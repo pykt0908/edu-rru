@@ -211,37 +211,6 @@ const person = computed(() => getPersonById(personId.value))
               </div>
             </div>
 
-            <!-- Department Info Card -->
-            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-xs space-y-4">
-              <div class="flex items-center gap-2 pb-2 border-b border-slate-100">
-                <v-icon icon="mdi-school-outline" size="18" class="text-emerald-700" />
-                <h2 class="text-base sm:text-lg font-bold text-slate-900">
-                  สังกัดสาขาวิชา
-                </h2>
-              </div>
-
-              <div class="space-y-3 text-xs sm:text-[13px] text-slate-600">
-                <div class="flex items-start gap-2.5">
-                  <v-icon icon="mdi-domain" size="16" class="text-emerald-700 shrink-0 mt-0.5" />
-                  <div>
-                    <span class="font-bold text-slate-800 block">{{ person.departmentName }}</span>
-                    <span class="text-slate-400 text-xs">คณะครุศาสตร์ มหาวิทยาลัยราชภัฏราชนครินทร์</span>
-                  </div>
-                </div>
-
-
-              </div>
-
-              <div class="pt-2">
-                <RouterLink
-                  to="/about/personnel"
-                  class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-800 hover:underline no-underline"
-                >
-                  <v-icon icon="mdi-view-grid" size="14" />
-                  <span>ดูคณาจารย์ทั้งหมดในคณะ</span>
-                </RouterLink>
-              </div>
-            </div>
           </div>
         </div>
       </template>
