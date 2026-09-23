@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { getPersonById } from '@/data/personnelData'
 
@@ -8,19 +8,6 @@ const router = useRouter()
 
 const personId = computed(() => route.params.id as string)
 const person = computed(() => getPersonById(personId.value))
-
-const copiedEmail = ref(false)
-const copyEmail = async (email: string) => {
-  try {
-    await navigator.clipboard.writeText(email)
-    copiedEmail.value = true
-    setTimeout(() => {
-      copiedEmail.value = false
-    }, 2000)
-  } catch {
-    // fallback
-  }
-}
 </script>
 
 <template>
@@ -159,46 +146,7 @@ const copyEmail = async (email: string) => {
                 </div>
               </div>
 
-              <!-- Contact & Location Box -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
-                <!-- Email -->
-                <div class="flex items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200/70">
-                  <div class="flex items-center gap-2.5 min-w-0">
-                    <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
-                      <v-icon icon="mdi-email-outline" size="16" />
-                    </div>
-                    <div class="min-w-0">
-                      <span class="block text-[10px] font-bold text-slate-400 uppercase">อีเมลติดต่อ</span>
-                      <a :href="'mailto:' + person.email" class="text-xs sm:text-[13px] font-semibold text-slate-800 hover:text-emerald-700 truncate block transition-colors no-underline">
-                        {{ person.email }}
-                      </a>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    :title="copiedEmail ? 'คัดลอกแล้ว' : 'คัดลอกอีเมล'"
-                    class="p-1.5 rounded-lg hover:bg-slate-200 text-slate-500 transition-colors cursor-pointer shrink-0"
-                    @click="copyEmail(person.email)"
-                  >
-                    <v-icon :icon="copiedEmail ? 'mdi-check' : 'mdi-content-copy'" size="16" :class="copiedEmail ? 'text-emerald-600' : ''" />
-                  </button>
-                </div>
 
-                <!-- Phone -->
-                <div v-if="person.phone" class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200/70">
-                  <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center shrink-0">
-                    <v-icon icon="mdi-phone-outline" size="16" />
-                  </div>
-                  <div class="min-w-0">
-                    <span class="block text-[10px] font-bold text-slate-400 uppercase">โทรศัพท์ภายใน</span>
-                    <span class="text-xs sm:text-[13px] font-semibold text-slate-800 block truncate">
-                      {{ person.phone }}
-                    </span>
-                  </div>
-                </div>
-
-
-              </div>
             </div>
           </div>
         </div>
