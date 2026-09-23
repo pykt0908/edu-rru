@@ -506,10 +506,7 @@ const filteredDepartments = computed(() => {
                   </div>
                 </div>
 
-                <div class="flex items-center gap-2 shrink-0">
-                  <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-200 text-slate-700">
-                    {{ currentDepartment.count }} ท่าน
-                  </span>
+                <div class="flex items-center shrink-0">
                   <v-icon
                     icon="mdi-chevron-down"
                     size="18"
@@ -552,10 +549,7 @@ const filteredDepartments = computed(() => {
                       </div>
                       <span class="truncate">ทุกสาขาวิชา (ทั้งหมด)</span>
                     </div>
-                    <div class="flex items-center gap-1.5 shrink-0">
-                      <span class="text-[11px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                        {{ totalPersonnelCount }}
-                      </span>
+                    <div class="flex items-center shrink-0">
                       <v-icon
                         v-if="selectedDepartment === 'all'"
                         icon="mdi-check"
@@ -588,10 +582,7 @@ const filteredDepartments = computed(() => {
                         </div>
                         <span class="truncate">{{ dept.name }}</span>
                       </div>
-                      <div class="flex items-center gap-1.5 shrink-0">
-                        <span class="text-[11px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                          {{ dept.members.length }}
-                        </span>
+                      <div class="flex items-center shrink-0">
                         <v-icon
                           v-if="selectedDepartment === dept.id"
                           icon="mdi-check"
