@@ -110,26 +110,13 @@ const copyEmail = async (email: string) => {
             <!-- Right Profile Info -->
             <div class="flex-1 space-y-6">
               <!-- Name & Title -->
-              <div class="space-y-2 border-b border-slate-100 pb-5">
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-emerald-100 text-emerald-800">
-                    {{ person.academicTitle || 'อาจารย์' }}
-                  </span>
-                  <span class="px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-700">
-                    {{ person.roleTitle }}
-                  </span>
-                </div>
-
+              <div class="space-y-1.5 border-b border-slate-100 pb-5">
                 <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
                   {{ person.name }}
                 </h1>
 
                 <p v-if="person.nameEn" class="text-sm sm:text-base text-slate-500 font-medium">
                   {{ person.nameEn }}
-                </p>
-
-                <p v-if="person.degrees" class="text-xs sm:text-sm text-emerald-800/90 font-medium pt-1">
-                  {{ person.degrees }}
                 </p>
               </div>
 
