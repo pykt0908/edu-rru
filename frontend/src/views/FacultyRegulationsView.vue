@@ -15,16 +15,75 @@ interface LawItem {
 }
 
 const categories = [
-  { id: 'all', name: 'ทั้งหมด', icon: 'mdi-format-list-bulleted' },
-  { id: 'act', name: 'พระราชบัญญัติ', icon: 'mdi-scale-balance' },
-  { id: 'regulation', name: 'ข้อบังคับมหาวิทยาลัย', icon: 'mdi-file-document-outline' },
-  { id: 'rule', name: 'ระเบียบและแนวปฏิบัติ', icon: 'mdi-clipboard-text-outline' },
-  { id: 'announcement', name: 'ประกาศมหาวิทยาลัย/คณะ', icon: 'mdi-bullhorn-outline' },
+  {
+    id: 'all',
+    name: 'ทั้งหมดทุกหมวดหมู่',
+    shortName: 'ทั้งหมด',
+    icon: 'mdi-format-list-bulleted',
+    desc: 'รวมพระราชบัญญัติ ข้อบังคับ ระเบียบ และประกาศทั้งหมด',
+  },
+  {
+    id: 'act',
+    name: 'พระราชบัญญัติ (พ.ร.บ.)',
+    shortName: 'พระราชบัญญัติ',
+    icon: 'mdi-scale-balance',
+    desc: 'กฎหมายแม่บท พระราชบัญญัติจัดตั้ง และสภาวิชาชีพครู',
+  },
+  {
+    id: 'regulation',
+    name: 'ข้อบังคับมหาวิทยาลัย',
+    shortName: 'ข้อบังคับ',
+    icon: 'mdi-file-document-outline',
+    desc: 'ข้อบังคับ มรภ.ราชนครินทร์ ว่าด้วยการบริหารงานบุคคลและวินัย',
+  },
+  {
+    id: 'rule',
+    name: 'ระเบียบและแนวปฏิบัติ',
+    shortName: 'ระเบียบ/แนวปฏิบัติ',
+    icon: 'mdi-clipboard-text-outline',
+    desc: 'ระเบียบการลา ค่าตอบแทน ทุนวิจัย และแนวทางการเบิกจ่าย',
+  },
+  {
+    id: 'announcement',
+    name: 'ประกาศมหาวิทยาลัย/คณะ',
+    shortName: 'ประกาศ',
+    icon: 'mdi-bullhorn-outline',
+    desc: 'ประกาศนโยบาย No Gift Policy, ITA และเกณฑ์ประเมินผลการปฏิบัติงาน',
+  },
 ]
 
 const selectedCategory = ref('all')
+const selectedYear = ref('all')
 const searchQuery = ref('')
 const sortOrder = ref<'desc' | 'asc'>('desc')
+
+const isCategoryDropdownOpen = ref(false)
+const isYearDropdownOpen = ref(false)
+
+const availableYears = computed(() => {
+  const years = Array.from(new Set(lawItems.map((item) => item.year)))
+  return years.sort((a, b) => parseInt(b, 10) - parseInt(a, 10))
+})
+
+const currentCategory = computed(() => {
+  return categories.find((c) => c.id === selectedCategory.value) || categories[0]
+})
+
+const selectCategory = (id: string) => {
+  selectedCategory.value = id
+  isCategoryDropdownOpen.value = false
+}
+
+const selectYear = (yr: string) => {
+  selectedYear.value = yr
+  isYearDropdownOpen.value = false
+}
+
+const clearFilters = () => {
+  selectedCategory.value = 'all'
+  selectedYear.value = 'all'
+  searchQuery.value = ''
+}
 
 const lawItems: LawItem[] = [
   // พระราชบัญญัติ (Acts)
@@ -265,6 +324,11 @@ const filteredLaws = computed(() => {
     list = list.filter((item) => item.category === selectedCategory.value)
   }
 
+  // Year filter
+  if (selectedYear.value !== 'all') {
+    list = list.filter((item) => item.year === selectedYear.value)
+  }
+
   // Search filter
   const query = searchQuery.value.trim().toLowerCase()
   if (query) {
@@ -301,13 +365,20 @@ const getCategoryBadgeClass = (category: string) => {
     case 'announcement':
       return 'bg-amber-50 text-amber-800 border-amber-200'
     default:
-      return 'bg-slate-50 text-slate-700 border-slate-200'
+      return 'bg-slate-100 text-slate-700 border-slate-200'
   }
 }
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-50/60 pb-20">
+  <div class="min-h-screen bg-slate-50/60 pb-20 relative">
+    <!-- Click-away backdrop to close open dropdowns -->
+    <div
+      v-if="isCategoryDropdownOpen || isYearDropdownOpen"
+      class="fixed inset-0 z-20"
+      @click="isCategoryDropdownOpen = false; isYearDropdownOpen = false"
+    />
+
     <!-- Hero Banner (Follows rule.md Section 13) -->
     <PageHeroBanner
       badge="ระเบียบและกฎหมาย"
@@ -319,73 +390,284 @@ const getCategoryBadgeClass = (category: string) => {
 
     <!-- Main Container -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6">
-      <!-- Filter & Search Card -->
-      <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/90 shadow-xs space-y-4">
-        <!-- Category Filter Tabs -->
-        <div>
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5">
-            เลือกหมวดหมู่ข้อกฎหมายและระเบียบ
-          </label>
-          <div class="flex flex-wrap gap-2">
-            <button
-              v-for="cat in categories"
-              :key="cat.id"
-              type="button"
-              class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-150 cursor-pointer min-h-[40px] border"
-              :class="
-                selectedCategory === cat.id
-                  ? 'bg-emerald-700 text-white border-emerald-700 shadow-sm shadow-emerald-700/20'
-                  : 'bg-slate-50 text-slate-600 border-slate-200/80 hover:bg-slate-100 hover:text-slate-900'
-              "
-              @click="selectedCategory = cat.id"
-            >
-              <v-icon :icon="cat.icon" size="16" />
-              <span>{{ cat.name }}</span>
-              <span
-                class="px-1.5 py-0.5 rounded-full text-[11px] font-bold"
-                :class="selectedCategory === cat.id ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'"
+      <!-- Filter & Search Toolbar Card -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-xs space-y-4 relative z-30">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 items-end">
+          <!-- 1. Category Dropdown Selector (md:col-span-5) -->
+          <div class="relative md:col-span-5">
+            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+              เลือกหมวดหมู่ข้อกฎหมาย
+            </label>
+            <div class="relative">
+              <button
+                type="button"
+                class="w-full flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl border transition-all duration-150 cursor-pointer text-left min-h-[44px]"
+                :class="
+                  isCategoryDropdownOpen
+                    ? 'border-emerald-600 ring-2 ring-emerald-500/20 bg-emerald-50/30'
+                    : 'border-slate-200 hover:border-slate-300 bg-slate-50/60 hover:bg-slate-50'
+                "
+                @click="isCategoryDropdownOpen = !isCategoryDropdownOpen; isYearDropdownOpen = false"
               >
-                {{ getCategoryCount(cat.id) }}
-              </span>
-            </button>
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div
+                    class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border"
+                    :class="getCategoryBadgeClass(currentCategory.id)"
+                  >
+                    <v-icon :icon="currentCategory.icon" size="16" />
+                  </div>
+                  <div class="min-w-0">
+                    <span class="block text-xs sm:text-sm font-bold text-slate-800 truncate">
+                      {{ currentCategory.name }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-200 text-slate-700">
+                    {{ getCategoryCount(currentCategory.id) }} รายการ
+                  </span>
+                  <v-icon
+                    icon="mdi-chevron-down"
+                    size="18"
+                    class="text-slate-400 transition-transform duration-200"
+                    :class="isCategoryDropdownOpen ? 'rotate-180 text-emerald-700' : ''"
+                  />
+                </div>
+              </button>
+
+              <!-- Category Dropdown Popover Menu -->
+              <transition
+                enter-active-class="transition ease-out duration-150"
+                enter-from-class="opacity-0 translate-y-1"
+                enter-to-class="opacity-100 translate-y-0"
+                leave-active-class="transition ease-in duration-100"
+                leave-from-class="opacity-100 translate-y-0"
+                leave-to-class="opacity-0 translate-y-1"
+              >
+                <div
+                  v-if="isCategoryDropdownOpen"
+                  class="absolute top-full left-0 right-0 mt-1.5 z-40 bg-white rounded-2xl shadow-xl shadow-slate-900/12 border border-slate-200/90 py-1.5 overflow-hidden divide-y divide-slate-100"
+                >
+                  <button
+                    v-for="cat in categories"
+                    :key="cat.id"
+                    type="button"
+                    class="w-full flex items-start justify-between gap-3 px-3.5 py-2.5 hover:bg-emerald-50/70 transition-colors text-left cursor-pointer group"
+                    :class="selectedCategory === cat.id ? 'bg-emerald-50/50' : ''"
+                    @click="selectCategory(cat.id)"
+                  >
+                    <div class="flex items-start gap-3 min-w-0">
+                      <div
+                        class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border mt-0.5"
+                        :class="getCategoryBadgeClass(cat.id)"
+                      >
+                        <v-icon :icon="cat.icon" size="17" />
+                      </div>
+                      <div class="min-w-0">
+                        <span
+                          class="block text-xs sm:text-sm font-bold text-slate-800 group-hover:text-emerald-800 transition-colors"
+                          :class="selectedCategory === cat.id ? 'text-emerald-700' : ''"
+                        >
+                          {{ cat.name }}
+                        </span>
+                        <p class="text-[11px] text-slate-500 line-clamp-1 mt-0.5">
+                          {{ cat.desc }}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 shrink-0 self-center">
+                      <span
+                        class="px-2 py-0.5 rounded-full text-[11px] font-bold"
+                        :class="selectedCategory === cat.id ? 'bg-emerald-700 text-white' : 'bg-slate-100 text-slate-600'"
+                      >
+                        {{ getCategoryCount(cat.id) }}
+                      </span>
+                      <v-icon
+                        v-if="selectedCategory === cat.id"
+                        icon="mdi-check"
+                        size="18"
+                        class="text-emerald-700"
+                      />
+                      <div v-else class="w-[18px]" />
+                    </div>
+                  </button>
+                </div>
+              </transition>
+            </div>
+          </div>
+
+          <!-- 2. Year Filter Dropdown (md:col-span-3) -->
+          <div class="relative md:col-span-3">
+            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+              ปี พ.ศ. ที่ประกาศ
+            </label>
+            <div class="relative">
+              <button
+                type="button"
+                class="w-full flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl border transition-all duration-150 cursor-pointer text-left min-h-[44px]"
+                :class="
+                  isYearDropdownOpen
+                    ? 'border-emerald-600 ring-2 ring-emerald-500/20 bg-emerald-50/30'
+                    : 'border-slate-200 hover:border-slate-300 bg-slate-50/60 hover:bg-slate-50'
+                "
+                @click="isYearDropdownOpen = !isYearDropdownOpen; isCategoryDropdownOpen = false"
+              >
+                <div class="flex items-center gap-2 min-w-0">
+                  <v-icon icon="mdi-calendar-clock-outline" size="16" class="text-slate-500 shrink-0" />
+                  <span class="text-xs sm:text-sm font-bold text-slate-800 truncate">
+                    {{ selectedYear === 'all' ? 'ทุกปี พ.ศ. (ทั้งหมด)' : `พ.ศ. ${selectedYear}` }}
+                  </span>
+                </div>
+                <v-icon
+                  icon="mdi-chevron-down"
+                  size="18"
+                  class="text-slate-400 transition-transform duration-200 shrink-0"
+                  :class="isYearDropdownOpen ? 'rotate-180 text-emerald-700' : ''"
+                />
+              </button>
+
+              <transition
+                enter-active-class="transition ease-out duration-150"
+                enter-from-class="opacity-0 translate-y-1"
+                enter-to-class="opacity-100 translate-y-0"
+                leave-active-class="transition ease-in duration-100"
+                leave-from-class="opacity-100 translate-y-0"
+                leave-to-class="opacity-0 translate-y-1"
+              >
+                <div
+                  v-if="isYearDropdownOpen"
+                  class="absolute top-full left-0 right-0 mt-1.5 z-40 bg-white rounded-2xl shadow-xl shadow-slate-900/12 border border-slate-200/90 py-1.5 max-h-60 overflow-y-auto"
+                >
+                  <button
+                    type="button"
+                    class="w-full flex items-center justify-between px-3.5 py-2 text-xs sm:text-sm font-semibold hover:bg-emerald-50 text-left cursor-pointer"
+                    :class="selectedYear === 'all' ? 'text-emerald-700 font-bold bg-emerald-50/50' : 'text-slate-700'"
+                    @click="selectYear('all')"
+                  >
+                    <span>ทุกปี พ.ศ. (ทั้งหมด)</span>
+                    <v-icon v-if="selectedYear === 'all'" icon="mdi-check" size="16" class="text-emerald-700" />
+                  </button>
+
+                  <button
+                    v-for="yr in availableYears"
+                    :key="yr"
+                    type="button"
+                    class="w-full flex items-center justify-between px-3.5 py-2 text-xs sm:text-sm font-semibold hover:bg-emerald-50 text-left cursor-pointer"
+                    :class="selectedYear === yr ? 'text-emerald-700 font-bold bg-emerald-50/50' : 'text-slate-700'"
+                    @click="selectYear(yr)"
+                  >
+                    <span>พ.ศ. {{ yr }}</span>
+                    <v-icon v-if="selectedYear === yr" icon="mdi-check" size="16" class="text-emerald-700" />
+                  </button>
+                </div>
+              </transition>
+            </div>
+          </div>
+
+          <!-- 3. Search Bar (md:col-span-4) -->
+          <div class="relative md:col-span-4">
+            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+              ค้นหาข้อกฎหมาย
+            </label>
+            <div class="relative">
+              <v-icon
+                icon="mdi-magnify"
+                size="18"
+                class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="พิมพ์ชื่อกฎหมาย หรือคำสำคัญ..."
+                class="w-full pl-10 pr-9 py-2 rounded-xl text-xs sm:text-sm bg-slate-50/60 border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-600 transition-all min-h-[44px]"
+              />
+              <button
+                v-if="searchQuery"
+                type="button"
+                aria-label="ล้างคำค้นหา"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                @click="searchQuery = ''"
+              >
+                <v-icon icon="mdi-close-circle" size="16" />
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Search Bar and Sort Controls -->
-        <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          <!-- Search input -->
-          <div class="relative flex-1 max-w-md">
-            <v-icon
-              icon="mdi-magnify"
-              size="18"
-              class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
-            />
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="ค้นหาชื่อกฎหมาย ระเบียบ หรือคำสำคัญ..."
-              class="w-full pl-10 pr-9 py-2 rounded-xl text-xs sm:text-sm bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-600 transition-all min-h-[42px]"
-            />
-            <button
-              v-if="searchQuery"
-              type="button"
-              aria-label="ล้างคำค้นหา"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
-              @click="searchQuery = ''"
+        <!-- Active Filter Chips & Sort Toolbar -->
+        <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <!-- Left: Filter chips and result count -->
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-slate-500 font-medium">
+              ผลการค้นหา: <strong class="text-emerald-700 font-bold">{{ filteredLaws.length }}</strong> รายการ
+            </span>
+
+            <!-- Category Active Chip -->
+            <span
+              v-if="selectedCategory !== 'all'"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800"
             >
-              <v-icon icon="mdi-close-circle" size="16" />
+              <span>หมวด: {{ currentCategory.shortName }}</span>
+              <button
+                type="button"
+                aria-label="ล้างหมวดหมู่"
+                class="hover:text-emerald-950 cursor-pointer"
+                @click="selectedCategory = 'all'"
+              >
+                <v-icon icon="mdi-close" size="14" />
+              </button>
+            </span>
+
+            <!-- Year Active Chip -->
+            <span
+              v-if="selectedYear !== 'all'"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800"
+            >
+              <span>ปี {{ selectedYear }}</span>
+              <button
+                type="button"
+                aria-label="ล้างปี"
+                class="hover:text-blue-950 cursor-pointer"
+                @click="selectedYear = 'all'"
+              >
+                <v-icon icon="mdi-close" size="14" />
+              </button>
+            </span>
+
+            <!-- Search Query Active Chip -->
+            <span
+              v-if="searchQuery"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800"
+            >
+              <span>คำค้น: "{{ searchQuery }}"</span>
+              <button
+                type="button"
+                aria-label="ล้างคำค้นหา"
+                class="hover:text-amber-950 cursor-pointer"
+                @click="searchQuery = ''"
+              >
+                <v-icon icon="mdi-close" size="14" />
+              </button>
+            </span>
+
+            <!-- Clear all filters button -->
+            <button
+              v-if="selectedCategory !== 'all' || selectedYear !== 'all' || searchQuery"
+              type="button"
+              class="text-xs text-red-600 hover:text-red-700 hover:underline font-semibold cursor-pointer ml-1"
+              @click="clearFilters"
+            >
+              ล้างตัวกรองทั้งหมด
             </button>
           </div>
 
-          <!-- Sort order toggle and result count -->
-          <div class="flex items-center justify-between sm:justify-end gap-3 text-xs sm:text-sm">
-            <span class="text-slate-500 font-medium">
-              พบ <strong class="text-emerald-700 font-bold">{{ filteredLaws.length }}</strong> รายการ
-            </span>
-
+          <!-- Right: Sort by year toggle -->
+          <div class="flex items-center gap-2">
             <button
               type="button"
-              class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold cursor-pointer transition-colors"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold cursor-pointer transition-colors"
               @click="sortOrder = sortOrder === 'desc' ? 'asc' : 'desc'"
             >
               <v-icon :icon="sortOrder === 'desc' ? 'mdi-sort-clock-descending-outline' : 'mdi-sort-clock-ascending-outline'" size="16" />
