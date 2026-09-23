@@ -69,9 +69,9 @@ const aboutSubMenu = [
 ]
 
 const curriculumPrograms = [
-  { label: 'ปริญญาตรี', to: '/curriculum/bachelor', icon: 'mdi-school', badge: '4 ปี', desc: 'หลักสูตรครุศาสตรบัณฑิต 4 ปี' },
-  { label: 'ประกาศนียบัตรบัณฑิตวิชาชีพครู', to: '/curriculum/grad-diploma', icon: 'mdi-certificate-outline', badge: '1 ปี', desc: 'หลักสูตร ป.บัณฑิต 1 ปี' },
-  { label: 'ปริญญาโท', to: '/curriculum/master', icon: 'mdi-book-education-outline', badge: '2 ปี', desc: 'หลักสูตรครุศาสตรมหาบัณฑิต 2 ปี' },
+  { label: 'ปริญญาตรี', to: '/curriculum/bachelor', icon: 'mdi-school', desc: 'หลักสูตรครุศาสตรบัณฑิต' },
+  { label: 'ประกาศนียบัตรบัณฑิตวิชาชีพครู', to: '/curriculum/grad-diploma', icon: 'mdi-certificate-outline', desc: 'หลักสูตร ป.บัณฑิตวิชาชีพครู' },
+  { label: 'ปริญญาโท', to: '/curriculum/master', icon: 'mdi-book-education-outline', desc: 'หลักสูตรครุศาสตรมหาบัณฑิต' },
 ]
 </script>
 
@@ -145,16 +145,11 @@ const curriculumPrograms = [
               v-for="sub in curriculumPrograms"
               :key="sub.to"
               :to="sub.to"
-              class="flex items-center justify-between px-4 py-2 rounded-lg text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 no-underline min-h-[40px] transition-colors"
+              class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 no-underline min-h-[40px] transition-colors"
               @click="drawer = false; mobileAboutOpen = false"
             >
-              <div class="flex items-center gap-3 min-w-0">
-                <v-icon :icon="sub.icon" size="18" />
-                <span class="truncate">{{ sub.label }}</span>
-              </div>
-              <span v-if="sub.badge" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                {{ sub.badge }}
-              </span>
+              <v-icon :icon="sub.icon" size="18" />
+              <span>{{ sub.label }}</span>
             </RouterLink>
 
             <RouterLink
@@ -345,14 +340,9 @@ const curriculumPrograms = [
                               <v-icon :icon="sub.icon" size="16" />
                             </div>
                             <div class="min-w-0 flex-1">
-                              <div class="flex items-center gap-1.5">
-                                <p class="text-xs font-bold text-slate-800 group-hover:text-emerald-700 transition-colors leading-snug truncate">
-                                  {{ sub.label }}
-                                </p>
-                                <span v-if="sub.badge" class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-100 text-emerald-800">
-                                  {{ sub.badge }}
-                                </span>
-                              </div>
+                              <p class="text-xs font-bold text-slate-800 group-hover:text-emerald-700 transition-colors leading-snug truncate">
+                                {{ sub.label }}
+                              </p>
                               <p class="text-[11px] text-slate-500 mt-0.5 leading-snug line-clamp-1">
                                 {{ sub.desc }}
                               </p>
