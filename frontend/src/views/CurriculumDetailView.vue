@@ -290,8 +290,8 @@ const program = {
 
     <!-- Main Container -->
     <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      <!-- Navigation Tabs Container (Matching Reference Image) -->
-      <div class="bg-indigo-50/70 p-1.5 rounded-2xl flex items-center gap-1 overflow-x-auto scrollbar-none border border-indigo-100/80">
+      <!-- Navigation Tabs Container (Emerald Faculty Brand) -->
+      <div class="bg-emerald-50/70 p-1.5 rounded-2xl flex items-center gap-1 overflow-x-auto scrollbar-none border border-emerald-100/80">
         <button
           v-for="t in tabs"
           :key="t.id"
@@ -299,8 +299,8 @@ const program = {
           class="flex-1 py-2.5 px-3 sm:px-4 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all duration-200 cursor-pointer text-center"
           :class="
             activeTab === t.id
-              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
-              : 'text-indigo-900/80 hover:bg-indigo-100/70 hover:text-indigo-950'
+              ? 'bg-emerald-700 text-white shadow-md shadow-emerald-700/20'
+              : 'text-emerald-900/80 hover:bg-emerald-100/70 hover:text-emerald-950'
           "
           @click="activeTab = t.id"
         >
@@ -413,7 +413,7 @@ const program = {
                   :key="jIdx"
                   class="flex items-start gap-2.5"
                 >
-                  <span class="text-indigo-600 font-bold leading-none mt-1">▸</span>
+                  <span class="text-emerald-600 font-bold leading-none mt-1">▸</span>
                   <span>{{ job }}</span>
                 </li>
               </ul>
@@ -437,7 +437,7 @@ const program = {
                 <tbody class="divide-y divide-slate-100">
                   <tr v-for="(fee, fIdx) in program.tuitionFees" :key="fIdx">
                     <td class="py-3.5 px-4 font-medium text-slate-800">{{ fee.term }}</td>
-                    <td class="py-3.5 px-4 font-bold text-indigo-700 text-right">{{ fee.amount }}</td>
+                    <td class="py-3.5 px-4 font-bold text-emerald-700 text-right">{{ fee.amount }}</td>
                     <td class="py-3.5 px-4 text-slate-500 text-xs">{{ fee.note }}</td>
                   </tr>
                 </tbody>
@@ -459,7 +459,7 @@ const program = {
                 v-for="(st, sIdx) in program.structures"
                 :key="sIdx"
                 class="flex items-center justify-between p-4"
-                :class="st.highlight ? 'bg-indigo-50 font-bold text-indigo-900' : 'text-slate-800'"
+                :class="st.highlight ? 'bg-emerald-50 font-bold text-emerald-900' : 'text-slate-800'"
               >
                 <span>{{ st.category }}</span>
                 <span class="font-bold shrink-0">{{ st.credits }}</span>
@@ -475,7 +475,7 @@ const program = {
             <div class="space-y-6">
               <div v-for="yp in program.studyPlan" :key="yp.year" class="space-y-3">
                 <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-indigo-600" />
+                  <span class="w-2 h-2 rounded-full bg-emerald-600" />
                   <span>{{ yp.year }}</span>
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -484,7 +484,7 @@ const program = {
                     :key="sem.name"
                     class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2"
                   >
-                    <span class="font-bold text-xs text-indigo-700 block">{{ sem.name }}</span>
+                    <span class="font-bold text-xs text-emerald-700 block">{{ sem.name }}</span>
                     <ul class="text-xs text-slate-600 space-y-1.5 pl-3">
                       <li v-for="(c, cIdx) in sem.courses" :key="cIdx" class="list-disc">
                         {{ c }}
@@ -507,12 +507,12 @@ const program = {
                 :key="prof.name"
                 class="p-4 rounded-2xl border border-slate-200 bg-slate-50/40 text-center space-y-3"
               >
-                <div class="w-20 h-20 rounded-full mx-auto bg-indigo-100 flex items-center justify-center text-indigo-700 shadow-inner">
+                <div class="w-20 h-20 rounded-full mx-auto bg-emerald-100 flex items-center justify-center text-emerald-700 shadow-inner">
                   <v-icon icon="mdi-account" size="40" />
                 </div>
                 <div>
                   <h4 class="text-sm font-bold text-slate-900">{{ prof.name }}</h4>
-                  <p class="text-xs font-semibold text-indigo-700 mt-0.5">{{ prof.position }}</p>
+                  <p class="text-xs font-semibold text-emerald-700 mt-0.5">{{ prof.position }}</p>
                   <p class="text-[11px] text-slate-500 mt-1 leading-snug">{{ prof.degree }}</p>
                 </div>
               </div>
@@ -550,11 +550,11 @@ const program = {
               </div>
             </div>
 
-            <!-- Action Buttons (Solid Purple & Outlined matching image) -->
+            <!-- Action Buttons (Emerald Faculty Brand) -->
             <div class="space-y-2.5 pt-2">
               <button
                 type="button"
-                class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold text-sm shadow-sm transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                class="w-full py-2.5 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white font-bold text-sm shadow-sm transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 <v-icon icon="mdi-download" size="18" />
                 <span>ดาวน์โหลด</span>
@@ -562,7 +562,7 @@ const program = {
 
               <button
                 type="button"
-                class="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-indigo-50 active:bg-indigo-100 text-indigo-700 font-bold text-sm border-2 border-indigo-600 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                class="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-emerald-50 active:bg-emerald-100 text-emerald-700 font-bold text-sm border-2 border-emerald-700 transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 <v-icon icon="mdi-account-plus-outline" size="18" />
                 <span>สมัครเรียน</span>
@@ -579,7 +579,7 @@ const program = {
             <!-- Facebook Page Header Simulation -->
             <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/70 space-y-3">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+                <div class="w-10 h-10 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
                   <v-icon icon="mdi-school" size="20" />
                 </div>
                 <div class="min-w-0">
@@ -594,7 +594,7 @@ const program = {
               <div class="flex items-center gap-2 text-xs">
                 <button
                   type="button"
-                  class="flex-1 py-1.5 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  class="flex-1 py-1.5 px-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <v-icon icon="mdi-facebook" size="14" />
                   <span>ติดตามเพจ</span>
@@ -627,7 +627,7 @@ const program = {
               <a
                 href="https://edu.rru.ac.th"
                 target="_blank"
-                class="flex items-center gap-2 text-slate-700 hover:text-indigo-700 transition-colors"
+                class="flex items-center gap-2 text-slate-700 hover:text-emerald-700 transition-colors"
               >
                 <v-icon icon="mdi-link-variant" size="15" class="text-slate-400 shrink-0" />
                 <span class="truncate">edu.rru.ac.th</span>
@@ -635,7 +635,7 @@ const program = {
 
               <a
                 href="tel:038511170"
-                class="flex items-center gap-2 text-slate-700 hover:text-indigo-700 transition-colors"
+                class="flex items-center gap-2 text-slate-700 hover:text-emerald-700 transition-colors"
               >
                 <v-icon icon="mdi-phone" size="15" class="text-slate-400 shrink-0" />
                 <span>038-511170, 09-2265-8433</span>
@@ -643,19 +643,19 @@ const program = {
 
               <a
                 href="mailto:educ@rru.ac.th"
-                class="flex items-center gap-2 text-slate-700 hover:text-indigo-700 transition-colors"
+                class="flex items-center gap-2 text-slate-700 hover:text-emerald-700 transition-colors"
               >
                 <v-icon icon="mdi-email-outline" size="15" class="text-slate-400 shrink-0" />
                 <span class="truncate">educ@rru.ac.th</span>
               </a>
             </div>
 
-            <!-- Facebook Page Direct Button (Purple button matching image) -->
+            <!-- Facebook Page Direct Button -->
             <a
               href="https://facebook.com"
               target="_blank"
               rel="noopener noreferrer"
-              class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold text-xs text-center transition-colors flex items-center justify-center gap-2 no-underline shadow-xs"
+              class="w-full py-2.5 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white font-bold text-xs text-center transition-colors flex items-center justify-center gap-2 no-underline shadow-xs"
             >
               <v-icon icon="mdi-facebook" size="16" />
               <span>facebook page</span>
