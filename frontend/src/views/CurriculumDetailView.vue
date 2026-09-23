@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import eduLogo from '@/assets/logos/edu-logo-border-white.png'
 
 // Active tab
@@ -16,6 +16,11 @@ const tabs = [
 // Current gallery photo index
 const activePhotoIndex = ref(0)
 const isFullscreen = ref(false)
+
+const openLightbox = (idx: number) => {
+  activePhotoIndex.value = idx
+  isFullscreen.value = true
+}
 
 const photos = [
   {
@@ -47,6 +52,25 @@ const nextPhoto = () => {
 const prevPhoto = () => {
   activePhotoIndex.value = (activePhotoIndex.value - 1 + photos.length) % photos.length
 }
+
+const handleKeyDown = (e: KeyboardEvent) => {
+  if (!isFullscreen.value) return
+  if (e.key === 'ArrowRight') {
+    nextPhoto()
+  } else if (e.key === 'ArrowLeft') {
+    prevPhoto()
+  } else if (e.key === 'Escape') {
+    isFullscreen.value = false
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown)
+})
 
 // Curriculum Data
 const program = {
@@ -219,7 +243,7 @@ const program = {
             :key="idx"
             class="relative aspect-[4/3] overflow-hidden bg-slate-900 rounded-lg group/item cursor-pointer"
             :class="idx === activePhotoIndex ? 'ring-2 ring-emerald-500' : 'opacity-90 hover:opacity-100'"
-            @click="activePhotoIndex = idx"
+            @click="openLightbox(idx)"
           >
             <img
               :src="photo.url"
@@ -227,9 +251,13 @@ const program = {
               class="w-full h-full object-cover transition-transform duration-500 group-hover/item:scale-105"
             />
             <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-60 group-hover/item:opacity-80 transition-opacity" />
-            <div class="absolute bottom-2 left-2 right-2">
+            <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between">
               <span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold bg-black/60 text-white tracking-wider backdrop-blur-xs">
                 {{ photo.badge }}
+              </span>
+              <span class="text-[10px] text-white/75 opacity-0 group-hover/item:opacity-100 transition-opacity flex items-center gap-0.5">
+                <v-icon icon="mdi-magnify-plus" size="12" />
+                <span>คลิกเพื่อขยาย</span>
               </span>
             </div>
           </div>
@@ -240,7 +268,7 @@ const program = {
           type="button"
           aria-label="ดูภาพขนาดเต็ม"
           class="absolute right-14 top-3 w-8 h-8 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-xs transition-all shadow-md cursor-pointer"
-          @click="isFullscreen = true"
+          @click="openLightbox(activePhotoIndex)"
         >
           <v-icon icon="mdi-fullscreen" size="18" />
         </button>
@@ -264,28 +292,101 @@ const program = {
         </button>
       </div>
 
-      <!-- Fullscreen Modal -->
-      <div
-        v-if="isFullscreen"
-        class="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-4"
-        @click.self="isFullscreen = false"
+      <!-- Fullscreen Lightbox Modal (Translucent overlay revealing website underneath) -->
+      <transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
       >
-        <button
-          type="button"
-          class="absolute top-5 right-5 text-white/80 hover:text-white p-2 cursor-pointer"
-          @click="isFullscreen = false"
+        <div
+          v-if="isFullscreen"
+          class="fixed inset-0 z-50 bg-slate-950/65 backdrop-blur-xs flex flex-col justify-between p-3 sm:p-6"
+          @click.self="isFullscreen = false"
         >
-          <v-icon icon="mdi-close" size="32" />
-        </button>
-        <img
-          :src="photos[activePhotoIndex]?.url"
-          :alt="photos[activePhotoIndex]?.title"
-          class="max-w-4xl max-h-[80vh] object-contain rounded-xl shadow-2xl"
-        />
-        <p class="text-white text-sm mt-4 font-medium text-center">
-          {{ photos[activePhotoIndex]?.title }}
-        </p>
-      </div>
+          <!-- Top Bar: Index Counter, Title & Close Button -->
+          <div class="w-full max-w-5xl mx-auto flex items-center justify-between py-2 text-white z-20">
+            <div class="flex items-center gap-2.5">
+              <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-white/20 text-white backdrop-blur-md border border-white/30 tracking-wider">
+                {{ activePhotoIndex + 1 }} / {{ photos.length }}
+              </span>
+              <span class="text-xs sm:text-sm font-medium text-white/90 truncate max-w-xs sm:max-w-md hidden sm:inline-block">
+                {{ photos[activePhotoIndex]?.title }}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              aria-label="ปิดหน้าต่างรูปภาพ"
+              class="w-10 h-10 rounded-full bg-white/20 hover:bg-white/35 text-white flex items-center justify-center backdrop-blur-md transition-all cursor-pointer border border-white/30 shadow-lg"
+              @click="isFullscreen = false"
+            >
+              <v-icon icon="mdi-close" size="22" />
+            </button>
+          </div>
+
+          <!-- Middle: Left / Right Navigation & Displayed Image -->
+          <div
+            class="relative w-full max-w-5xl mx-auto flex-1 flex items-center justify-center px-2 sm:px-14 my-2 select-none"
+            @click.self="isFullscreen = false"
+          >
+            <!-- Previous Button in Lightbox -->
+            <button
+              type="button"
+              aria-label="ดูภาพก่อนหน้า"
+              class="absolute left-1 sm:left-3 z-30 w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center backdrop-blur-md transition-all shadow-xl hover:scale-105 cursor-pointer border border-white/20"
+              @click.stop="prevPhoto"
+            >
+              <v-icon icon="mdi-chevron-left" size="28" />
+            </button>
+
+            <!-- Main Active Image -->
+            <div class="relative max-h-[72vh] flex flex-col items-center justify-center">
+              <img
+                :key="activePhotoIndex"
+                :src="photos[activePhotoIndex]?.url"
+                :alt="photos[activePhotoIndex]?.title"
+                class="max-w-full max-h-[72vh] object-contain rounded-2xl shadow-2xl ring-1 ring-white/20"
+              />
+              <p class="text-white text-xs sm:text-sm mt-3 font-medium text-center bg-black/60 px-3 py-1 rounded-full backdrop-blur-xs sm:hidden">
+                {{ photos[activePhotoIndex]?.title }}
+              </p>
+            </div>
+
+            <!-- Next Button in Lightbox -->
+            <button
+              type="button"
+              aria-label="ดูภาพถัดไป"
+              class="absolute right-1 sm:right-3 z-30 w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center backdrop-blur-md transition-all shadow-xl hover:scale-105 cursor-pointer border border-white/20"
+              @click.stop="nextPhoto"
+            >
+              <v-icon icon="mdi-chevron-right" size="28" />
+            </button>
+          </div>
+
+          <!-- Bottom Bar: Thumbnails preview & Keyboard hint -->
+          <div class="w-full max-w-xl mx-auto flex flex-col items-center gap-2 py-2 z-20">
+            <div class="flex items-center gap-2">
+              <button
+                v-for="(photo, idx) in photos"
+                :key="idx"
+                type="button"
+                :aria-label="photo.title"
+                class="w-12 h-9 sm:w-16 sm:h-11 rounded-lg overflow-hidden border-2 transition-all duration-200 cursor-pointer"
+                :class="idx === activePhotoIndex ? 'border-emerald-400 scale-105 shadow-lg ring-2 ring-emerald-400/40' : 'border-white/30 opacity-60 hover:opacity-100'"
+                @click="activePhotoIndex = idx"
+              >
+                <img :src="photo.url" :alt="photo.title" class="w-full h-full object-cover" />
+              </button>
+            </div>
+            <span class="text-[11px] text-white/70 hidden sm:inline-block">
+              กดลูกศร ซ้าย/ขวา เพื่อเปลี่ยนรูป หรือกด Esc เพื่อปิด
+            </span>
+          </div>
+        </div>
+      </transition>
     </div>
 
     <!-- Main Container -->

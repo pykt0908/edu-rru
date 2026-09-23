@@ -62,17 +62,16 @@ const navItems = [
 
 const aboutSubMenu = [
   { label: 'ประวัติคณะ', to: '/about/history', icon: 'mdi-book-open-page-variant-outline', desc: 'ความเป็นมาตั้งแต่ พ.ศ. 2483' },
+  { label: 'ปรัชญา วิสัยทัศน์ และพันธกิจ', to: '/about/philosophy', icon: 'mdi-lightbulb-outline', desc: 'อัตลักษณ์และทิศทางของคณะ' },
   { label: 'คณะผู้บริหาร', to: '/about/management', icon: 'mdi-account-tie-outline', desc: 'คณบดี รองคณบดี และผู้ช่วยคณบดี' },
   { label: 'คณะกรรมการคณะครุศาสตร์', to: '/about/committee', icon: 'mdi-account-group-outline', desc: 'คณะกรรมการประจำคณะครุศาสตร์' },
   { label: 'การประเมินคุณธรรมและความโปร่งใส (ITA)', to: '/about/ita', icon: 'mdi-shield-check-outline', desc: 'การประเมินคุณธรรมและความโปร่งใส' },
-  { label: 'ปรัชญา วิสัยทัศน์ และพันธกิจ', to: '/about/philosophy', icon: 'mdi-lightbulb-outline', desc: 'อัตลักษณ์และทิศทางของคณะ' },
 ]
 
-const curriculumSubMenu = [
-  { label: 'ปริญญาตรี', to: '/curriculum/bachelor', icon: 'mdi-school', desc: 'หลักสูตรครุศาสตรบัณฑิต 4 ปี' },
-  { label: 'ประกาศนียบัตรบัณฑิตวิชาชีพครู', to: '/curriculum/grad-diploma', icon: 'mdi-certificate-outline', desc: 'หลักสูตร ป.บัณฑิต 1 ปี' },
-  { label: 'ปริญญาโท', to: '/curriculum/master', icon: 'mdi-book-education-outline', desc: 'หลักสูตรครุศาสตรมหาบัณฑิต 2 ปี' },
-  { label: 'รายละเอียดหลักสูตร (ตัวอย่าง)', to: '/curriculum/detail', icon: 'mdi-file-document-outline', desc: 'สาขาวิชาวิทยาการข้อมูล' },
+const curriculumPrograms = [
+  { label: 'ปริญญาตรี', to: '/curriculum/bachelor', icon: 'mdi-school', badge: '4 ปี', desc: 'หลักสูตรครุศาสตรบัณฑิต 4 ปี' },
+  { label: 'ประกาศนียบัตรบัณฑิตวิชาชีพครู', to: '/curriculum/grad-diploma', icon: 'mdi-certificate-outline', badge: '1 ปี', desc: 'หลักสูตร ป.บัณฑิต 1 ปี' },
+  { label: 'ปริญญาโท', to: '/curriculum/master', icon: 'mdi-book-education-outline', badge: '2 ปี', desc: 'หลักสูตรครุศาสตรมหาบัณฑิต 2 ปี' },
 ]
 </script>
 
@@ -140,17 +139,31 @@ const curriculumSubMenu = [
             <!-- Submenu หลักสูตร -->
             <div class="pt-3 pb-1 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-              <span>หลักสูตร</span>
+              <span>หลักสูตรที่เปิดสอน</span>
             </div>
             <RouterLink
-              v-for="sub in curriculumSubMenu"
+              v-for="sub in curriculumPrograms"
               :key="sub.to"
               :to="sub.to"
-              class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 no-underline min-h-[40px] transition-colors"
+              class="flex items-center justify-between px-4 py-2 rounded-lg text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 no-underline min-h-[40px] transition-colors"
               @click="drawer = false; mobileAboutOpen = false"
             >
-              <v-icon :icon="sub.icon" size="18" />
-              <span>{{ sub.label }}</span>
+              <div class="flex items-center gap-3 min-w-0">
+                <v-icon :icon="sub.icon" size="18" />
+                <span class="truncate">{{ sub.label }}</span>
+              </div>
+              <span v-if="sub.badge" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                {{ sub.badge }}
+              </span>
+            </RouterLink>
+
+            <RouterLink
+              to="/curriculum/detail"
+              class="flex items-center gap-3 px-4 py-2 rounded-lg text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 no-underline min-h-[40px] transition-colors"
+              @click="drawer = false; mobileAboutOpen = false"
+            >
+              <v-icon icon="mdi-database-search" size="18" />
+              <span>รายละเอียดหลักสูตร (ตัวอย่าง)</span>
             </RouterLink>
           </div>
         </div>
@@ -261,58 +274,133 @@ const curriculumSubMenu = [
               />
             </button>
 
-            <!-- Dropdown panel -->
+            <!-- Megamenu panel -->
             <transition
-              enter-active-class="transition ease-out duration-150"
-              enter-from-class="opacity-0 translate-y-1"
-              enter-to-class="opacity-100 translate-y-0"
-              leave-active-class="transition ease-in duration-100"
-              leave-from-class="opacity-100 translate-y-0"
-              leave-to-class="opacity-0 translate-y-1"
+              enter-active-class="transition ease-out duration-200"
+              enter-from-class="opacity-0 translate-y-2 scale-98"
+              enter-to-class="opacity-100 translate-y-0 scale-100"
+              leave-active-class="transition ease-in duration-150"
+              leave-from-class="opacity-100 translate-y-0 scale-100"
+              leave-to-class="opacity-0 translate-y-2 scale-98"
             >
               <div
                 v-show="aboutOpen"
-                class="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-80 bg-white rounded-2xl shadow-xl shadow-slate-900/12 border border-slate-200/80 overflow-hidden z-50 max-h-[85vh] overflow-y-auto"
+                class="absolute top-full left-1/2 -translate-x-1/2 pt-2 z-50 pointer-events-auto"
               >
-                <div class="p-2 space-y-0.5">
-                  <RouterLink
-                    v-for="sub in aboutSubMenu"
-                    :key="sub.to"
-                    :to="sub.to"
-                    class="flex items-start gap-3 px-3 py-2 rounded-xl hover:bg-emerald-50 transition-colors duration-150 no-underline group"
-                    @click="aboutOpen = false"
-                  >
-                    <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                      <v-icon :icon="sub.icon" size="15" />
-                    </div>
-                    <div>
-                      <p class="text-xs font-semibold text-slate-800 group-hover:text-emerald-700 transition-colors">{{ sub.label }}</p>
-                      <p class="text-[10px] text-slate-500 mt-0.5">{{ sub.desc }}</p>
-                    </div>
-                  </RouterLink>
+                <!-- Container Card -->
+                <div class="w-[720px] max-w-[calc(100vw-2rem)] bg-white/98 backdrop-blur-xl rounded-2xl shadow-2xl shadow-slate-900/15 border border-slate-200/90 overflow-hidden text-slate-800">
+                  <!-- 2-Column Grid -->
+                  <div class="grid grid-cols-12 divide-x divide-slate-100">
+                    <!-- Column 1: ข้อมูลและโครงสร้างคณะ (col-span-6) -->
+                    <div class="col-span-6 p-5 space-y-3">
+                      <div class="flex items-center gap-2 pb-2.5 border-b border-slate-100">
+                        <div class="w-6 h-6 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                          <v-icon icon="mdi-domain" size="14" />
+                        </div>
+                        <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">ข้อมูลและโครงสร้างคณะ</span>
+                      </div>
 
-                  <!-- ส่วนหลักสูตร (Curriculum Section) -->
-                  <div class="my-2 border-t border-slate-100" />
-                  <div class="px-3 pt-1 pb-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-                    <span>หลักสูตร</span>
+                      <div class="space-y-1">
+                        <RouterLink
+                          v-for="sub in aboutSubMenu"
+                          :key="sub.to"
+                          :to="sub.to"
+                          class="flex items-start gap-3 p-2.5 rounded-xl hover:bg-emerald-50/80 transition-all duration-150 no-underline group"
+                          @click="aboutOpen = false"
+                        >
+                          <div class="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-100/80 text-emerald-700 flex items-center justify-center shrink-0 group-hover:bg-emerald-700 group-hover:text-white group-hover:border-emerald-700 transition-all duration-200">
+                            <v-icon :icon="sub.icon" size="16" />
+                          </div>
+                          <div class="min-w-0">
+                            <p class="text-xs font-bold text-slate-800 group-hover:text-emerald-700 transition-colors leading-snug truncate">
+                              {{ sub.label }}
+                            </p>
+                            <p class="text-[11px] text-slate-500 mt-0.5 leading-snug line-clamp-1">
+                              {{ sub.desc }}
+                            </p>
+                          </div>
+                        </RouterLink>
+                      </div>
+                    </div>
+
+                    <!-- Column 2: หลักสูตรที่เปิดสอน (col-span-6) -->
+                    <div class="col-span-6 p-5 flex flex-col justify-between bg-slate-50/50">
+                      <div>
+                        <div class="flex items-center gap-2 pb-2.5 border-b border-slate-100">
+                          <div class="w-6 h-6 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                            <v-icon icon="mdi-school" size="14" />
+                          </div>
+                          <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">หลักสูตรที่เปิดสอน</span>
+                        </div>
+
+                        <div class="mt-3 space-y-1">
+                          <RouterLink
+                            v-for="sub in curriculumPrograms"
+                            :key="sub.to"
+                            :to="sub.to"
+                            class="flex items-start gap-3 p-2.5 rounded-xl hover:bg-emerald-50/80 transition-all duration-150 no-underline group"
+                            @click="aboutOpen = false"
+                          >
+                            <div class="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-100/80 text-emerald-700 flex items-center justify-center shrink-0 group-hover:bg-emerald-700 group-hover:text-white group-hover:border-emerald-700 transition-all duration-200">
+                              <v-icon :icon="sub.icon" size="16" />
+                            </div>
+                            <div class="min-w-0 flex-1">
+                              <div class="flex items-center gap-1.5">
+                                <p class="text-xs font-bold text-slate-800 group-hover:text-emerald-700 transition-colors leading-snug truncate">
+                                  {{ sub.label }}
+                                </p>
+                                <span v-if="sub.badge" class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-100 text-emerald-800">
+                                  {{ sub.badge }}
+                                </span>
+                              </div>
+                              <p class="text-[11px] text-slate-500 mt-0.5 leading-snug line-clamp-1">
+                                {{ sub.desc }}
+                              </p>
+                            </div>
+                          </RouterLink>
+                        </div>
+                      </div>
+
+                      <!-- Highlight Banner: สาขาวิชาวิทยาการข้อมูล -->
+                      <div class="mt-3 pt-3 border-t border-slate-200/70">
+                        <RouterLink
+                          to="/curriculum/detail"
+                          class="flex items-center gap-3 p-2.5 rounded-xl bg-gradient-to-r from-emerald-700 to-emerald-800 text-white hover:from-emerald-800 hover:to-emerald-900 transition-all shadow-sm hover:shadow-md no-underline group"
+                          @click="aboutOpen = false"
+                        >
+                          <div class="w-9 h-9 rounded-lg bg-white/15 backdrop-blur-xs flex items-center justify-center shrink-0 border border-white/20">
+                            <v-icon icon="mdi-database-search" size="18" class="text-emerald-100" />
+                          </div>
+                          <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-1.5">
+                              <span class="text-xs font-bold text-white truncate">สาขาวิชาวิทยาการข้อมูล</span>
+                              <span class="px-1.5 py-0.2 rounded text-[9px] font-extrabold bg-amber-400 text-slate-900">แนะนำ</span>
+                            </div>
+                            <p class="text-[10px] text-emerald-100/90 truncate mt-0.5">
+                              ดูตัวอย่างหน้ารายละเอียดหลักสูตรฉบับเต็ม
+                            </p>
+                          </div>
+                          <v-icon icon="mdi-arrow-right" size="16" class="text-white/80 group-hover:translate-x-0.5 transition-transform" />
+                        </RouterLink>
+                      </div>
+                    </div>
                   </div>
 
-                  <RouterLink
-                    v-for="sub in curriculumSubMenu"
-                    :key="sub.to"
-                    :to="sub.to"
-                    class="flex items-start gap-3 px-3 py-2 rounded-xl hover:bg-emerald-50 transition-colors duration-150 no-underline group"
-                    @click="aboutOpen = false"
-                  >
-                    <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                      <v-icon :icon="sub.icon" size="15" />
+                  <!-- Megamenu Footer -->
+                  <div class="bg-slate-100/80 px-5 py-2.5 border-t border-slate-200/70 flex items-center justify-between text-[11px] text-slate-500">
+                    <div class="flex items-center gap-2">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                      <span>คณะครุศาสตร์ มหาวิทยาลัยราชภัฏราชนครินทร์</span>
                     </div>
-                    <div>
-                      <p class="text-xs font-semibold text-slate-800 group-hover:text-emerald-700 transition-colors">{{ sub.label }}</p>
-                      <p class="text-[10px] text-slate-500 mt-0.5">{{ sub.desc }}</p>
-                    </div>
-                  </RouterLink>
+                    <RouterLink
+                      to="/contact"
+                      class="text-emerald-700 hover:text-emerald-800 font-semibold no-underline flex items-center gap-1"
+                      @click="aboutOpen = false"
+                    >
+                      <span>ติดต่อสอบถาม</span>
+                      <v-icon icon="mdi-chevron-right" size="14" />
+                    </RouterLink>
+                  </div>
                 </div>
               </div>
             </transition>
