@@ -58,8 +58,17 @@ const router = createRouter({
       component: () => import('../views/FacultyPersonnelView.vue'),
     },
     {
+      path: '/about/personnel/:id',
+      name: 'faculty-personnel-detail',
+      component: () => import('../views/FacultyPersonnelDetailView.vue'),
+    },
+    {
       path: '/personnel',
       redirect: '/about/personnel',
+    },
+    {
+      path: '/personnel/:id',
+      redirect: (to) => `/about/personnel/${to.params.id}`,
     },
     {
       path: '/curriculum',

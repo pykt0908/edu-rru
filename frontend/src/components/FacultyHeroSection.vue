@@ -48,7 +48,7 @@ const scrollToContent = () => {
         <!-- Left Column: Giant Typography Stack -->
         <div class="lg:col-span-8 flex flex-col justify-start">
           <!-- Eyebrow Sub-heading -->
-          <div class="text-emerald-700 font-bold tracking-widest text-xs sm:text-sm uppercase mb-1 sm:mb-2">
+          <div class="text-emerald-700 font-bold tracking-widest pt-5 text-xs sm:text-sm uppercase mb-1 sm:mb-2">
             สร้างครูดี มีความรู้ สู่สังคม
           </div>
 
