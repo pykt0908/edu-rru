@@ -1,21 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
-import {
-  getPersonById,
-  getRelatedFaculty,
-} from '@/data/personnelData'
+import { getPersonById } from '@/data/personnelData'
 
 const route = useRoute()
 const router = useRouter()
 
 const personId = computed(() => route.params.id as string)
 const person = computed(() => getPersonById(personId.value))
-
-const relatedFaculty = computed(() => {
-  if (!person.value) return []
-  return getRelatedFaculty(person.value.departmentId, person.value.id)
-})
 
 const copiedEmail = ref(false)
 const copyEmail = async (email: string) => {
@@ -297,43 +289,9 @@ const copyEmail = async (email: string) => {
                 ไม่มีข้อมูลผลงานทางวิชาการที่แสดงในขณะนี้
               </div>
             </div>
-
-            <!-- 3. Teaching Courses -->
-            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-5">
-              <div class="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-                <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center">
-                  <v-icon icon="mdi-notebook-outline" size="18" />
-                </div>
-                <h2 class="text-lg sm:text-xl font-bold text-slate-900">
-                  รายวิชาที่รับผิดชอบการสอน
-                </h2>
-              </div>
-
-              <div v-if="person.courses && person.courses.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div
-                  v-for="(course, idx) in person.courses"
-                  :key="idx"
-                  class="flex items-center gap-3 p-3 rounded-xl bg-slate-50/80 border border-slate-100"
-                >
-                  <span class="px-2 py-1 rounded-lg bg-emerald-100 text-emerald-900 text-xs font-bold font-mono shrink-0">
-                    {{ course.code }}
-                  </span>
-                  <div class="min-w-0">
-                    <span class="text-xs font-semibold text-slate-800 truncate block">
-                      {{ course.name }}
-                    </span>
-                    <span class="text-[10px] text-slate-400">ระดับ{{ course.level }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div v-else class="text-center py-6 text-xs text-slate-400">
-                ไม่มีข้อมูลรายวิชาที่แสดงในขณะนี้
-              </div>
-            </div>
           </div>
 
-          <!-- Right Column (1 Col): Expertise & Related Department Faculty -->
+          <!-- Right Column (1 Col): Expertise & Department Info -->
           <div class="space-y-8">
             <!-- Expertise Chips Card -->
             <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-xs space-y-4">
@@ -360,42 +318,37 @@ const copyEmail = async (email: string) => {
               </div>
             </div>
 
-            <!-- Related Faculty in Same Department -->
-            <div v-if="relatedFaculty.length > 0" class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-xs space-y-4">
-              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-                <div class="flex items-center gap-2">
-                  <v-icon icon="mdi-account-multiple-outline" size="18" class="text-emerald-700" />
-                  <h2 class="text-base font-bold text-slate-900">
-                    อาจารย์ในสาขาเดียวกัน
-                  </h2>
-                </div>
-                <span class="text-xs font-semibold text-slate-400">{{ relatedFaculty.length }} ท่าน</span>
+            <!-- Department Info Card -->
+            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-xs space-y-4">
+              <div class="flex items-center gap-2 pb-2 border-b border-slate-100">
+                <v-icon icon="mdi-school-outline" size="18" class="text-emerald-700" />
+                <h2 class="text-base sm:text-lg font-bold text-slate-900">
+                  สังกัดสาขาวิชา
+                </h2>
               </div>
 
-              <div class="space-y-3">
+              <div class="space-y-3 text-xs sm:text-[13px] text-slate-600">
+                <div class="flex items-start gap-2.5">
+                  <v-icon icon="mdi-domain" size="16" class="text-emerald-700 shrink-0 mt-0.5" />
+                  <div>
+                    <span class="font-bold text-slate-800 block">{{ person.departmentName }}</span>
+                    <span class="text-slate-400 text-xs">คณะครุศาสตร์ มหาวิทยาลัยราชภัฏราชนครินทร์</span>
+                  </div>
+                </div>
+
+                <div v-if="person.officeRoom" class="flex items-start gap-2.5 pt-1">
+                  <v-icon icon="mdi-map-marker-outline" size="16" class="text-emerald-700 shrink-0 mt-0.5" />
+                  <span>{{ person.officeRoom }}</span>
+                </div>
+              </div>
+
+              <div class="pt-2">
                 <RouterLink
-                  v-for="colleague in relatedFaculty"
-                  :key="colleague.id"
-                  :to="'/about/personnel/' + colleague.id"
-                  class="flex items-center gap-3 p-2.5 rounded-2xl border border-transparent hover:border-slate-200 hover:bg-slate-50 transition-all duration-200 group no-underline"
+                  to="/about/personnel"
+                  class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-800 hover:underline no-underline"
                 >
-                  <!-- Mini portrait -->
-                  <div class="w-12 h-14 rounded-xl overflow-hidden bg-[#DDE2E6] shrink-0 shadow-2xs">
-                    <img
-                      :src="colleague.avatar"
-                      :alt="colleague.name"
-                      class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform"
-                    />
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <h3 class="text-xs sm:text-[13px] font-bold text-slate-800 truncate group-hover:text-emerald-800 transition-colors">
-                      {{ colleague.name }}
-                    </h3>
-                    <p class="text-[11px] text-slate-500 truncate mt-0.5">
-                      {{ colleague.roleTitle }}
-                    </p>
-                  </div>
-                  <v-icon icon="mdi-chevron-right" size="18" class="text-slate-300 group-hover:text-emerald-700 transition-colors" />
+                  <v-icon icon="mdi-view-grid" size="14" />
+                  <span>ดูคณาจารย์ทั้งหมดในคณะ</span>
                 </RouterLink>
               </div>
             </div>
