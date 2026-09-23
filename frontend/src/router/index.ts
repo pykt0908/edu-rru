@@ -48,6 +48,11 @@ const router = createRouter({
       component: () => import('../views/FacultyPhilosophyView.vue'),
     },
     {
+      path: '/about/regulations',
+      name: 'faculty-regulations',
+      component: () => import('../views/FacultyRegulationsView.vue'),
+    },
+    {
       path: '/curriculum',
       redirect: '/curriculum/bachelor',
     },

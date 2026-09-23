@@ -66,6 +66,7 @@ const aboutSubMenu = [
   { label: 'คณะผู้บริหาร', to: '/about/management', icon: 'mdi-account-tie-outline', desc: 'คณบดี รองคณบดี และผู้ช่วยคณบดี' },
   { label: 'คณะกรรมการคณะครุศาสตร์', to: '/about/committee', icon: 'mdi-account-group-outline', desc: 'คณะกรรมการประจำคณะครุศาสตร์' },
   { label: 'การประเมินคุณธรรมและความโปร่งใส (ITA)', to: '/about/ita', icon: 'mdi-shield-check-outline', desc: 'การประเมินคุณธรรมและความโปร่งใส' },
+  { label: 'ข้อกฎหมายสำหรับบุคลากร', to: '/about/regulations', icon: 'mdi-gavel', desc: 'กฎหมาย ระเบียบ ข้อบังคับ และประกาศ' },
 ]
 
 const curriculumPrograms = [
