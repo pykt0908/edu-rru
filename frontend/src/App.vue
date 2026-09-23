@@ -7,15 +7,12 @@ import eduLogo from '@/assets/logos/edu-logo-border-white.png'
 import AppFooter from '@/components/AppFooter.vue'
 
 const route = useRoute()
-const isAboutActive = computed(() => route.path.startsWith('/about'))
-const isCurriculumActive = computed(() => route.path.startsWith('/curriculum'))
+const isAboutActive = computed(() => route.path.startsWith('/about') || route.path.startsWith('/curriculum'))
 
 const drawer = ref(false)
 const isScrolled = ref(false)
 const aboutOpen = ref(false)
 const mobileAboutOpen = ref(false)
-const curriculumOpen = ref(false)
-const mobileCurriculumOpen = ref(false)
 
 let lenis: Lenis | null = null
 
@@ -133,38 +130,24 @@ const curriculumSubMenu = [
               v-for="sub in aboutSubMenu"
               :key="sub.to"
               :to="sub.to"
-              class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 no-underline min-h-[40px] transition-colors"
+              class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 no-underline min-h-[40px] transition-colors"
               @click="drawer = false; mobileAboutOpen = false"
             >
               <v-icon :icon="sub.icon" size="18" />
               <span>{{ sub.label }}</span>
             </RouterLink>
-          </div>
-        </div>
 
-        <!-- หลักสูตร accordion -->
-        <div>
-          <button
-            type="button"
-            class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-700 hover:bg-slate-100 text-sm font-medium min-h-[44px] cursor-pointer"
-            @click="mobileCurriculumOpen = !mobileCurriculumOpen"
-          >
-            <v-icon icon="mdi-school" size="20" />
-            <span class="flex-1 text-left">หลักสูตร</span>
-            <v-icon
-              icon="mdi-chevron-down"
-              size="18"
-              class="transition-transform duration-200"
-              :class="mobileCurriculumOpen ? 'rotate-180 text-emerald-600' : 'text-slate-400'"
-            />
-          </button>
-          <div v-show="mobileCurriculumOpen" class="pl-4 mt-1 space-y-1">
+            <!-- Submenu หลักสูตร -->
+            <div class="pt-3 pb-1 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+              <span>หลักสูตร</span>
+            </div>
             <RouterLink
               v-for="sub in curriculumSubMenu"
               :key="sub.to"
               :to="sub.to"
-              class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 no-underline min-h-[40px] transition-colors"
-              @click="drawer = false; mobileCurriculumOpen = false"
+              class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 no-underline min-h-[40px] transition-colors"
+              @click="drawer = false; mobileAboutOpen = false"
             >
               <v-icon :icon="sub.icon" size="18" />
               <span>{{ sub.label }}</span>
@@ -289,76 +272,41 @@ const curriculumSubMenu = [
             >
               <div
                 v-show="aboutOpen"
-                class="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-72 bg-white rounded-2xl shadow-xl shadow-slate-900/12 border border-slate-200/80 overflow-hidden z-50"
+                class="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-80 bg-white rounded-2xl shadow-xl shadow-slate-900/12 border border-slate-200/80 overflow-hidden z-50 max-h-[85vh] overflow-y-auto"
               >
-                <div class="p-2">
+                <div class="p-2 space-y-0.5">
                   <RouterLink
                     v-for="sub in aboutSubMenu"
                     :key="sub.to"
                     :to="sub.to"
-                    class="flex items-start gap-3 px-3 py-2.5 rounded-xl hover:bg-emerald-50 transition-colors duration-150 no-underline group"
+                    class="flex items-start gap-3 px-3 py-2 rounded-xl hover:bg-emerald-50 transition-colors duration-150 no-underline group"
                     @click="aboutOpen = false"
                   >
-                    <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                      <v-icon :icon="sub.icon" size="16" />
+                    <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                      <v-icon :icon="sub.icon" size="15" />
                     </div>
                     <div>
                       <p class="text-xs font-semibold text-slate-800 group-hover:text-emerald-700 transition-colors">{{ sub.label }}</p>
                       <p class="text-[10px] text-slate-500 mt-0.5">{{ sub.desc }}</p>
                     </div>
                   </RouterLink>
-                </div>
-              </div>
-            </transition>
-          </div>
 
-          <!-- หลักสูตร dropdown -->
-          <div
-            class="relative h-full flex items-center"
-            @mouseenter="curriculumOpen = true"
-            @mouseleave="curriculumOpen = false"
-          >
-            <button
-              type="button"
-              class="relative h-full px-2 xl:px-2.5 font-medium text-slate-600 hover:text-emerald-700 transition-all flex items-center gap-1 xl:gap-1.5 shrink-0 whitespace-nowrap cursor-pointer select-none border-0"
-              :class="[
-                isScrolled ? 'text-xs xl:text-xs py-1' : 'text-xs xl:text-sm',
-                curriculumOpen || isCurriculumActive ? '!text-emerald-700 font-semibold' : ''
-              ]"
-            >
-              <v-icon icon="mdi-school" :size="isScrolled ? 16 : 18" />
-              <span>หลักสูตร</span>
-              <v-icon
-                icon="mdi-chevron-down"
-                :size="isScrolled ? 14 : 16"
-                class="transition-transform duration-200"
-                :class="curriculumOpen ? 'rotate-180' : ''"
-              />
-            </button>
+                  <!-- ส่วนหลักสูตร (Curriculum Section) -->
+                  <div class="my-2 border-t border-slate-100" />
+                  <div class="px-3 pt-1 pb-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                    <span>หลักสูตร</span>
+                  </div>
 
-            <!-- Dropdown panel -->
-            <transition
-              enter-active-class="transition ease-out duration-150"
-              enter-from-class="opacity-0 translate-y-1"
-              enter-to-class="opacity-100 translate-y-0"
-              leave-active-class="transition ease-in duration-100"
-              leave-from-class="opacity-100 translate-y-0"
-              leave-to-class="opacity-0 translate-y-1"
-            >
-              <div
-                v-show="curriculumOpen"
-                class="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-72 bg-white rounded-2xl shadow-xl shadow-slate-900/12 border border-slate-200/80 overflow-hidden z-50"
-              >
-                <div class="p-2">
                   <RouterLink
                     v-for="sub in curriculumSubMenu"
                     :key="sub.to"
                     :to="sub.to"
-                    class="flex items-start gap-3 px-3 py-2.5 rounded-xl hover:bg-emerald-50 transition-colors duration-150 no-underline group"
-                    @click="curriculumOpen = false"
+                    class="flex items-start gap-3 px-3 py-2 rounded-xl hover:bg-emerald-50 transition-colors duration-150 no-underline group"
+                    @click="aboutOpen = false"
                   >
-                    <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                      <v-icon :icon="sub.icon" size="16" />
+                    <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                      <v-icon :icon="sub.icon" size="15" />
                     </div>
                     <div>
                       <p class="text-xs font-semibold text-slate-800 group-hover:text-emerald-700 transition-colors">{{ sub.label }}</p>
