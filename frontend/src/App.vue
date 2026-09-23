@@ -64,6 +64,7 @@ const aboutSubMenu = [
   { label: 'ประวัติคณะ', to: '/about/history', icon: 'mdi-book-open-page-variant-outline', desc: 'ความเป็นมาตั้งแต่ พ.ศ. 2483' },
   { label: 'ปรัชญา วิสัยทัศน์ และพันธกิจ', to: '/about/philosophy', icon: 'mdi-lightbulb-outline', desc: 'อัตลักษณ์และทิศทางของคณะ' },
   { label: 'คณะผู้บริหาร', to: '/about/management', icon: 'mdi-account-tie-outline', desc: 'คณบดี รองคณบดี และผู้ช่วยคณบดี' },
+  { label: 'บุคลากรประจำสาขาวิชา', to: '/about/personnel', icon: 'mdi-account-group', desc: 'ประธานสาขาและอาจารย์ประจำสาขา' },
   { label: 'คณะกรรมการคณะครุศาสตร์', to: '/about/committee', icon: 'mdi-account-group-outline', desc: 'คณะกรรมการประจำคณะครุศาสตร์' },
   { label: 'การประเมินคุณธรรมและความโปร่งใส (ITA)', to: '/about/ita', icon: 'mdi-shield-check-outline', desc: 'การประเมินคุณธรรมและความโปร่งใส' },
   { label: 'ข้อกฎหมายสำหรับบุคลากร', to: '/about/regulations', icon: 'mdi-gavel', desc: 'กฎหมาย ระเบียบ ข้อบังคับ และประกาศ' },

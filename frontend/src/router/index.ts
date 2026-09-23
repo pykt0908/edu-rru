@@ -53,6 +53,15 @@ const router = createRouter({
       component: () => import('../views/FacultyRegulationsView.vue'),
     },
     {
+      path: '/about/personnel',
+      name: 'faculty-personnel',
+      component: () => import('../views/FacultyPersonnelView.vue'),
+    },
+    {
+      path: '/personnel',
+      redirect: '/about/personnel',
+    },
+    {
       path: '/curriculum',
       redirect: '/curriculum/bachelor',
     },
