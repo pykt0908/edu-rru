@@ -390,6 +390,37 @@ const departments: Department[] = [
   },
 ]
 
+const isDepartmentDropdownOpen = ref(false)
+
+const currentDepartment = computed(() => {
+  if (selectedDepartment.value === 'all') {
+    return { id: 'all', name: 'ทุกสาขาวิชา (ทั้งหมด)', count: totalPersonnelCount.value }
+  }
+  const found = departments.find((d) => d.id === selectedDepartment.value)
+  return found
+    ? { id: found.id, name: found.name, count: found.members.length }
+    : { id: 'all', name: 'ทุกสาขาวิชา (ทั้งหมด)', count: totalPersonnelCount.value }
+})
+
+const totalPersonnelCount = computed(() => {
+  return departments.reduce((acc, d) => acc + d.members.length, 0)
+})
+
+const filteredPersonnelCount = computed(() => {
+  return filteredDepartments.value.reduce((acc, d) => acc + d.members.length, 0)
+})
+
+const selectDepartment = (id: string) => {
+  selectedDepartment.value = id
+  isDepartmentDropdownOpen.value = false
+}
+
+const clearFilters = () => {
+  selectedDepartment.value = 'all'
+  searchQuery.value = ''
+  isDepartmentDropdownOpen.value = false
+}
+
 // Filtered departments based on selection and search
 const filteredDepartments = computed(() => {
   let list = departments
@@ -426,7 +457,14 @@ const filteredDepartments = computed(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white pb-24">
+  <div class="min-h-screen bg-white pb-24 relative">
+    <!-- Click-away backdrop for dropdown -->
+    <div
+      v-if="isDepartmentDropdownOpen"
+      class="fixed inset-0 z-20"
+      @click="isDepartmentDropdownOpen = false"
+    />
+
     <!-- Hero Banner (Follows rule.md Section 13) -->
     <PageHeroBanner
       badge="คณาจารย์และบุคลากร"
@@ -437,61 +475,218 @@ const filteredDepartments = computed(() => {
     />
 
     <!-- Main Content Container -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12">
-      <!-- Filter & Search Toolbar -->
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
-        <!-- Quick Department Selector Tabs -->
-        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-          <button
-            type="button"
-            class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 cursor-pointer whitespace-nowrap border"
-            :class="
-              selectedDepartment === 'all'
-                ? 'bg-emerald-700 text-white border-emerald-700 shadow-xs'
-                : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-            "
-            @click="selectedDepartment = 'all'"
-          >
-            <span>ทุกสาขาวิชา</span>
-          </button>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10">
+      <!-- Filter & Search Toolbar Card (Dropdown + Search) -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-xs relative z-30">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 items-end">
+          <!-- 1. Department Dropdown Selector (md:col-span-6 lg:col-span-5) -->
+          <div class="relative md:col-span-6 lg:col-span-5">
+            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+              เลือกสาขาวิชา
+            </label>
+            <div class="relative">
+              <button
+                type="button"
+                class="w-full flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl border transition-all duration-150 cursor-pointer text-left min-h-[44px]"
+                :class="
+                  isDepartmentDropdownOpen
+                    ? 'border-emerald-600 ring-2 ring-emerald-500/20 bg-emerald-50/20'
+                    : 'border-slate-200 hover:border-slate-300 bg-slate-50/70 hover:bg-slate-50'
+                "
+                @click="isDepartmentDropdownOpen = !isDepartmentDropdownOpen"
+              >
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-emerald-100 text-emerald-800 border border-emerald-200/60">
+                    <v-icon icon="mdi-school" size="16" />
+                  </div>
+                  <div class="min-w-0">
+                    <span class="block text-xs sm:text-sm font-bold text-slate-800 truncate">
+                      {{ currentDepartment.name }}
+                    </span>
+                  </div>
+                </div>
 
-          <button
-            v-for="dept in departments"
-            :key="dept.id"
-            type="button"
-            class="px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 cursor-pointer whitespace-nowrap border"
-            :class="
-              selectedDepartment === dept.id
-                ? 'bg-emerald-700 text-white border-emerald-700 shadow-xs'
-                : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-            "
-            @click="selectedDepartment = dept.id"
-          >
-            <span>{{ dept.name.replace('สาขาวิชา', '') }}</span>
-          </button>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-200 text-slate-700">
+                    {{ currentDepartment.count }} ท่าน
+                  </span>
+                  <v-icon
+                    icon="mdi-chevron-down"
+                    size="18"
+                    class="text-slate-400 transition-transform duration-200"
+                    :class="isDepartmentDropdownOpen ? 'rotate-180 text-emerald-700' : ''"
+                  />
+                </div>
+              </button>
+
+              <!-- Department Dropdown Popover Menu -->
+              <transition
+                enter-active-class="transition ease-out duration-150"
+                enter-from-class="opacity-0 translate-y-1"
+                enter-to-class="opacity-100 translate-y-0"
+                leave-active-class="transition ease-in duration-100"
+                leave-from-class="opacity-100 translate-y-0"
+                leave-to-class="opacity-0 translate-y-1"
+              >
+                <div
+                  v-if="isDepartmentDropdownOpen"
+                  class="absolute top-full left-0 right-0 mt-1.5 z-40 bg-white rounded-2xl shadow-xl shadow-slate-900/12 border border-slate-200/90 py-1.5 overflow-hidden max-h-96 overflow-y-auto"
+                >
+                  <!-- Option: All Departments -->
+                  <button
+                    type="button"
+                    class="w-full flex items-center justify-between gap-3 px-3.5 py-2.5 text-left text-xs sm:text-sm transition-colors cursor-pointer border-b border-slate-100"
+                    :class="
+                      selectedDepartment === 'all'
+                        ? 'bg-emerald-50 text-emerald-900 font-bold'
+                        : 'text-slate-700 hover:bg-slate-50'
+                    "
+                    @click="selectDepartment('all')"
+                  >
+                    <div class="flex items-center gap-2.5 min-w-0">
+                      <div
+                        class="w-6 h-6 rounded-md flex items-center justify-center shrink-0"
+                        :class="selectedDepartment === 'all' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-500'"
+                      >
+                        <v-icon icon="mdi-view-grid" size="14" />
+                      </div>
+                      <span class="truncate">ทุกสาขาวิชา (ทั้งหมด)</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                      <span class="text-[11px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                        {{ totalPersonnelCount }}
+                      </span>
+                      <v-icon
+                        v-if="selectedDepartment === 'all'"
+                        icon="mdi-check"
+                        size="16"
+                        class="text-emerald-700"
+                      />
+                    </div>
+                  </button>
+
+                  <!-- List of Departments -->
+                  <div class="py-1">
+                    <button
+                      v-for="dept in departments"
+                      :key="dept.id"
+                      type="button"
+                      class="w-full flex items-center justify-between gap-3 px-3.5 py-2 text-left text-xs sm:text-sm transition-colors cursor-pointer"
+                      :class="
+                        selectedDepartment === dept.id
+                          ? 'bg-emerald-50 text-emerald-900 font-bold'
+                          : 'text-slate-700 hover:bg-slate-50'
+                      "
+                      @click="selectDepartment(dept.id)"
+                    >
+                      <div class="flex items-center gap-2.5 min-w-0">
+                        <div
+                          class="w-6 h-6 rounded-md flex items-center justify-center shrink-0"
+                          :class="selectedDepartment === dept.id ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-500'"
+                        >
+                          <v-icon icon="mdi-school" size="14" />
+                        </div>
+                        <span class="truncate">{{ dept.name }}</span>
+                      </div>
+                      <div class="flex items-center gap-1.5 shrink-0">
+                        <span class="text-[11px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                          {{ dept.members.length }}
+                        </span>
+                        <v-icon
+                          v-if="selectedDepartment === dept.id"
+                          icon="mdi-check"
+                          size="16"
+                          class="text-emerald-700"
+                        />
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </transition>
+            </div>
+          </div>
+
+          <!-- 2. Search Input Box (md:col-span-6 lg:col-span-7) -->
+          <div class="md:col-span-6 lg:col-span-7">
+            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+              ค้นหาคณาจารย์
+            </label>
+            <div class="relative">
+              <v-icon
+                icon="mdi-magnify"
+                size="18"
+                class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="ค้นหาชื่อ-นามสกุล, ตำแหน่ง, คุณวุฒิ หรือสาขาวิชา..."
+                class="w-full pl-10 pr-9 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-50/70 border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 focus:bg-white transition-all min-h-[44px]"
+              />
+              <button
+                v-if="searchQuery"
+                type="button"
+                aria-label="ล้างคำค้นหา"
+                class="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 cursor-pointer rounded-full"
+                @click="searchQuery = ''"
+              >
+                <v-icon icon="mdi-close-circle" size="16" />
+              </button>
+            </div>
+          </div>
         </div>
 
-        <!-- Search Box -->
-        <div class="relative w-full md:w-72 shrink-0">
-          <v-icon
-            icon="mdi-magnify"
-            size="18"
-            class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-          />
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="ค้นหาชื่อคณาจารย์..."
-            class="w-full pl-9 pr-8 py-1.5 rounded-full text-xs sm:text-sm bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all min-h-[38px]"
-          />
+        <!-- Active Filter Summary & Quick Clear -->
+        <div
+          v-if="selectedDepartment !== 'all' || searchQuery"
+          class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs"
+        >
+          <div class="flex flex-wrap items-center gap-1.5 text-slate-600">
+            <span class="text-slate-400 font-medium">ผลการกรอง:</span>
+            <!-- Selected Department Chip -->
+            <span
+              v-if="selectedDepartment !== 'all'"
+              class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium"
+            >
+              <v-icon icon="mdi-school" size="12" />
+              <span>{{ currentDepartment.name }}</span>
+              <button
+                type="button"
+                class="hover:text-emerald-950 cursor-pointer ml-0.5"
+                @click="selectedDepartment = 'all'"
+              >
+                <v-icon icon="mdi-close" size="12" />
+              </button>
+            </span>
+
+            <!-- Search Query Chip -->
+            <span
+              v-if="searchQuery"
+              class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200 font-medium"
+            >
+              <v-icon icon="mdi-magnify" size="12" />
+              <span>"{{ searchQuery }}"</span>
+              <button
+                type="button"
+                class="hover:text-blue-950 cursor-pointer ml-0.5"
+                @click="searchQuery = ''"
+              >
+                <v-icon icon="mdi-close" size="12" />
+              </button>
+            </span>
+
+            <span class="text-slate-500 ml-1">
+              (พบ {{ filteredPersonnelCount }} ท่าน ใน {{ filteredDepartments.length }} สาขาวิชา)
+            </span>
+          </div>
+
           <button
-            v-if="searchQuery"
             type="button"
-            aria-label="ล้างคำค้นหา"
-            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
-            @click="searchQuery = ''"
+            class="text-xs font-semibold text-emerald-700 hover:text-emerald-800 hover:underline cursor-pointer flex items-center gap-1"
+            @click="clearFilters"
           >
-            <v-icon icon="mdi-close-circle" size="16" />
+            <v-icon icon="mdi-refresh" size="14" />
+            <span>ล้างตัวกรองทั้งหมด</span>
           </button>
         </div>
       </div>
