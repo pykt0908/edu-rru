@@ -77,21 +77,7 @@ const person = computed(() => getPersonById(personId.value))
                 />
               </div>
 
-              <!-- Quick Badges under photo on mobile/desktop -->
-              <div class="mt-4 flex flex-col gap-2">
-                <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-900 text-xs font-medium">
-                  <v-icon icon="mdi-school" size="16" class="text-emerald-700 shrink-0" />
-                  <span class="truncate">{{ person.departmentName }}</span>
-                </div>
 
-                <div
-                  v-if="person.roleTitle.includes('ประธาน')"
-                  class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold"
-                >
-                  <v-icon icon="mdi-star-outline" size="16" class="text-amber-700 shrink-0" />
-                  <span>{{ person.roleTitle }}</span>
-                </div>
-              </div>
             </div>
 
             <!-- Right Profile Info -->
