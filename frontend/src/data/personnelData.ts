@@ -25,6 +25,20 @@ export interface CourseItem {
   level: string
 }
 
+export interface ExperienceItem {
+  period?: string
+  position: string
+  organization: string
+  description?: string
+}
+
+export interface StudyVisitItem {
+  year?: string
+  topic: string
+  organization?: string
+  location?: string
+}
+
 export interface Person {
   id: string
   name: string
@@ -43,6 +57,8 @@ export interface Person {
   expertise?: string[]
   publications?: PublicationItem[]
   courses?: CourseItem[]
+  workExperience?: ExperienceItem[]
+  studyVisits?: StudyVisitItem[]
   bio?: string
 }
 
@@ -134,6 +150,46 @@ export const departments: Department[] = [
           { code: 'ECE305', name: 'การประเมินพัฒนาการและการเรียนรู้ของเด็กปฐมวัย', level: 'ปริญญาตรี' },
           { code: 'ECE402', name: 'การวิจัยเพื่อพัฒนาการเรียนรู้ปฐมวัย', level: 'ปริญญาตรี' },
         ],
+        workExperience: [
+          {
+            period: '2564 - ปัจจุบัน',
+            position: 'ประธานสาขาวิชาการศึกษาปฐมวัย',
+            organization: 'คณะครุศาสตร์ มหาวิทยาลัยราชภัฏราชนครินทร์',
+            description: 'บริหารจัดการและพัฒนาหลักสูตรครุศาสตรบัณฑิต สาขาวิชาการศึกษาปฐมวัย',
+          },
+          {
+            period: '2561 - 2564',
+            position: 'กรรมการฝ่ายประกันคุณภาพการศึกษา',
+            organization: 'คณะครุศาสตร์ มหาวิทยาลัยราชภัฏราชนครินทร์',
+            description: 'ขับเคลื่อนมาตรฐานคุณภาพการจัดการศึกษาตามเกณฑ์ AUN-QA',
+          },
+          {
+            period: '2555 - ปัจจุบัน',
+            position: 'อาจารย์ประจำกลุ่มวิชาชีพครูและปฐมวัย',
+            organization: 'มหาวิทยาลัยราชภัฏราชนครินทร์',
+            description: 'จัดการเรียนการสอนและพัฒนางานวิจัยด้านการศึกษาปฐมวัย',
+          },
+        ],
+        studyVisits: [
+          {
+            year: '2566',
+            topic: 'ศึกษาดูงานการจัดการศึกษาและการดูแลเด็กปฐมวัยตามแนวทางเรจจิโอ เอมิเลีย (Reggio Emilia Approach)',
+            organization: 'ศูนย์พัฒนาเด็กปฐมวัยและโรงเรียนต้นแบบการศึกษาปฐมวัย',
+            location: 'กรุงเทพมหานคร',
+          },
+          {
+            year: '2565',
+            topic: 'การศึกษาดูงานด้านนวัตกรรมการเรียนรู้และทักษะสมอง EF ในเด็กปฐมวัย',
+            organization: 'สถาบันวิจัยการเรียนรู้และโรงเรียนสาธิตจุฬาลงกรณ์มหาวิทยาลัย',
+            location: 'กรุงเทพมหานคร',
+          },
+          {
+            year: '2562',
+            topic: 'โครงการศึกษาดูงานการจัดการเรียนรู้ปฐมวัยในศตวรรษที่ 21 ณ ประเทศสิงคโปร์',
+            organization: 'National Institute of Early Childhood Development (NIEC)',
+            location: 'ประเทศสิงคโปร์',
+          },
+        ],
       },
       {
         id: 'ec-2',
@@ -181,6 +237,34 @@ export const departments: Department[] = [
           { code: 'ECE102', name: 'จิตวิทยาและพฤติกรรมเด็กปฐมวัย', level: 'ปริญญาตรี' },
           { code: 'ECE204', name: 'นิทานและวรรณกรรมสำหรับเด็กปฐมวัย', level: 'ปริญญาตรี' },
           { code: 'ECE308', name: 'การจัดสภาพแวดล้อมการเรียนรู้ในระดับปฐมวัย', level: 'ปริญญาตรี' },
+        ],
+        workExperience: [
+          {
+            period: '2558 - ปัจจุบัน',
+            position: 'อาจารย์ประจำสาขาวิชาการศึกษาปฐมวัย',
+            organization: 'คณะครุศาสตร์ มหาวิทยาลัยราชภัฏราชนครินทร์',
+            description: 'อาจารย์ผู้รับผิดชอบหลักสูตรและวิทยากรด้านวรรณกรรมเด็ก',
+          },
+          {
+            period: '2552 - 2557',
+            position: 'ครูปฐมวัยชำนาญการ',
+            organization: 'โรงเรียนสาธิตมหาวิทยาลัยราชภัฏราชนครินทร์',
+            description: 'จัดการเรียนรู้และพัฒนาสื่อนวัตกรรมส่งเสริมพัฒนาการทางภาษา',
+          },
+        ],
+        studyVisits: [
+          {
+            year: '2565',
+            topic: 'ศึกษาดูงานการจัดพื้นที่เรียนรู้และห้องสมุดมีชีวิตสำหรับเด็กปฐมวัย',
+            organization: 'TK Park และพิพิธภัณฑ์เด็กกรุงเทพมหานคร',
+            location: 'กรุงเทพมหานคร',
+          },
+          {
+            year: '2563',
+            topic: 'การศึกษาดูงานการจัดสภาพแวดล้อมเพื่อการเรียนรู้ตามแนวคิดวอลดอร์ฟ (Waldorf)',
+            organization: 'โรงเรียนปัญโญทัย',
+            location: 'กรุงเทพมหานคร',
+          },
         ],
       },
       {
@@ -230,6 +314,28 @@ export const departments: Department[] = [
           { code: 'ECE206', name: 'ดนตรีและการเคลื่อนไหวสำหรับเด็กปฐมวัย', level: 'ปริญญาตรี' },
           { code: 'ECE310', name: 'การผลิตสื่อการเรียนรู้ปฐมวัย', level: 'ปริญญาตรี' },
         ],
+        workExperience: [
+          {
+            period: '2559 - ปัจจุบัน',
+            position: 'อาจารย์ประจำสาขาวิชาการศึกษาปฐมวัย',
+            organization: 'คณะครุศาสตร์ มหาวิทยาลัยราชภัฏราชนครินทร์',
+            description: 'ผู้สอนและวิทยากรด้านดนตรี การเคลื่อนไหว และศิลปะสร้างสรรค์สำหรับเด็ก',
+          },
+          {
+            period: '2553 - 2558',
+            position: 'นักวิชาการศึกษาด้านสื่อการเรียนรู้',
+            organization: 'สำนักการศึกษา กรุงเทพมหานคร',
+            description: 'พัฒนาสื่อการเรียนรู้และคู่มือครูปฐมวัย',
+          },
+        ],
+        studyVisits: [
+          {
+            year: '2566',
+            topic: 'ศึกษาดูงานการบูรณาการดนตรีและการเคลื่อนไหวตามแนวทาง Orff Schulwerk',
+            organization: 'วิทยาลัยดุริยางคศิลป์ มหาวิทยาลัยมหิดล',
+            location: 'จ.นครปฐม',
+          },
+        ],
       },
       {
         id: 'ec-4',
@@ -277,6 +383,28 @@ export const departments: Department[] = [
           { code: 'ECE207', name: 'คณิตศาสตร์และวิทยาศาสตร์สำหรับเด็กปฐมวัย', level: 'ปริญญาตรี' },
           { code: 'ECE312', name: 'การจัดประสบการณ์สะเต็มศึกษาในระดับปฐมวัย', level: 'ปริญญาตรี' },
           { code: 'ECE405', name: 'การสัมมนาการศึกษาปฐมวัย', level: 'ปริญญาตรี' },
+        ],
+        workExperience: [
+          {
+            period: '2562 - ปัจจุบัน',
+            position: 'อาจารย์ประจำสาขาวิชาการศึกษาปฐมวัย',
+            organization: 'คณะครุศาสตร์ มหาวิทยาลัยราชภัฏราชนครินทร์',
+            description: 'ผู้รับผิดชอบงานด้านสะเต็มศึกษาปฐมวัยและการจัดการเรียนการสอนแบบมอนเตสซอรี่',
+          },
+          {
+            period: '2556 - 2561',
+            position: 'ครูปฐมวัยประจำโรงเรียนเอกชนต้นแบบ',
+            organization: 'โรงเรียนอนุบาลมอนเตสซอรี่',
+            description: 'จัดการเรียนรู้ตามแนวคิดมอนเตสซอรี่ในห้องเรียนปฐมวัย',
+          },
+        ],
+        studyVisits: [
+          {
+            year: '2566',
+            topic: 'ศึกษาดูงานการจัดการเรียนรู้สะเต็มศึกษาปฐมวัย (Early STEM) ในระดับนานาชาติ',
+            organization: 'ศูนย์สะเต็มศึกษาแห่งชาติ และโรงเรียนนานาชาติ',
+            location: 'กรุงเทพมหานคร',
+          },
         ],
       },
     ],

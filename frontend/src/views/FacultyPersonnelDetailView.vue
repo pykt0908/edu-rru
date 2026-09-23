@@ -134,8 +134,53 @@ const person = computed(() => getPersonById(personId.value))
 
         <!-- Detailed Information Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <!-- Left Column (2 Cols): Publications -->
+          <!-- Left Column (2 Cols): Experience, Publications, Study Visits -->
           <div class="lg:col-span-2 space-y-8">
+            <!-- Work Experience -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-5">
+              <div class="flex items-center gap-2.5 pb-3 border-b border-slate-100">
+                <div class="w-8 h-8 rounded-lg bg-teal-100 text-teal-800 flex items-center justify-center">
+                  <v-icon icon="mdi-briefcase-outline" size="18" />
+                </div>
+                <h2 class="text-lg sm:text-xl font-bold text-slate-900">
+                  ประสบการณ์การทำงาน
+                </h2>
+              </div>
+
+              <div v-if="person.workExperience && person.workExperience.length > 0" class="space-y-3.5">
+                <div
+                  v-for="(exp, idx) in person.workExperience"
+                  :key="idx"
+                  class="p-4 rounded-2xl bg-slate-50/80 border border-slate-100 space-y-1.5 hover:bg-slate-50 transition-colors"
+                >
+                  <div class="flex items-center gap-2">
+                    <span
+                      v-if="exp.period"
+                      class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-teal-50 text-teal-800 border border-teal-200/80"
+                    >
+                      {{ exp.period }}
+                    </span>
+                  </div>
+
+                  <h3 class="text-xs sm:text-sm font-bold text-slate-800 leading-snug">
+                    {{ exp.position }}
+                  </h3>
+
+                  <p v-if="exp.organization" class="text-xs text-slate-600 font-medium">
+                    {{ exp.organization }}
+                  </p>
+
+                  <p v-if="exp.description" class="text-xs text-slate-500 font-normal">
+                    {{ exp.description }}
+                  </p>
+                </div>
+              </div>
+
+              <div v-else class="text-center py-6 text-xs text-slate-400">
+                ไม่มีข้อมูลประสบการณ์การทำงานที่แสดงในขณะนี้
+              </div>
+            </div>
+
             <!-- Academic Publications & Research -->
             <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-5">
               <div class="flex items-center gap-2.5 pb-3 border-b border-slate-100">
@@ -180,6 +225,51 @@ const person = computed(() => getPersonById(personId.value))
 
               <div v-else class="text-center py-6 text-xs text-slate-400">
                 ไม่มีข้อมูลผลงานทางวิชาการที่แสดงในขณะนี้
+              </div>
+            </div>
+
+            <!-- Study Visits -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-5">
+              <div class="flex items-center gap-2.5 pb-3 border-b border-slate-100">
+                <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center">
+                  <v-icon icon="mdi-bus-school" size="18" />
+                </div>
+                <h2 class="text-lg sm:text-xl font-bold text-slate-900">
+                  การศึกษาดูงาน
+                </h2>
+              </div>
+
+              <div v-if="person.studyVisits && person.studyVisits.length > 0" class="space-y-3.5">
+                <div
+                  v-for="(visit, idx) in person.studyVisits"
+                  :key="idx"
+                  class="p-4 rounded-2xl bg-slate-50/80 border border-slate-100 space-y-1.5 hover:bg-slate-50 transition-colors"
+                >
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span
+                      v-if="visit.year"
+                      class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-900 border border-amber-200/80"
+                    >
+                      พ.ศ. {{ visit.year }}
+                    </span>
+                    <span v-if="visit.location" class="text-xs text-slate-500 font-medium flex items-center gap-1">
+                      <v-icon icon="mdi-map-marker-outline" size="14" class="text-slate-400 shrink-0" />
+                      {{ visit.location }}
+                    </span>
+                  </div>
+
+                  <h3 class="text-xs sm:text-sm font-bold text-slate-800 leading-snug">
+                    {{ visit.topic }}
+                  </h3>
+
+                  <p v-if="visit.organization" class="text-xs text-slate-500 font-normal">
+                    {{ visit.organization }}
+                  </p>
+                </div>
+              </div>
+
+              <div v-else class="text-center py-6 text-xs text-slate-400">
+                ไม่มีข้อมูลการศึกษาดูงานที่แสดงในขณะนี้
               </div>
             </div>
           </div>
