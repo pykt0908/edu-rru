@@ -120,10 +120,6 @@ const copyEmail = async (email: string) => {
                 </p>
               </div>
 
-              <!-- Bio / Summary -->
-              <div v-if="person.bio" class="text-xs sm:text-sm text-slate-600 leading-relaxed bg-slate-50/80 rounded-2xl p-4 border border-slate-100">
-                {{ person.bio }}
-              </div>
 
               <!-- Contact & Location Box -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
