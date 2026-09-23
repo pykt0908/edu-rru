@@ -176,21 +176,7 @@ const copyEmail = async (email: string) => {
                   </div>
                 </div>
 
-                <!-- Office Room -->
-                <div v-if="person.officeRoom" class="sm:col-span-2 flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200/70">
-                  <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center shrink-0 mt-0.5">
-                    <v-icon icon="mdi-map-marker-outline" size="16" />
-                  </div>
-                  <div class="min-w-0">
-                    <span class="block text-[10px] font-bold text-slate-400 uppercase">ห้องพักอาจารย์ / สถานที่ทำงาน</span>
-                    <span class="text-xs sm:text-[13px] font-semibold text-slate-800 block">
-                      {{ person.officeRoom }}
-                    </span>
-                    <span v-if="person.officeHours" class="text-[11px] text-slate-500 block mt-0.5">
-                      เวลาให้คำปรึกษา: {{ person.officeHours }}
-                    </span>
-                  </div>
-                </div>
+
               </div>
             </div>
           </div>
@@ -336,10 +322,7 @@ const copyEmail = async (email: string) => {
                   </div>
                 </div>
 
-                <div v-if="person.officeRoom" class="flex items-start gap-2.5 pt-1">
-                  <v-icon icon="mdi-map-marker-outline" size="16" class="text-emerald-700 shrink-0 mt-0.5" />
-                  <span>{{ person.officeRoom }}</span>
-                </div>
+
               </div>
 
               <div class="pt-2">
