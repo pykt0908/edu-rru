@@ -151,15 +151,6 @@ const curriculumPrograms = [
               <v-icon :icon="sub.icon" size="18" />
               <span>{{ sub.label }}</span>
             </RouterLink>
-
-            <RouterLink
-              to="/curriculum/detail"
-              class="flex items-center gap-3 px-4 py-2 rounded-lg text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 no-underline min-h-[40px] transition-colors"
-              @click="drawer = false; mobileAboutOpen = false"
-            >
-              <v-icon icon="mdi-database-search" size="18" />
-              <span>รายละเอียดหลักสูตร (ตัวอย่าง)</span>
-            </RouterLink>
           </div>
         </div>
 
@@ -319,7 +310,7 @@ const curriculumPrograms = [
                     </div>
 
                     <!-- Column 2: หลักสูตรที่เปิดสอน (col-span-6) -->
-                    <div class="col-span-6 p-5 flex flex-col justify-between bg-slate-50/50">
+                    <div class="col-span-6 p-5 flex flex-col justify-start bg-slate-50/50">
                       <div>
                         <div class="flex items-center gap-2 pb-2.5 border-b border-slate-100">
                           <div class="w-6 h-6 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center">
@@ -349,29 +340,6 @@ const curriculumPrograms = [
                             </div>
                           </RouterLink>
                         </div>
-                      </div>
-
-                      <!-- Highlight Banner: สาขาวิชาวิทยาการข้อมูล -->
-                      <div class="mt-3 pt-3 border-t border-slate-200/70">
-                        <RouterLink
-                          to="/curriculum/detail"
-                          class="flex items-center gap-3 p-2.5 rounded-xl bg-gradient-to-r from-emerald-700 to-emerald-800 text-white hover:from-emerald-800 hover:to-emerald-900 transition-all shadow-sm hover:shadow-md no-underline group"
-                          @click="aboutOpen = false"
-                        >
-                          <div class="w-9 h-9 rounded-lg bg-white/15 backdrop-blur-xs flex items-center justify-center shrink-0 border border-white/20">
-                            <v-icon icon="mdi-database-search" size="18" class="text-emerald-100" />
-                          </div>
-                          <div class="min-w-0 flex-1">
-                            <div class="flex items-center gap-1.5">
-                              <span class="text-xs font-bold text-white truncate">สาขาวิชาวิทยาการข้อมูล</span>
-                              <span class="px-1.5 py-0.2 rounded text-[9px] font-extrabold bg-amber-400 text-slate-900">แนะนำ</span>
-                            </div>
-                            <p class="text-[10px] text-emerald-100/90 truncate mt-0.5">
-                              ดูตัวอย่างหน้ารายละเอียดหลักสูตรฉบับเต็ม
-                            </p>
-                          </div>
-                          <v-icon icon="mdi-arrow-right" size="16" class="text-white/80 group-hover:translate-x-0.5 transition-transform" />
-                        </RouterLink>
                       </div>
                     </div>
                   </div>
