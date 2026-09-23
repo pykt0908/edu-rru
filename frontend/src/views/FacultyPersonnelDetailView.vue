@@ -120,24 +120,19 @@ const person = computed(() => getPersonById(personId.value))
                   <div
                     v-for="(edu, idx) in person.educationHistory"
                     :key="idx"
-                    class="flex items-start gap-3 p-2.5 rounded-xl bg-slate-50/80 border border-slate-100"
+                    class="p-3 rounded-xl bg-slate-50/80 border border-slate-100/90"
                   >
-                    <div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
-                      {{ idx + 1 }}
+                    <div class="flex flex-wrap items-center justify-between gap-1.5">
+                      <span class="text-xs sm:text-[13px] font-bold text-slate-800">
+                        {{ edu.degree }} ({{ edu.field }})
+                      </span>
+                      <span v-if="edu.year" class="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                        พ.ศ. {{ edu.year }}
+                      </span>
                     </div>
-                    <div class="flex-1 min-w-0">
-                      <div class="flex flex-wrap items-center justify-between gap-1.5">
-                        <span class="text-xs sm:text-[13px] font-bold text-slate-800">
-                          {{ edu.degree }} ({{ edu.field }})
-                        </span>
-                        <span v-if="edu.year" class="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                          พ.ศ. {{ edu.year }}
-                        </span>
-                      </div>
-                      <p class="text-xs text-slate-500 font-medium mt-0.5">
-                        {{ edu.institution }}
-                      </p>
-                    </div>
+                    <p class="text-xs text-slate-500 font-medium mt-0.5">
+                      {{ edu.institution }}
+                    </p>
                   </div>
                 </div>
 
