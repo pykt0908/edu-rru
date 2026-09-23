@@ -120,6 +120,44 @@ const copyEmail = async (email: string) => {
                 </p>
               </div>
 
+              <!-- Education Credentials inside Profile Card -->
+              <div class="space-y-3">
+                <div class="flex items-center gap-2 pb-1.5 border-b border-slate-100">
+                  <v-icon icon="mdi-school-outline" size="18" class="text-emerald-700" />
+                  <h2 class="text-sm sm:text-base font-bold text-slate-900">
+                    คุณวุฒิการศึกษา
+                  </h2>
+                </div>
+
+                <div v-if="person.educationHistory && person.educationHistory.length > 0" class="space-y-2.5">
+                  <div
+                    v-for="(edu, idx) in person.educationHistory"
+                    :key="idx"
+                    class="flex items-start gap-3 p-2.5 rounded-xl bg-slate-50/80 border border-slate-100"
+                  >
+                    <div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
+                      {{ idx + 1 }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex flex-wrap items-center justify-between gap-1.5">
+                        <span class="text-xs sm:text-[13px] font-bold text-slate-800">
+                          {{ edu.degree }} ({{ edu.field }})
+                        </span>
+                        <span v-if="edu.year" class="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                          พ.ศ. {{ edu.year }}
+                        </span>
+                      </div>
+                      <p class="text-xs text-slate-500 font-medium mt-0.5">
+                        {{ edu.institution }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div v-else class="text-xs sm:text-sm text-slate-700 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                  {{ person.degrees || 'ข้อมูลอยู่ระหว่างการปรับปรุง' }}
+                </div>
+              </div>
 
               <!-- Contact & Location Box -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
@@ -167,52 +205,9 @@ const copyEmail = async (email: string) => {
 
         <!-- Detailed Information Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <!-- Left Column (2 Cols): Credentials, Publications, Courses -->
+          <!-- Left Column (2 Cols): Publications -->
           <div class="lg:col-span-2 space-y-8">
-            <!-- 1. Education History -->
-            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-5">
-              <div class="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-                <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center">
-                  <v-icon icon="mdi-school-outline" size="18" />
-                </div>
-                <h2 class="text-lg sm:text-xl font-bold text-slate-900">
-                  คุณวุฒิการศึกษา
-                </h2>
-              </div>
-
-              <!-- Education Timeline / List -->
-              <div v-if="person.educationHistory && person.educationHistory.length > 0" class="space-y-4">
-                <div
-                  v-for="(edu, idx) in person.educationHistory"
-                  :key="idx"
-                  class="flex items-start gap-3.5 p-3.5 rounded-2xl bg-slate-50/70 border border-slate-100 hover:bg-slate-50 transition-colors"
-                >
-                  <div class="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
-                    {{ idx + 1 }}
-                  </div>
-                  <div class="flex-1 min-w-0 space-y-0.5">
-                    <div class="flex flex-wrap items-center justify-between gap-2">
-                      <h3 class="text-xs sm:text-sm font-bold text-slate-800">
-                        {{ edu.degree }} ({{ edu.field }})
-                      </h3>
-                      <span v-if="edu.year" class="text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                        พ.ศ. {{ edu.year }}
-                      </span>
-                    </div>
-                    <p class="text-xs text-slate-500 font-medium">
-                      {{ edu.institution }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Fallback to degrees string if educationHistory not populated -->
-              <div v-else class="p-4 rounded-xl bg-slate-50 border border-slate-100 text-xs sm:text-sm text-slate-700">
-                {{ person.degrees || 'ข้อมูลอยู่ระหว่างการปรับปรุง' }}
-              </div>
-            </div>
-
-            <!-- 2. Academic Publications & Research -->
+            <!-- Academic Publications & Research -->
             <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-5">
               <div class="flex items-center gap-2.5 pb-3 border-b border-slate-100">
                 <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center">
