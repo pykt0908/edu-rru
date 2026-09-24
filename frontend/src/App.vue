@@ -60,18 +60,24 @@ const navItems = [
   { label: 'ติดต่อ', to: '/contact', icon: 'mdi-phone-outline', disabled: false },
 ]
 
-const aboutSubMenu = [
+// 1. ข้อมูลและนโยบายคณะ (Overview & Governance)
+const facultyOverviewMenu = [
   { label: 'ประวัติคณะ', to: '/about/history', icon: 'mdi-book-open-page-variant-outline', desc: 'ความเป็นมาตั้งแต่ พ.ศ. 2483' },
   { label: 'ปรัชญา วิสัยทัศน์ และพันธกิจ', to: '/about/philosophy', icon: 'mdi-lightbulb-outline', desc: 'อัตลักษณ์และทิศทางของคณะ' },
-  { label: 'คณะผู้บริหาร', to: '/about/management', icon: 'mdi-account-tie-outline', desc: 'คณบดี รองคณบดี และผู้ช่วยคณบดี' },
-  { label: 'บุคลากรประจำสาขาวิชา', to: '/about/personnel', icon: 'mdi-account-group', desc: 'ประธานสาขาและอาจารย์ประจำสาขา' },
-  { label: 'คณะกรรมการคณะครุศาสตร์', to: '/about/committee', icon: 'mdi-account-group-outline', desc: 'คณะกรรมการประจำคณะครุศาสตร์' },
-  { label: 'การประเมินคุณธรรมและความโปร่งใส (ITA)', to: '/about/ita', icon: 'mdi-shield-check-outline', desc: 'การประเมินคุณธรรมและความโปร่งใส' },
-  { label: 'ข้อกฎหมายสำหรับบุคลากร', to: '/about/regulations', icon: 'mdi-gavel', desc: 'กฎหมาย ระเบียบ ข้อบังคับ และประกาศ' },
+  { label: 'การประเมินคุณธรรมและความโปร่งใส (ITA)', to: '/about/ita', icon: 'mdi-shield-check-outline', desc: 'ผลการประเมิน ITA ประจำปี' },
+  { label: 'ข้อกฎหมายสำหรับบุคลากร', to: '/about/regulations', icon: 'mdi-gavel', desc: 'กฎหมาย ระเบียบ ข้อบังคับ' },
 ]
 
+// 2. โครงสร้างและการบริหาร (Leadership & Personnel)
+const facultyPeopleMenu = [
+  { label: 'คณะผู้บริหาร', to: '/about/management', icon: 'mdi-account-tie-outline', desc: 'คณบดี รองคณบดี และผู้ช่วยคณบดี' },
+  { label: 'คณะกรรมการคณะครุศาสตร์', to: '/about/committee', icon: 'mdi-account-group-outline', desc: 'คณะกรรมการประจำคณะครุศาสตร์' },
+  { label: 'บุคลากรประจำสาขาวิชา', to: '/about/personnel', icon: 'mdi-account-group', desc: 'ประธานสาขาและอาจารย์ประจำ 11 สาขา' },
+]
+
+// 3. หลักสูตรที่เปิดสอน (Academic Programs)
 const curriculumPrograms = [
-  { label: 'ปริญญาตรี', to: '/curriculum/bachelor', icon: 'mdi-school', desc: 'หลักสูตรครุศาสตรบัณฑิต' },
+  { label: 'ปริญญาตรี', to: '/curriculum/bachelor', icon: 'mdi-school', desc: 'หลักสูตรครุศาสตรบัณฑิต 4 ปี' },
   { label: 'ประกาศนียบัตรบัณฑิตวิชาชีพครู', to: '/curriculum/grad-diploma', icon: 'mdi-certificate-outline', desc: 'หลักสูตร ป.บัณฑิตวิชาชีพครู' },
   { label: 'ปริญญาโท', to: '/curriculum/master', icon: 'mdi-book-education-outline', desc: 'หลักสูตรครุศาสตรมหาบัณฑิต' },
 ]
@@ -126,31 +132,52 @@ const curriculumPrograms = [
               :class="mobileAboutOpen ? 'rotate-180 text-emerald-600' : 'text-slate-400'"
             />
           </button>
-          <div v-show="mobileAboutOpen" class="pl-4 mt-1 space-y-1">
+          <div v-show="mobileAboutOpen" class="pl-3 mt-1 space-y-2">
+            <!-- 1. ข้อมูลและนโยบาย -->
+            <div class="pt-2 pb-1 px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+              <span>ข้อมูลและนโยบาย</span>
+            </div>
             <RouterLink
-              v-for="sub in aboutSubMenu"
+              v-for="sub in facultyOverviewMenu"
               :key="sub.to"
               :to="sub.to"
-              class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 no-underline min-h-[40px] transition-colors"
+              class="flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 no-underline min-h-[38px] transition-colors"
               @click="drawer = false; mobileAboutOpen = false"
             >
-              <v-icon :icon="sub.icon" size="18" />
+              <v-icon :icon="sub.icon" size="17" class="text-emerald-700" />
               <span>{{ sub.label }}</span>
             </RouterLink>
 
-            <!-- Submenu หลักสูตร -->
-            <div class="pt-3 pb-1 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+            <!-- 2. การบริหารและบุคลากร -->
+            <div class="pt-2 pb-1 px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+              <span>การบริหารและบุคลากร</span>
+            </div>
+            <RouterLink
+              v-for="sub in facultyPeopleMenu"
+              :key="sub.to"
+              :to="sub.to"
+              class="flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 no-underline min-h-[38px] transition-colors"
+              @click="drawer = false; mobileAboutOpen = false"
+            >
+              <v-icon :icon="sub.icon" size="17" class="text-emerald-700" />
+              <span>{{ sub.label }}</span>
+            </RouterLink>
+
+            <!-- 3. หลักสูตรที่เปิดสอน -->
+            <div class="pt-2 pb-1 px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-600" />
               <span>หลักสูตรที่เปิดสอน</span>
             </div>
             <RouterLink
               v-for="sub in curriculumPrograms"
               :key="sub.to"
               :to="sub.to"
-              class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 no-underline min-h-[40px] transition-colors"
+              class="flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700 no-underline min-h-[38px] transition-colors"
               @click="drawer = false; mobileAboutOpen = false"
             >
-              <v-icon :icon="sub.icon" size="18" />
+              <v-icon :icon="sub.icon" size="17" class="text-blue-700" />
               <span>{{ sub.label }}</span>
             </RouterLink>
           </div>
@@ -278,61 +305,29 @@ const curriculumPrograms = [
                 class="absolute top-full left-1/2 -translate-x-1/2 pt-2 z-50 pointer-events-auto"
               >
                 <!-- Container Card -->
-                <div class="w-[720px] max-w-[calc(100vw-2rem)] bg-white/98 backdrop-blur-xl rounded-2xl shadow-2xl shadow-slate-900/15 border border-slate-200/90 overflow-hidden text-slate-800">
-                  <!-- 2-Column Grid -->
+                <div class="w-[880px] max-w-[calc(100vw-2rem)] bg-white/98 backdrop-blur-xl rounded-2xl shadow-2xl shadow-slate-900/15 border border-slate-200/90 overflow-hidden text-slate-800">
+                  <!-- 3-Column Balanced Grid -->
                   <div class="grid grid-cols-12 divide-x divide-slate-100">
-                    <!-- Column 1: ข้อมูลและโครงสร้างคณะ (col-span-6) -->
-                    <div class="col-span-6 p-5 space-y-3">
-                      <div class="flex items-center gap-2 pb-2.5 border-b border-slate-100">
-                        <div class="w-6 h-6 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                          <v-icon icon="mdi-domain" size="14" />
-                        </div>
-                        <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">ข้อมูลและโครงสร้างคณะ</span>
-                      </div>
-
-                      <div class="space-y-1">
-                        <RouterLink
-                          v-for="sub in aboutSubMenu"
-                          :key="sub.to"
-                          :to="sub.to"
-                          class="flex items-start gap-3 p-2.5 rounded-xl hover:bg-emerald-50/80 transition-all duration-150 no-underline group"
-                          @click="aboutOpen = false"
-                        >
-                          <div class="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-100/80 text-emerald-700 flex items-center justify-center shrink-0 group-hover:bg-emerald-700 group-hover:text-white group-hover:border-emerald-700 transition-all duration-200">
-                            <v-icon :icon="sub.icon" size="16" />
-                          </div>
-                          <div class="min-w-0">
-                            <p class="text-xs font-bold text-slate-800 group-hover:text-emerald-700 transition-colors leading-snug truncate">
-                              {{ sub.label }}
-                            </p>
-                            <p class="text-[11px] text-slate-500 mt-0.5 leading-snug line-clamp-1">
-                              {{ sub.desc }}
-                            </p>
-                          </div>
-                        </RouterLink>
-                      </div>
-                    </div>
-
-                    <!-- Column 2: หลักสูตรที่เปิดสอน (col-span-6) -->
-                    <div class="col-span-6 p-5 flex flex-col justify-start bg-slate-50/50">
+                    <!-- Column 1: ข้อมูลและนโยบาย (col-span-4) -->
+                    <div class="col-span-4 p-4.5 space-y-3 flex flex-col justify-between">
                       <div>
                         <div class="flex items-center gap-2 pb-2.5 border-b border-slate-100">
-                          <div class="w-6 h-6 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                            <v-icon icon="mdi-school" size="14" />
+                          <div class="w-6 h-6 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                            <v-icon icon="mdi-information-outline" size="14" />
                           </div>
-                          <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">หลักสูตรที่เปิดสอน</span>
+                          <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">ข้อมูลและนโยบาย</span>
                         </div>
 
-                        <div class="mt-3 space-y-1">
+                        <div class="mt-2.5 space-y-1">
                           <RouterLink
-                            v-for="sub in curriculumPrograms"
+                            v-for="sub in facultyOverviewMenu"
                             :key="sub.to"
                             :to="sub.to"
-                            class="flex items-start gap-3 p-2.5 rounded-xl hover:bg-emerald-50/80 transition-all duration-150 no-underline group"
+                            class="flex items-start gap-2.5 p-2 rounded-xl hover:bg-emerald-50/80 transition-all duration-150 no-underline group"
                             @click="aboutOpen = false"
                           >
-                            <div class="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-100/80 text-emerald-700 flex items-center justify-center shrink-0 group-hover:bg-emerald-700 group-hover:text-white group-hover:border-emerald-700 transition-all duration-200">
-                              <v-icon :icon="sub.icon" size="16" />
+                            <div class="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-100/80 text-emerald-700 flex items-center justify-center shrink-0 group-hover:bg-emerald-700 group-hover:text-white group-hover:border-emerald-700 transition-all duration-200 mt-0.5">
+                              <v-icon :icon="sub.icon" size="15" />
                             </div>
                             <div class="min-w-0 flex-1">
                               <p class="text-xs font-bold text-slate-800 group-hover:text-emerald-700 transition-colors leading-snug truncate">
@@ -346,20 +341,118 @@ const curriculumPrograms = [
                         </div>
                       </div>
                     </div>
+
+                    <!-- Column 2: การบริหารและบุคลากร (col-span-4) -->
+                    <div class="col-span-4 p-4.5 space-y-3 flex flex-col justify-between">
+                      <div>
+                        <div class="flex items-center gap-2 pb-2.5 border-b border-slate-100">
+                          <div class="w-6 h-6 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                            <v-icon icon="mdi-account-group-outline" size="14" />
+                          </div>
+                          <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">การบริหารและบุคลากร</span>
+                        </div>
+
+                        <div class="mt-2.5 space-y-1">
+                          <RouterLink
+                            v-for="sub in facultyPeopleMenu"
+                            :key="sub.to"
+                            :to="sub.to"
+                            class="flex items-start gap-2.5 p-2 rounded-xl hover:bg-emerald-50/80 transition-all duration-150 no-underline group"
+                            @click="aboutOpen = false"
+                          >
+                            <div class="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-100/80 text-emerald-700 flex items-center justify-center shrink-0 group-hover:bg-emerald-700 group-hover:text-white group-hover:border-emerald-700 transition-all duration-200 mt-0.5">
+                              <v-icon :icon="sub.icon" size="15" />
+                            </div>
+                            <div class="min-w-0 flex-1">
+                              <p class="text-xs font-bold text-slate-800 group-hover:text-emerald-700 transition-colors leading-snug truncate">
+                                {{ sub.label }}
+                              </p>
+                              <p class="text-[11px] text-slate-500 mt-0.5 leading-snug line-clamp-1">
+                                {{ sub.desc }}
+                              </p>
+                            </div>
+                          </RouterLink>
+                        </div>
+                      </div>
+
+                      <!-- Bottom Action Pill for Perfect Visual Balance -->
+                      <div class="pt-1">
+                        <RouterLink
+                          to="/about/personnel"
+                          class="flex items-center justify-between px-3 py-2 rounded-xl bg-emerald-50/80 border border-emerald-200/70 text-emerald-900 hover:bg-emerald-100 transition-colors text-[11px] font-bold no-underline group"
+                          @click="aboutOpen = false"
+                        >
+                          <div class="flex items-center gap-1.5 min-w-0">
+                            <v-icon icon="mdi-badge-account-horizontal-outline" size="14" class="text-emerald-700 shrink-0" />
+                            <span class="truncate">ทำเนียบคณาจารย์ 11 สาขาวิชา</span>
+                          </div>
+                          <v-icon icon="mdi-arrow-right" size="13" class="text-emerald-700 group-hover:translate-x-0.5 transition-transform shrink-0" />
+                        </RouterLink>
+                      </div>
+                    </div>
+
+                    <!-- Column 3: หลักสูตรที่เปิดสอน (col-span-4) -->
+                    <div class="col-span-4 p-4.5 space-y-3 flex flex-col justify-between bg-slate-50/50">
+                      <div>
+                        <div class="flex items-center gap-2 pb-2.5 border-b border-slate-100">
+                          <div class="w-6 h-6 rounded-md bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                            <v-icon icon="mdi-school" size="14" />
+                          </div>
+                          <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">หลักสูตรที่เปิดสอน</span>
+                        </div>
+
+                        <div class="mt-2.5 space-y-1">
+                          <RouterLink
+                            v-for="sub in curriculumPrograms"
+                            :key="sub.to"
+                            :to="sub.to"
+                            class="flex items-start gap-2.5 p-2 rounded-xl hover:bg-white transition-all duration-150 no-underline group"
+                            @click="aboutOpen = false"
+                          >
+                            <div class="w-7 h-7 rounded-lg bg-blue-50 border border-blue-100/80 text-blue-700 flex items-center justify-center shrink-0 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-all duration-200 mt-0.5">
+                              <v-icon :icon="sub.icon" size="15" />
+                            </div>
+                            <div class="min-w-0 flex-1">
+                              <p class="text-xs font-bold text-slate-800 group-hover:text-blue-700 transition-colors leading-snug truncate">
+                                {{ sub.label }}
+                              </p>
+                              <p class="text-[11px] text-slate-500 mt-0.5 leading-snug line-clamp-1">
+                                {{ sub.desc }}
+                              </p>
+                            </div>
+                          </RouterLink>
+                        </div>
+                      </div>
+
+                      <!-- Bottom Action Pill for Perfect Visual Balance -->
+                      <div class="pt-1">
+                        <RouterLink
+                          to="/curriculum/bachelor"
+                          class="flex items-center justify-between px-3 py-2 rounded-xl bg-blue-50/80 border border-blue-200/70 text-blue-900 hover:bg-blue-100 transition-colors text-[11px] font-bold no-underline group"
+                          @click="aboutOpen = false"
+                        >
+                          <div class="flex items-center gap-1.5 min-w-0">
+                            <v-icon icon="mdi-book-search-outline" size="14" class="text-blue-700 shrink-0" />
+                            <span class="truncate">รายละเอียดหลักสูตรทั้งหมด</span>
+                          </div>
+                          <v-icon icon="mdi-arrow-right" size="13" class="text-blue-700 group-hover:translate-x-0.5 transition-transform shrink-0" />
+                        </RouterLink>
+                      </div>
+                    </div>
                   </div>
 
                   <!-- Megamenu Footer -->
-                  <div class="bg-slate-100/80 px-5 py-2.5 border-t border-slate-200/70 flex items-center justify-between text-[11px] text-slate-500">
+                  <div class="bg-slate-100/90 px-6 py-2.5 border-t border-slate-200/80 flex items-center justify-between text-[11px] text-slate-600">
                     <div class="flex items-center gap-2">
                       <span class="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-                      <span>คณะครุศาสตร์ มหาวิทยาลัยราชภัฏราชนครินทร์</span>
+                      <span class="font-medium">คณะครุศาสตร์ มหาวิทยาลัยราชภัฏราชนครินทร์</span>
                     </div>
                     <RouterLink
                       to="/contact"
-                      class="text-emerald-700 hover:text-emerald-800 font-semibold no-underline flex items-center gap-1"
+                      class="text-emerald-700 hover:text-emerald-800 font-bold no-underline flex items-center gap-1"
                       @click="aboutOpen = false"
                     >
-                      <span>ติดต่อสอบถาม</span>
+                      <span>ติดต่อสอบถามข้อมูล</span>
                       <v-icon icon="mdi-chevron-right" size="14" />
                     </RouterLink>
                   </div>
