@@ -53,11 +53,11 @@ onUnmounted(() => {
 })
 
 const navItems = [
-  { label: 'SDGs', to: '/sdgs', icon: 'mdi-earth' },
-  { label: 'งานบริการนักศึกษา', to: '/student-services', icon: 'mdi-account-school-outline' },
-  { label: 'งานวางแผน', to: '/planning', icon: 'mdi-chart-timeline-variant' },
-  { label: 'งานกิจกรรมนักศึกษา', to: '/student-activities', icon: 'mdi-account-group-outline' },
-  { label: 'ติดต่อ', to: '/contact', icon: 'mdi-phone-outline' },
+  { label: 'SDGs', to: '/sdgs', icon: 'mdi-earth', disabled: false },
+  { label: 'งานบริการนักศึกษา', to: '/student-services', icon: 'mdi-account-school-outline', disabled: true },
+  { label: 'งานวางแผน', to: '/planning', icon: 'mdi-chart-timeline-variant', disabled: true },
+  { label: 'งานกิจกรรมนักศึกษา', to: '/student-activities', icon: 'mdi-account-group-outline', disabled: true },
+  { label: 'ติดต่อ', to: '/contact', icon: 'mdi-phone-outline', disabled: false },
 ]
 
 const aboutSubMenu = [
@@ -159,14 +159,16 @@ const curriculumPrograms = [
         <!-- Other nav items -->
         <v-list-item
           v-for="item in navItems"
-          :key="item.to"
-          :to="item.to"
+          :key="item.label"
+          :to="item.disabled ? undefined : item.to"
+          :disabled="item.disabled"
           :prepend-icon="item.icon"
           :title="item.label"
           rounded="lg"
           active-color="primary"
-          class="!min-h-[44px] text-slate-700"
-          @click="drawer = false"
+          class="!min-h-[44px]"
+          :class="item.disabled ? 'text-slate-400 opacity-50 cursor-not-allowed pointer-events-none' : 'text-slate-700'"
+          @click="item.disabled ? null : (drawer = false)"
         />
       </v-list>
 
@@ -367,17 +369,28 @@ const curriculumPrograms = [
           </div>
 
           <!-- Other nav items -->
-          <RouterLink
-            v-for="item in navItems"
-            :key="item.to"
-            :to="item.to"
-            class="relative h-full px-2 xl:px-2.5 font-medium text-slate-600 hover:text-emerald-700 transition-all flex items-center gap-1 xl:gap-1.5 shrink-0 whitespace-nowrap"
-            :class="isScrolled ? 'text-xs xl:text-xs py-1' : 'text-xs xl:text-sm'"
-            active-class="!text-emerald-700 font-semibold"
-          >
-            <v-icon :icon="item.icon" :size="isScrolled ? 16 : 18" />
-            <span>{{ item.label }}</span>
-          </RouterLink>
+          <template v-for="item in navItems" :key="item.label">
+            <span
+              v-if="item.disabled"
+              class="relative h-full px-2 xl:px-2.5 font-medium text-slate-400/70 cursor-not-allowed select-none flex items-center gap-1 xl:gap-1.5 shrink-0 whitespace-nowrap pointer-events-none"
+              :class="isScrolled ? 'text-xs xl:text-xs py-1' : 'text-xs xl:text-sm'"
+              title="อยู่ระหว่างการจัดทำข้อมูล (ไม่สามารถกดได้)"
+            >
+              <v-icon :icon="item.icon" :size="isScrolled ? 16 : 18" class="text-slate-400/60" />
+              <span>{{ item.label }}</span>
+            </span>
+
+            <RouterLink
+              v-else
+              :to="item.to"
+              class="relative h-full px-2 xl:px-2.5 font-medium text-slate-600 hover:text-emerald-700 transition-all flex items-center gap-1 xl:gap-1.5 shrink-0 whitespace-nowrap"
+              :class="isScrolled ? 'text-xs xl:text-xs py-1' : 'text-xs xl:text-sm'"
+              active-class="!text-emerald-700 font-semibold"
+            >
+              <v-icon :icon="item.icon" :size="isScrolled ? 16 : 18" />
+              <span>{{ item.label }}</span>
+            </RouterLink>
+          </template>
         </nav>
 
         <!-- Mobile Menu Toggle Button -->

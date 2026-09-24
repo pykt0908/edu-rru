@@ -30,9 +30,9 @@ const navLinks = [
   { label: 'หน้าแรก', to: '/' },
   { label: 'เกี่ยวกับคณะ', to: '/about' },
   { label: 'SDGs', to: '/sdgs' },
-  { label: 'งานบริการนักศึกษา', to: '/student-services' },
-  { label: 'งานวางแผน', to: '/planning' },
-  { label: 'งานกิจกรรมนักศึกษา', to: '/student-activities' },
+  { label: 'งานบริการนักศึกษา', to: '/student-services', disabled: true },
+  { label: 'งานวางแผน', to: '/planning', disabled: true },
+  { label: 'งานกิจกรรมนักศึกษา', to: '/student-activities', disabled: true },
   { label: 'ติดต่อเรา', to: '/contact' },
 ]
 </script>
@@ -128,14 +128,22 @@ const navLinks = [
             เมนูหลัก
           </h3>
           <div class="flex flex-wrap gap-x-4 gap-y-2">
-            <RouterLink
-              v-for="n in navLinks"
-              :key="n.to"
-              :to="n.to"
-              class="text-slate-400 hover:text-emerald-400 text-xs transition-colors duration-150 no-underline"
-            >
-              {{ n.label }}
-            </RouterLink>
+            <template v-for="n in navLinks" :key="n.label">
+              <span
+                v-if="n.disabled"
+                class="text-slate-600 cursor-not-allowed text-xs select-none pointer-events-none"
+                title="ยังไม่มีเนื้อหา"
+              >
+                {{ n.label }}
+              </span>
+              <RouterLink
+                v-else
+                :to="n.to"
+                class="text-slate-400 hover:text-emerald-400 text-xs transition-colors duration-150 no-underline"
+              >
+                {{ n.label }}
+              </RouterLink>
+            </template>
           </div>
         </div>
 
