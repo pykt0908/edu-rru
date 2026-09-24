@@ -140,68 +140,75 @@ const curriculumPrograms = [
 
         <!-- เกี่ยวกับคณะ accordion -->
         <div>
-          <button
-            type="button"
-            class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-700 hover:bg-slate-100 text-sm font-medium min-h-[44px] cursor-pointer"
+          <v-list-item
+            prepend-icon="mdi-school-outline"
+            title="เกี่ยวกับคณะ"
+            rounded="lg"
+            class="!min-h-[44px] text-slate-700 cursor-pointer select-none"
+            :class="{ 'bg-emerald-50/80 text-emerald-800 font-semibold': mobileAboutOpen }"
             @click="mobileAboutOpen = !mobileAboutOpen"
           >
-            <v-icon icon="mdi-school-outline" size="20" />
-            <span class="flex-1 text-left">เกี่ยวกับคณะ</span>
-            <v-icon
-              icon="mdi-chevron-down"
-              size="18"
-              class="transition-transform duration-200"
-              :class="mobileAboutOpen ? 'rotate-180 text-emerald-600' : 'text-slate-400'"
-            />
-          </button>
-          <div v-show="mobileAboutOpen" class="pl-3 mt-1 space-y-2">
+            <template #append>
+              <v-icon
+                icon="mdi-chevron-down"
+                size="18"
+                class="transition-transform duration-200"
+                :class="mobileAboutOpen ? 'rotate-180 text-emerald-600' : 'text-slate-400'"
+              />
+            </template>
+          </v-list-item>
+
+          <div v-show="mobileAboutOpen" class="pl-3 mt-1 mb-2 ml-4 border-l-2 border-emerald-500/20 space-y-1">
             <!-- 1. ข้อมูลและนโยบาย -->
             <div class="pt-2 pb-1 px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-600" />
               <span>ข้อมูลและนโยบาย</span>
             </div>
-            <RouterLink
+            <v-list-item
               v-for="sub in facultyOverviewMenu"
               :key="sub.to"
               :to="sub.to"
-              class="flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 no-underline min-h-[38px] transition-colors"
+              :prepend-icon="sub.icon"
+              :title="sub.label"
+              density="compact"
+              rounded="md"
+              class="!min-h-[38px] text-slate-600 hover:text-emerald-700"
               @click="drawer = false; mobileAboutOpen = false"
-            >
-              <v-icon :icon="sub.icon" size="17" class="text-emerald-700" />
-              <span>{{ sub.label }}</span>
-            </RouterLink>
+            />
 
             <!-- 2. การบริหารและบุคลากร -->
             <div class="pt-2 pb-1 px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-600" />
               <span>การบริหารและบุคลากร</span>
             </div>
-            <RouterLink
+            <v-list-item
               v-for="sub in facultyPeopleMenu"
               :key="sub.to"
               :to="sub.to"
-              class="flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 no-underline min-h-[38px] transition-colors"
+              :prepend-icon="sub.icon"
+              :title="sub.label"
+              density="compact"
+              rounded="md"
+              class="!min-h-[38px] text-slate-600 hover:text-emerald-700"
               @click="drawer = false; mobileAboutOpen = false"
-            >
-              <v-icon :icon="sub.icon" size="17" class="text-emerald-700" />
-              <span>{{ sub.label }}</span>
-            </RouterLink>
+            />
 
             <!-- 3. หลักสูตรที่เปิดสอน -->
             <div class="pt-2 pb-1 px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
               <span class="w-1.5 h-1.5 rounded-full bg-blue-600" />
               <span>หลักสูตรที่เปิดสอน</span>
             </div>
-            <RouterLink
+            <v-list-item
               v-for="sub in curriculumPrograms"
               :key="sub.to"
               :to="sub.to"
-              class="flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700 no-underline min-h-[38px] transition-colors"
+              :prepend-icon="sub.icon"
+              :title="sub.label"
+              density="compact"
+              rounded="md"
+              class="!min-h-[38px] text-slate-600 hover:text-blue-700"
               @click="drawer = false; mobileAboutOpen = false"
-            >
-              <v-icon :icon="sub.icon" size="17" class="text-blue-700" />
-              <span>{{ sub.label }}</span>
-            </RouterLink>
+            />
           </div>
         </div>
 
@@ -216,7 +223,7 @@ const curriculumPrograms = [
           rounded="lg"
           active-color="primary"
           class="!min-h-[44px]"
-          :class="item.disabled ? 'text-slate-400 opacity-50 cursor-not-allowed pointer-events-none' : 'text-slate-700'"
+          :class="item.disabled ? 'text-slate-400 cursor-not-allowed pointer-events-none opacity-60' : 'text-slate-700'"
           @click="item.disabled ? null : (drawer = false)"
         />
       </v-list>
