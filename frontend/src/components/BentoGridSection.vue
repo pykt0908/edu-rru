@@ -1,135 +1,15 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { POSTS, type Post } from '@/data/postsData'
 
-export interface Post {
-  id: number | string
-  title: string
-  desc: string
-  thumbnail: string
-  date: string
-  category: string
-  categoryBadgeClass: string
-  views: string
-  readTime: string
-  author: {
-    name: string
-    role: string
-    avatar: string
-  }
-  featured?: boolean
-  gridClass: string // Bento Grid column and row spanning
-}
+const router = useRouter()
 
 // Active Filter Category
 const selectedCategory = ref('ทั้งหมด')
 const categories = ['ทั้งหมด', 'ข่าวประชาสัมพันธ์', 'วิชาการ & วิจัย', 'กิจกรรมนิสิต', 'บริการวิชาการ']
 
-// Mock Data for Normal Posts with Thumbnail, Title, Desc, Date
-const posts = ref<Post[]>([
-  {
-    id: 1,
-    title: 'เปิดรับสมัครนิสิตใหม่ระดับปริญญาตรี คณะครุศาสตร์ ประจำปีการศึกษา 2569 (รอบ Portfolio & โควตาภาคตะวันออก)',
-    desc: 'หลักสูตรครุศาสตรบัณฑิต (ค.บ. 4 ปี) ผ่านการรับรองมาตรฐานวิชาชีพครูจากคุรุสภา มุ่งผลิตครูคุณภาพสู่สังคม มีให้เลือก 8 สาขาวิชาเอก พร้อมทุนการศึกษาและโครงการพัฒนาความเป็นเลิศ',
-    thumbnail: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&auto=format&fit=crop&q=80',
-    date: '24 กันยายน 2569',
-    category: 'ข่าวประชาสัมพันธ์',
-    categoryBadgeClass: 'bg-emerald-600 text-white',
-    views: '4.8K',
-    readTime: '3 นาที',
-    author: {
-      name: 'งานรับสมัครและบริการการศึกษา',
-      role: 'คณะครุศาสตร์',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
-    },
-    featured: true,
-    gridClass: 'lg:col-span-8 lg:row-span-2 min-h-[480px] lg:min-h-[540px]',
-  },
-  {
-    id: 2,
-    title: 'คณาจารย์ครุศาสตร์คว้ารางวัลชนะเลิศ นวัตกรรมการจัดการเรียนรู้ Active Learning ระดับชาติ 2569',
-    desc: 'ผลงานการออกแบบชุดการสอนดิจิทัลและกระบวนการจัดการเรียนรู้เพื่อพัฒนาสมรรถนะผู้เรียนในศตวรรษที่ 21 ได้รับการยกย่องในเวทีประชุมวิชาการครุศาสตร์ระดับประเทศ',
-    thumbnail: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&auto=format&fit=crop&q=80',
-    date: '22 กันยายน 2569',
-    category: 'วิชาการ & วิจัย',
-    categoryBadgeClass: 'bg-blue-600 text-white',
-    views: '2.3K',
-    readTime: '2 นาที',
-    author: {
-      name: 'ฝ่ายวิจัยและนวัตกรรม',
-      role: 'คณะครุศาสตร์',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
-    },
-    gridClass: 'lg:col-span-4 min-h-[255px]',
-  },
-  {
-    id: 3,
-    title: 'โครงการเตรียมความพร้อมนิสิตฝึกประสบการณ์วิชาชีพครูในสถานศึกษาเครือข่าย 120 แห่ง',
-    desc: 'เสริมสร้างจิตวิญญาณความเป็นครู จริยธรรมวิชาชีพ และทักษะการบริหารจัดการชั้นเรียนยุคใหม่ ก่อนลงปฏิบัติการสอนจริงในโรงเรียน',
-    thumbnail: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?w=800&auto=format&fit=crop&q=80',
-    date: '20 กันยายน 2569',
-    category: 'กิจกรรมนิสิต',
-    categoryBadgeClass: 'bg-purple-600 text-white',
-    views: '3.1K',
-    readTime: '2 นาที',
-    author: {
-      name: 'งานฝึกประสบการณ์วิชาชีพครู',
-      role: 'คณะครุศาสตร์',
-      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80',
-    },
-    gridClass: 'lg:col-span-4 min-h-[255px]',
-  },
-  {
-    id: 4,
-    title: 'ครุศาสตร์ราชนครินทร์ลงพื้นที่ยกระดับคุณภาพการศึกษาโรงเรียนขนาดเล็ก จังหวัดฉะเชิงเทรา',
-    desc: 'ดำเนินโครงการบริการวิชาการเพื่อการพัฒนาท้องถิ่น ถ่ายทอดสื่อนวัตกรรมการอ่านออกเขียนได้ และการใช้เทคโนโลยีส่งเสริมการเรียนรู้สำหรับเด็กในชนบท',
-    thumbnail: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&auto=format&fit=crop&q=80',
-    date: '18 กันยายน 2569',
-    category: 'บริการวิชาการ',
-    categoryBadgeClass: 'bg-amber-600 text-white',
-    views: '1.9K',
-    readTime: '3 นาที',
-    author: {
-      name: 'ฝ่ายบริการวิชาการและชุมชน',
-      role: 'คณะครุศาสตร์',
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80',
-    },
-    gridClass: 'lg:col-span-4 min-h-[340px]',
-  },
-  {
-    id: 5,
-    title: 'อบรมเชิงปฏิบัติการ: การประยุกต์ใช้ Generative AI สำหรับครูและผู้บริหารสถานศึกษายุคใหม่',
-    desc: 'เปิดโลกทัศน์การนำ AI เช่น ChatGPT, Claude และ Copilot มาช่วยร่างแผนการสอน สร้างแบบฝึกหัดที่ตรงจุด และประเมินผลผู้เรียนอย่างสร้างสรรค์และมีจริยธรรม',
-    thumbnail: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&auto=format&fit=crop&q=80',
-    date: '15 กันยายน 2569',
-    category: 'วิชาการ & วิจัย',
-    categoryBadgeClass: 'bg-blue-600 text-white',
-    views: '5.6K',
-    readTime: '4 นาที',
-    author: {
-      name: 'ศูนย์นวัตกรรมและเทคโนโลยีดิจิทัล',
-      role: 'คณะครุศาสตร์',
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80',
-    },
-    gridClass: 'lg:col-span-4 min-h-[340px]',
-  },
-  {
-    id: 6,
-    title: 'ประกาศผลการสอบคัดเลือกและกำหนดการรายงานตัว นิสิตทุนครูรักษ์ถิ่น ประจำปี 2569',
-    desc: 'ขอให้นักศึกษาที่มีรายชื่อผ่านการคัดเลือก ตรวจสอบเอกสารหลักฐาน และดำเนินการรายงานตัวตามวันและเวลาที่กำหนดอย่างเคร่งครัด',
-    thumbnail: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=80',
-    date: '12 กันยายน 2569',
-    category: 'ข่าวประชาสัมพันธ์',
-    categoryBadgeClass: 'bg-emerald-600 text-white',
-    views: '3.8K',
-    readTime: '2 นาที',
-    author: {
-      name: 'งานบริการนิสิตและทุนการศึกษา',
-      role: 'คณะครุศาสตร์',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
-    },
-    gridClass: 'lg:col-span-4 min-h-[340px]',
-  },
-])
+const posts = ref<Post[]>(POSTS)
 
 // Filtered Posts computed property
 const filteredPosts = computed(() => {
@@ -138,6 +18,10 @@ const filteredPosts = computed(() => {
   }
   return posts.value.filter((p) => p.category === selectedCategory.value)
 })
+
+const navigateToPost = (id: number | string) => {
+  router.push(`/posts/${id}`)
+}
 </script>
 
 <template>
@@ -172,12 +56,14 @@ const filteredPosts = computed(() => {
         <article
           v-for="post in filteredPosts"
           :key="post.id"
+          class="cursor-pointer"
           :class="[
             post.gridClass,
             post.featured
               ? 'relative bg-white rounded-3xl overflow-hidden border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-end p-6 sm:p-8 lg:p-10'
               : 'relative bg-white rounded-3xl overflow-hidden border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col'
           ]"
+          @click="navigateToPost(post.id)"
         >
           <!-- ================= FEATURED HERO POST (Big Card Layout) ================= -->
           <template v-if="post.featured">

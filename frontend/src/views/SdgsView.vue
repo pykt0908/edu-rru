@@ -344,10 +344,11 @@ const selectGoal = (id: number) => {
 
         <!-- Activities Grid (Clean & Minimalist cards) -->
         <div v-if="filteredActivities.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-          <article
+          <RouterLink
             v-for="act in filteredActivities"
             :key="act.id"
-            class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs hover:shadow-md transition-all duration-200 flex flex-col group"
+            :to="'/sdgs/post/' + act.id"
+            class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs hover:shadow-md transition-all duration-200 flex flex-col group no-underline text-inherit cursor-pointer"
           >
             <!-- Card Image -->
             <div class="relative h-44 overflow-hidden bg-slate-100">
@@ -398,7 +399,7 @@ const selectGoal = (id: number) => {
                 <span class="text-[10px] text-slate-400">คณะครุศาสตร์</span>
               </div>
             </div>
-          </article>
+          </RouterLink>
         </div>
 
         <!-- Empty State (Clean Minimalist) -->

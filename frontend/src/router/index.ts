@@ -103,6 +103,24 @@ const router = createRouter({
       component: () => import('../views/SdgsView.vue'),
     },
     {
+      path: '/sdgs/post/:id',
+      name: 'sdg-post-detail',
+      component: () => import('../views/SdgPostDetailView.vue'),
+    },
+    {
+      path: '/sdgs/activity/:id',
+      redirect: (to) => `/sdgs/post/${to.params.id}`,
+    },
+    {
+      path: '/posts/:id',
+      name: 'post-detail',
+      component: () => import('../views/PostDetailView.vue'),
+    },
+    {
+      path: '/news/:id',
+      redirect: (to) => `/posts/${to.params.id}`,
+    },
+    {
       path: '/student-services',
       name: 'student-services',
       component: () => import('../views/StudentServicesView.vue'),

@@ -10,6 +10,13 @@ export interface SdgGoal {
   svgIcon: string // SVG inner content
 }
 
+export interface SdgMetric {
+  labelTh: string
+  labelEn: string
+  value: string
+  icon?: string
+}
+
 export interface SdgActivity {
   id: number
   sdgId: number
@@ -21,6 +28,13 @@ export interface SdgActivity {
   image: string
   summaryTh: string
   summaryEn: string
+  contentTh?: string[]
+  contentEn?: string[]
+  targetCode?: string // e.g. "Target 4.1", "Target 1.2"
+  targetDescTh?: string
+  targetDescEn?: string
+  impactMetrics?: SdgMetric[]
+  gallery?: string[]
   author: string
 }
 
@@ -502,3 +516,14 @@ export const SDG_ACTIVITIES: SdgActivity[] = [
     author: 'คณบดีคณะครุศาสตร์'
   }
 ]
+
+export function getSdgActivityById(id: string | number): SdgActivity | undefined {
+  const numericId = typeof id === 'string' ? parseInt(id, 10) : id
+  return SDG_ACTIVITIES.find((a) => a.id === numericId)
+}
+
+export function getSdgGoalById(id: string | number): SdgGoal | undefined {
+  const numericId = typeof id === 'string' ? parseInt(id, 10) : id
+  return SDG_GOALS.find((g) => g.id === numericId)
+}
+
