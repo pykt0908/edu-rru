@@ -113,7 +113,7 @@ const curriculumPrograms = [
       temporary
       location="right"
       width="300"
-      class="lg:hidden"
+      class="xl:hidden"
     >
       <div class="p-4 border-b border-slate-100 flex items-center justify-between">
         <div class="flex items-center gap-2.5 min-w-0">
@@ -252,15 +252,15 @@ const curriculumPrograms = [
       ]"
     >
       <div
-        class="transition-[max-width,height,padding,border-radius,box-shadow,background-color,border-color] duration-300 ease-out flex items-center justify-between gap-3 sm:gap-4 pointer-events-auto border"
+        class="transition-[max-width,height,padding,border-radius,box-shadow,background-color,border-color] duration-300 ease-out flex items-center justify-between gap-2.5 sm:gap-4 pointer-events-auto border"
         :class="[
           isScrolled
-            ? 'max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 rounded-full bg-white/92 backdrop-blur-xl border-slate-200/90 shadow-xl shadow-slate-900/10'
+            ? 'max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 h-14 sm:h-16 rounded-full bg-white/92 backdrop-blur-xl border-slate-200/90 shadow-xl shadow-slate-900/10'
             : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 rounded-none bg-transparent border-transparent'
         ]"
       >
         <!-- Logo / Brand -->
-        <RouterLink to="/" class="flex items-center gap-2.5 sm:gap-3 shrink-0 no-underline group py-1">
+        <RouterLink to="/" class="flex items-center gap-2 sm:gap-3 shrink-0 no-underline group py-1">
           <img
             :src="eduLogo"
             alt="โลโก้คณะครุศาสตร์ มหาวิทยาลัยราชภัฏราชนครินทร์"
@@ -270,29 +270,31 @@ const curriculumPrograms = [
           <div class="shrink-0">
             <span
               class="font-bold text-slate-800 tracking-tight block leading-tight whitespace-nowrap transition-all duration-300"
-              :class="isScrolled ? 'text-xs sm:text-sm' : 'text-xs sm:text-sm md:text-base xl:text-lg'"
+              :class="isScrolled ? 'text-xs sm:text-sm 2xl:text-base' : 'text-xs sm:text-sm md:text-base 2xl:text-lg'"
             >
-              คณะครุศาสตร์ มหาวิทยาลัยราชภัฏราชนครินทร์
+              <span class="hidden 2xl:inline">คณะครุศาสตร์ มหาวิทยาลัยราชภัฏราชนครินทร์</span>
+              <span class="inline 2xl:hidden">คณะครุศาสตร์ มรภ.ราชนครินทร์</span>
             </span>
             <span
               class="text-slate-500 leading-tight whitespace-nowrap transition-all duration-300"
-              :class="isScrolled ? 'hidden xl:block text-[10px] mt-0.5' : 'text-[10px] sm:text-[11px] xl:text-xs block mt-0.5'"
+              :class="isScrolled ? 'hidden 2xl:block text-[10px] mt-0.5' : 'text-[10px] sm:text-[11px] 2xl:text-xs hidden sm:block mt-0.5'"
             >
-              Faculty of Education, Rajabhatrajanagarinda University
+              <span class="hidden 2xl:inline">Faculty of Education, Rajabhatrajanagarinda University</span>
+              <span class="inline 2xl:hidden">Faculty of Education, RRU</span>
             </span>
           </div>
         </RouterLink>
 
         <!-- Desktop Navigation Links -->
-        <nav class="hidden lg:flex items-center gap-0.5 xl:gap-1.5 h-full shrink-0">
+        <nav class="hidden xl:flex items-center gap-0.5 2xl:gap-1.5 h-full shrink-0">
           <!-- Home -->
           <RouterLink
             to="/"
-            class="relative h-full px-2 xl:px-2.5 font-medium text-slate-600 hover:text-emerald-700 transition-all flex items-center gap-1 xl:gap-1.5 shrink-0 whitespace-nowrap"
-            :class="isScrolled ? 'text-xs xl:text-xs py-1' : 'text-xs xl:text-sm'"
+            class="relative h-full px-1.5 2xl:px-2.5 font-medium text-slate-600 hover:text-emerald-700 transition-all flex items-center gap-1 2xl:gap-1.5 shrink-0 whitespace-nowrap"
+            :class="isScrolled ? 'text-xs 2xl:text-sm py-1' : 'text-xs 2xl:text-sm'"
             active-class="!text-emerald-700 font-semibold"
           >
-            <v-icon icon="mdi-home-outline" :size="isScrolled ? 16 : 18" />
+            <v-icon icon="mdi-home-outline" :size="isScrolled ? 15 : 17" />
             <span>หน้าแรก</span>
           </RouterLink>
 
@@ -304,17 +306,17 @@ const curriculumPrograms = [
           >
             <button
               type="button"
-              class="relative h-full px-2 xl:px-2.5 font-medium text-slate-600 hover:text-emerald-700 transition-all flex items-center gap-1 xl:gap-1.5 shrink-0 whitespace-nowrap cursor-pointer select-none border-0"
+              class="relative h-full px-1.5 2xl:px-2.5 font-medium text-slate-600 hover:text-emerald-700 transition-all flex items-center gap-1 2xl:gap-1.5 shrink-0 whitespace-nowrap cursor-pointer select-none border-0"
               :class="[
-                isScrolled ? 'text-xs xl:text-xs py-1' : 'text-xs xl:text-sm',
+                isScrolled ? 'text-xs 2xl:text-sm py-1' : 'text-xs 2xl:text-sm',
                 aboutOpen || isAboutActive ? '!text-emerald-700 font-semibold' : ''
               ]"
             >
-              <v-icon icon="mdi-school-outline" :size="isScrolled ? 16 : 18" />
+              <v-icon icon="mdi-school-outline" :size="isScrolled ? 15 : 17" />
               <span>เกี่ยวกับคณะ</span>
               <v-icon
                 icon="mdi-chevron-down"
-                :size="isScrolled ? 14 : 16"
+                :size="isScrolled ? 13 : 15"
                 class="transition-transform duration-200"
                 :class="aboutOpen ? 'rotate-180' : ''"
               />
@@ -464,29 +466,29 @@ const curriculumPrograms = [
           <template v-for="item in navItems" :key="item.label">
             <span
               v-if="item.disabled"
-              class="relative h-full px-2 xl:px-2.5 font-medium text-slate-400/70 cursor-not-allowed select-none flex items-center gap-1 xl:gap-1.5 shrink-0 whitespace-nowrap pointer-events-none"
-              :class="isScrolled ? 'text-xs xl:text-xs py-1' : 'text-xs xl:text-sm'"
+              class="relative h-full px-1.5 2xl:px-2.5 font-medium text-slate-400/70 cursor-not-allowed select-none flex items-center gap-1 2xl:gap-1.5 shrink-0 whitespace-nowrap pointer-events-none"
+              :class="isScrolled ? 'text-xs 2xl:text-sm py-1' : 'text-xs 2xl:text-sm'"
               title="อยู่ระหว่างการจัดทำข้อมูล (ไม่สามารถกดได้)"
             >
-              <v-icon :icon="item.icon" :size="isScrolled ? 16 : 18" class="text-slate-400/60" />
+              <v-icon :icon="item.icon" :size="isScrolled ? 15 : 17" class="text-slate-400/60" />
               <span>{{ item.label }}</span>
             </span>
 
             <RouterLink
               v-else
               :to="item.to"
-              class="relative h-full px-2 xl:px-2.5 font-medium text-slate-600 hover:text-emerald-700 transition-all flex items-center gap-1 xl:gap-1.5 shrink-0 whitespace-nowrap"
-              :class="isScrolled ? 'text-xs xl:text-xs py-1' : 'text-xs xl:text-sm'"
+              class="relative h-full px-1.5 2xl:px-2.5 font-medium text-slate-600 hover:text-emerald-700 transition-all flex items-center gap-1 2xl:gap-1.5 shrink-0 whitespace-nowrap"
+              :class="isScrolled ? 'text-xs 2xl:text-sm py-1' : 'text-xs 2xl:text-sm'"
               active-class="!text-emerald-700 font-semibold"
             >
-              <v-icon :icon="item.icon" :size="isScrolled ? 16 : 18" />
+              <v-icon :icon="item.icon" :size="isScrolled ? 15 : 17" />
               <span>{{ item.label }}</span>
             </RouterLink>
           </template>
         </nav>
 
-        <!-- Mobile Menu Toggle Button -->
-        <div class="flex items-center lg:hidden shrink-0">
+        <!-- Mobile / Tablet Menu Toggle Button -->
+        <div class="flex items-center xl:hidden shrink-0">
           <v-btn
             icon="mdi-menu"
             variant="text"
