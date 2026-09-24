@@ -1,13 +1,54 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { getPersonById } from '@/data/personnelData'
+import { api } from '@/services/api'
 
 const route = useRoute()
 const router = useRouter()
 
 const personId = computed(() => route.params.id as string)
-const person = computed(() => getPersonById(personId.value))
+const staticPerson = computed(() => getPersonById(personId.value))
+const apiPerson = ref<any>(null)
+const loading = ref(true)
+
+const person = computed(() => {
+  if (apiPerson.value) {
+    const raw = apiPerson.value
+    return {
+      ...raw,
+      name: raw.name,
+      nameEn: raw.name_en ?? raw.nameEn,
+      academicTitle: raw.academic_title ?? raw.academicTitle,
+      roleTitle: raw.role_title ?? raw.roleTitle,
+      departmentId: raw.department_id ?? raw.departmentId,
+      departmentName: raw.department_name ?? raw.departmentName,
+      officeRoom: raw.office_room ?? raw.officeRoom,
+      officeHours: raw.office_hours ?? raw.officeHours,
+      educationHistory: raw.education_history ?? raw.educationHistory ?? [],
+      expertise: raw.expertise ?? [],
+      publications: raw.publications ?? [],
+      courses: raw.courses ?? [],
+      workExperience: raw.work_experience ?? raw.workExperience ?? [],
+      studyVisits: raw.study_visits ?? raw.studyVisits ?? [],
+      isHead: raw.is_head !== undefined ? !!raw.is_head : !!raw.isHead,
+    }
+  }
+  return staticPerson.value
+})
+
+onMounted(async () => {
+  try {
+    const res = await api.getPersonnelItem(personId.value)
+    if (res) {
+      apiPerson.value = res
+    }
+  } catch (err) {
+    console.warn('Failed to load personnel from API, using static data:', err)
+  } finally {
+    loading.value = false
+  }
+})
 </script>
 
 <template>

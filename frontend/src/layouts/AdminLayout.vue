@@ -27,12 +27,20 @@ const navMenuItems = [
     icon: 'mdi-account-group-outline',
     to: '/admin/personnel',
   },
+  {
+    title: 'จัดการข้อมูลและนโยบาย',
+    icon: 'mdi-book-cog-outline',
+    to: '/admin/content',
+  },
 ]
 
 const currentTitle = computed(() => {
   if (route.path === '/admin') return 'แดชบอร์ดภาพรวม (Dashboard Overview)'
+  if (route.path === '/admin/posts/create') return 'สร้างข่าวสารใหม่'
+  if (route.path.match(/\/admin\/posts\/\d+\/edit/)) return 'แก้ไขข่าวสาร'
   if (route.path.startsWith('/admin/posts')) return 'จัดการข่าวสารและกิจกรรม (News & Posts)'
   if (route.path.startsWith('/admin/personnel')) return 'จัดการบุคลากรและคณาจารย์ (Personnel)'
+  if (route.path.startsWith('/admin/content')) return 'จัดการข้อมูลและนโยบาย (Content & Policy)'
   return 'ระบบจัดการหลังบ้าน'
 })
 </script>
@@ -181,7 +189,7 @@ const currentTitle = computed(() => {
           </div>
 
           <RouterLink
-            to="/admin/posts"
+            to="/admin/posts/create"
             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold shadow-xs transition-colors no-underline"
           >
             <v-icon icon="mdi-plus" size="16" />

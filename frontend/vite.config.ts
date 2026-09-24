@@ -17,6 +17,9 @@ export default defineConfig({
     }
   },
   server: {
+    allowedHosts: [
+      '.trycloudflare.com'
+    ],
     port: 5173,
     proxy: {
       '/api': {

@@ -156,9 +156,24 @@ const router = createRouter({
           component: () => import('../views/admin/AdminPostsView.vue'),
         },
         {
+          path: 'posts/create',
+          name: 'admin-post-create',
+          component: () => import('../views/admin/AdminPostCreateView.vue'),
+        },
+        {
+          path: 'posts/:id/edit',
+          name: 'admin-post-edit',
+          component: () => import('../views/admin/AdminPostEditView.vue'),
+        },
+        {
           path: 'personnel',
           name: 'admin-personnel',
           component: () => import('../views/admin/AdminPersonnelView.vue'),
+        },
+        {
+          path: 'content',
+          name: 'admin-content',
+          component: () => import('../views/admin/AdminContentView.vue'),
         },
       ],
     },

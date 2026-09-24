@@ -16,19 +16,38 @@ onMounted(async () => {
   try {
     const res = await api.getPosts()
     if (res?.data && res.data.length > 0) {
-      posts.value = res.data
+      // Sort: featured first, then by id ascending — matches original local data order
+      posts.value = [...res.data].sort((a, b) => {
+        if (a.featured === b.featured) return a.id - b.id
+        return a.featured ? -1 : 1
+      })
     }
   } catch (err) {
     console.warn('API getPosts error, using fallback:', err)
   }
 })
 
-// Filtered Posts computed property
+// Grid layout pattern — re-applied by position whenever category filter changes
+const GRID_CLASSES = [
+  'lg:col-span-8 lg:row-span-2 min-h-[480px] lg:min-h-[540px]', // position 0: big hero card
+  'lg:col-span-4 min-h-[255px]',  // position 1
+  'lg:col-span-4 min-h-[255px]',  // position 2
+  'lg:col-span-4 min-h-[340px]',  // position 3
+  'lg:col-span-4 min-h-[340px]',  // position 4
+  'lg:col-span-4 min-h-[340px]',  // position 5
+]
+
+// Filtered Posts — reassign gridClass & featured by position so layout is always bento-style
 const filteredPosts = computed(() => {
-  if (selectedCategory.value === 'ทั้งหมด') {
-    return posts.value
+  let list = posts.value
+  if (selectedCategory.value !== 'ทั้งหมด') {
+    list = list.filter((p) => p.category === selectedCategory.value)
   }
-  return posts.value.filter((p) => p.category === selectedCategory.value)
+  return list.map((p, i) => ({
+    ...p,
+    gridClass: GRID_CLASSES[i] ?? 'lg:col-span-4 min-h-[255px]',
+    featured: i === 0,
+  }))
 })
 
 const navigateToPost = (id: number | string) => {

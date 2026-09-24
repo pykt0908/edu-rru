@@ -87,5 +87,8 @@ class DatabaseSeeder extends Seeder
                 );
             }
         }
+
+        // 4. Seed Content & Policy Data
+        $this->call(ContentSeeder::class);
     }
 }

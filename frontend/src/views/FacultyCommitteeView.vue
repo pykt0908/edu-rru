@@ -1,84 +1,57 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import PageHeroBanner from '@/components/PageHeroBanner.vue'
+import { api } from '@/services/api'
 
-interface CommitteeMember {
+interface CommitteeDisplayItem {
+  id?: number
   no: number
   name: string
   position: string
 }
 
-const members: CommitteeMember[] = [
-  {
-    no: 1,
-    name: 'ผู้ช่วยศาสตราจารย์ ดร.ลินดา นาคโปย',
-    position: 'คณบดี',
-  },
-  {
-    no: 2,
-    name: 'ผู้ช่วยศาสตราจารย์ ดร.ทัศนีย์ รอดมั่นคง',
-    position: 'รองคณบดี',
-  },
-  {
-    no: 3,
-    name: 'อาจารย์วรุตม์ กิจเจริญ',
-    position: 'รองคณบดี',
-  },
-  {
-    no: 4,
-    name: 'รองศาสตราจารย์ ดร. มนตรี แย้มกสิกร',
-    position: 'ผู้ทรงคุณวุฒิภายนอก',
-  },
-  {
-    no: 5,
-    name: 'ผู้ช่วยศาสตราจารย์ ดร.ดวงใจ ชนะสิทธิ์',
-    position: 'ผู้ทรงคุณวุฒิภายนอก',
-  },
-  {
-    no: 6,
-    name: 'นางสาวสุทธิษา สมนา',
-    position: 'ผู้แทนประธานสาขาวิชา',
-  },
-  {
-    no: 7,
-    name: 'อาจารย์ชาญณรงค์ คำเพชร',
-    position: 'ผู้แทนประธานสาขาวิชา',
-  },
-  {
-    no: 8,
-    name: 'อาจารย์ ดร.คทาวุธ กุลศิริรัตน์',
-    position: 'ผู้แทนประธานสาขาวิชา',
-  },
-  {
-    no: 9,
-    name: 'ผู้ช่วยศาสตราจารย์ ดร.อังคณา กุลนภาดล',
-    position: 'ผู้แทนคณาจารย์',
-  },
-  {
-    no: 10,
-    name: 'นางวัลยา วงศ์ณรัตน์',
-    position: 'เลขานุการ',
-  },
-  {
-    no: 11,
-    name: 'ผู้ช่วยศาสตราจารย์ ดร.อดิเรก เยาว์วงค์',
-    position: 'ผู้แทนคณาจารย์',
-  },
-  {
-    no: 12,
-    name: 'ผู้ช่วยศาสตราจารย์ ดร.จิราภรณ์ พจนาอารีย์วงศ์',
-    position: 'ผู้แทนคณาจารย์',
-  },
-  {
-    no: 13,
-    name: 'ผู้ช่วยศาสตราจารย์ ดร.อังคณา กรัณยาธิกุล',
-    position: 'ผู้ทรงคุณวุฒิภายนอก',
-  },
-  {
-    no: 14,
-    name: 'นางสาวปิยนันต์ ต่อแสงธรรม',
-    position: 'ผู้ช่วยเลขานุการ',
-  },
+const defaultMembers: CommitteeDisplayItem[] = [
+  { no: 1, name: 'ผู้ช่วยศาสตราจารย์ ดร.ลินดา นาคโปย', position: 'คณบดี' },
+  { no: 2, name: 'ผู้ช่วยศาสตราจารย์ ดร.ทัศนีย์ รอดมั่นคง', position: 'รองคณบดี' },
+  { no: 3, name: 'อาจารย์วรุตม์ กิจเจริญ', position: 'รองคณบดี' },
+  { no: 4, name: 'รองศาสตราจารย์ ดร. มนตรี แย้มกสิกร', position: 'ผู้ทรงคุณวุฒิภายนอก' },
+  { no: 5, name: 'ผู้ช่วยศาสตราจารย์ ดร.ดวงใจ ชนะสิทธิ์', position: 'ผู้ทรงคุณวุฒิภายนอก' },
+  { no: 6, name: 'นางสาวสุทธิษา สมนา', position: 'ผู้แทนประธานสาขาวิชา' },
+  { no: 7, name: 'อาจารย์ชาญณรงค์ คำเพชร', position: 'ผู้แทนประธานสาขาวิชา' },
+  { no: 8, name: 'อาจารย์ ดร.คทาวุธ กุลศิริรัตน์', position: 'ผู้แทนประธานสาขาวิชา' },
+  { no: 9, name: 'ผู้ช่วยศาสตราจารย์ ดร.อังคณา กุลนภาดล', position: 'ผู้แทนคณาจารย์' },
+  { no: 10, name: 'นางวัลยา วงศ์ณรัตน์', position: 'เลขานุการ' },
+  { no: 11, name: 'ผู้ช่วยศาสตราจารย์ ดร.อดิเรก เยาว์วงค์', position: 'ผู้แทนคณาจารย์' },
+  { no: 12, name: 'ผู้ช่วยศาสตราจารย์ ดร.จิราภรณ์ พจนาอารีย์วงศ์', position: 'ผู้แทนคณาจารย์' },
+  { no: 13, name: 'ผู้ช่วยศาสตราจารย์ ดร.อังคณา กรัณยาธิกุล', position: 'ผู้ทรงคุณวุฒิภายนอก' },
+  { no: 14, name: 'นางสาวปิยนันต์ ต่อแสงธรรม', position: 'ผู้ช่วยเลขานุการ' },
 ]
+
+const members = ref<CommitteeDisplayItem[]>(defaultMembers)
+const loading = ref(true)
+
+const loadMembers = async () => {
+  loading.value = true
+  try {
+    const data = await api.getCommitteeMembers({ active_only: true })
+    if (data && data.length > 0) {
+      members.value = data.map((item, idx) => ({
+        id: item.id,
+        no: item.sort_order || idx + 1,
+        name: item.name,
+        position: item.position,
+      }))
+    }
+  } catch (err) {
+    console.warn('Failed to load committee members from API, using default list:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  loadMembers()
+})
 </script>
 
 <template>
@@ -113,7 +86,7 @@ const members: CommitteeMember[] = [
             <tbody class="divide-y divide-slate-100">
               <tr
                 v-for="item in members"
-                :key="item.no"
+                :key="item.id || item.no"
                 class="hover:bg-slate-50/70 transition-colors"
               >
                 <!-- ลำดับที่ -->
@@ -129,6 +102,12 @@ const members: CommitteeMember[] = [
                 <!-- ตำแหน่ง -->
                 <td class="py-4 sm:py-5 px-4 sm:px-8 text-right text-slate-700 text-sm sm:text-base whitespace-nowrap">
                   {{ item.position }}
+                </td>
+              </tr>
+
+              <tr v-if="members.length === 0 && !loading">
+                <td colspan="3" class="py-12 text-center text-slate-400 text-sm">
+                  ไม่พบข้อมูลคณะกรรมการในขณะนี้
                 </td>
               </tr>
             </tbody>

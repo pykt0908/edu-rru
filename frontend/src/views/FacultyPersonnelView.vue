@@ -15,7 +15,23 @@ onMounted(async () => {
   try {
     const res = await api.getPersonnel({ grouped: true })
     if (Array.isArray(res) && res.length > 0) {
-      departmentsList.value = res
+      departmentsList.value = res.map((d: any) => ({
+        id: d.id,
+        name: d.name,
+        degreeTitle: d.degreeTitle || d.degree_title,
+        members: (d.members || []).map((m: any) => ({
+          ...m,
+          id: m.slug_id || m.id,
+          roleTitle: m.role_title ?? m.roleTitle,
+          nameEn: m.name_en ?? m.nameEn,
+          academicTitle: m.academic_title ?? m.academicTitle,
+          departmentId: m.department_id ?? m.departmentId,
+          departmentName: m.department_name ?? m.departmentName,
+          officeRoom: m.office_room ?? m.officeRoom,
+          officeHours: m.office_hours ?? m.officeHours,
+          isHead: m.is_head !== undefined ? !!m.is_head : !!m.isHead,
+        })),
+      }))
     }
   } catch (err) {
     console.warn('API getPersonnel failed, using fallback:', err)

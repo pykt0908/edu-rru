@@ -17,5 +17,13 @@ class Personnel extends Model
         'publications' => 'array',
         'courses' => 'array',
         'work_experience' => 'array',
+        'study_visits' => 'array',
+        'is_head' => 'boolean',
+        'sort_order' => 'integer',
     ];
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id', 'slug');
+    }
 }

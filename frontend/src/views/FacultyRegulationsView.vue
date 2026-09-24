@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import PageHeroBanner from '@/components/PageHeroBanner.vue'
+import { api } from '@/services/api'
 
 interface LawItem {
   id: number
   title: string
-  category: 'act' | 'regulation' | 'rule' | 'announcement'
+  category: string
   categoryName: string
   year: string
   effectiveDate: string
@@ -14,13 +15,24 @@ interface LawItem {
   description?: string
 }
 
-const categories = [
+interface CategoryOption {
+  id: string
+  name: string
+  shortName: string
+  icon: string
+  desc: string
+  badgeClass?: string
+  color?: string
+}
+
+const defaultCategories: CategoryOption[] = [
   {
     id: 'all',
     name: 'ทั้งหมดทุกหมวดหมู่',
     shortName: 'ทั้งหมด',
     icon: 'mdi-format-list-bulleted',
     desc: 'รวมพระราชบัญญัติ ข้อบังคับ ระเบียบ และประกาศทั้งหมด',
+    badgeClass: 'bg-emerald-50 text-emerald-800 border-emerald-200',
   },
   {
     id: 'act',
@@ -28,6 +40,7 @@ const categories = [
     shortName: 'พระราชบัญญัติ',
     icon: 'mdi-scale-balance',
     desc: 'กฎหมายแม่บท พระราชบัญญัติจัดตั้ง และสภาวิชาชีพครู',
+    badgeClass: 'bg-purple-50 text-purple-700 border-purple-200',
   },
   {
     id: 'regulation',
@@ -35,6 +48,7 @@ const categories = [
     shortName: 'ข้อบังคับ',
     icon: 'mdi-file-document-outline',
     desc: 'ข้อบังคับ มรภ.ราชนครินทร์ ว่าด้วยการบริหารงานบุคคลและวินัย',
+    badgeClass: 'bg-blue-50 text-blue-700 border-blue-200',
   },
   {
     id: 'rule',
@@ -42,6 +56,7 @@ const categories = [
     shortName: 'ระเบียบ/แนวปฏิบัติ',
     icon: 'mdi-clipboard-text-outline',
     desc: 'ระเบียบการลา ค่าตอบแทน ทุนวิจัย และแนวทางการเบิกจ่าย',
+    badgeClass: 'bg-emerald-50 text-emerald-800 border-emerald-200',
   },
   {
     id: 'announcement',
@@ -49,8 +64,11 @@ const categories = [
     shortName: 'ประกาศ',
     icon: 'mdi-bullhorn-outline',
     desc: 'ประกาศนโยบาย No Gift Policy, ITA และเกณฑ์ประเมินผลการปฏิบัติงาน',
+    badgeClass: 'bg-amber-50 text-amber-800 border-amber-200',
   },
 ]
+
+const categories = ref<CategoryOption[]>(defaultCategories)
 
 const selectedCategory = ref('all')
 const selectedYear = ref('all')
@@ -61,12 +79,12 @@ const isCategoryDropdownOpen = ref(false)
 const isYearDropdownOpen = ref(false)
 
 const availableYears = computed(() => {
-  const years = Array.from(new Set(lawItems.map((item) => item.year)))
+  const years = Array.from(new Set(lawItems.value.map((item) => item.year).filter(Boolean)))
   return years.sort((a, b) => parseInt(b, 10) - parseInt(a, 10))
 })
 
 const currentCategory = computed(() => {
-  return categories.find((c) => c.id === selectedCategory.value) || categories[0]
+  return categories.value.find((c) => c.id === selectedCategory.value) || categories.value[0]
 })
 
 const selectCategory = (id: string) => {
@@ -85,7 +103,7 @@ const clearFilters = () => {
   searchQuery.value = ''
 }
 
-const lawItems: LawItem[] = [
+const defaultLawItems: LawItem[] = [
   // พระราชบัญญัติ (Acts)
   {
     id: 1,
@@ -315,9 +333,66 @@ const lawItems: LawItem[] = [
   },
 ]
 
+const lawItems = ref<LawItem[]>(defaultLawItems)
+
+const loadCategories = async () => {
+  try {
+    const data = await api.getRegulationCategories({ active_only: true })
+    if (data && data.length) {
+      categories.value = [
+        {
+          id: 'all',
+          name: 'ทั้งหมดทุกหมวดหมู่',
+          shortName: 'ทั้งหมด',
+          icon: 'mdi-format-list-bulleted',
+          desc: 'รวมพระราชบัญญัติ ข้อบังคับ ระเบียบ และประกาศทั้งหมด',
+          badgeClass: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+        },
+        ...data.map((c) => ({
+          id: c.key,
+          name: c.name,
+          shortName: c.short_name || c.name,
+          icon: c.icon || 'mdi-file-document-outline',
+          desc: c.description || '',
+          badgeClass: c.badge_class || 'bg-slate-100 text-slate-700 border-slate-200',
+          color: c.color || 'bg-slate-100 text-slate-700',
+        })),
+      ]
+    }
+  } catch (err) {
+    console.warn('Failed to load regulation categories, using fallback:', err)
+  }
+}
+
+const loadLaws = async () => {
+  try {
+    await loadCategories()
+    const data = await api.getRegulations()
+    if (data && data.length) {
+      lawItems.value = data.map((raw: any) => ({
+        id: raw.id,
+        title: raw.title,
+        category: raw.category,
+        categoryName: categories.value.find((c) => c.id === raw.category)?.shortName || raw.category,
+        year: raw.year || '',
+        effectiveDate: raw.effective_date || raw.effectiveDate || '',
+        fileSize: raw.file_size || raw.fileSize || '',
+        fileUrl: raw.file_url || raw.fileUrl || '#',
+        description: raw.description || '',
+      }))
+    }
+  } catch (err) {
+    console.warn('Failed to load regulations from API, using fallback:', err)
+  }
+}
+
+onMounted(() => {
+  loadLaws()
+})
+
 // Filter and search
 const filteredLaws = computed(() => {
-  let list = lawItems
+  let list = lawItems.value
 
   // Category filter
   if (selectedCategory.value !== 'all') {
@@ -350,11 +425,13 @@ const filteredLaws = computed(() => {
 })
 
 const getCategoryCount = (catId: string) => {
-  if (catId === 'all') return lawItems.length
-  return lawItems.filter((item) => item.category === catId).length
+  if (catId === 'all') return lawItems.value.length
+  return lawItems.value.filter((item) => item.category === catId).length
 }
 
 const getCategoryBadgeClass = (category: string) => {
+  const found = categories.value.find((c) => c.id === category)
+  if (found?.badgeClass) return found.badgeClass
   switch (category) {
     case 'act':
       return 'bg-purple-50 text-purple-700 border-purple-200'

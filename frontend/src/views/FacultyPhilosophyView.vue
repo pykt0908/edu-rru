@@ -1,13 +1,41 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import PageHeroBanner from '@/components/PageHeroBanner.vue'
+import { api, type Mission } from '@/services/api'
 
-const missions = [
-  { text: 'ผลิตบัณฑิตครูและบุคลากรทางการศึกษาที่มีคุณภาพตามมาตรฐานวิชาชีพ' },
-  { text: 'วิจัยและพัฒนานวัตกรรมทางการศึกษาเพื่อพัฒนาท้องถิ่น' },
-  { text: 'บริการวิชาการแก่ชุมชนและสังคม' },
-  { text: 'ทำนุบำรุงศิลปวัฒนธรรมและภูมิปัญญาท้องถิ่น' },
-  { text: 'บริหารจัดการองค์กรตามหลักธรรมาภิบาล' },
-]
+const philosophy = ref('สร้างครูดี มีความรู้ สู่สังคม')
+const philosophyDetail = ref('คณะครุศาสตร์มุ่งมั่นผลิตบัณฑิตครูที่มีคุณภาพ มีความรู้ความสามารถในวิชาชีพ และมีคุณธรรมจริยธรรมเป็นแบบอย่างที่ดีแก่สังคม')
+const vision = ref('เป็นสถาบันชั้นนำด้านการผลิตครู และบุคลากรทางการศึกษาของภูมิภาคตะวันออก มุ่งสู่ความเป็นเลิศในการจัดการศึกษา การวิจัย และการบริการวิชาการ เพื่อพัฒนาท้องถิ่นและสังคม')
+const identity = ref('บัณฑิตครูมีจิตวิญญาณความเป็นครู มีความรู้คู่คุณธรรม')
+const missions = ref<Mission[]>([
+  { id: 1, text: 'ผลิตบัณฑิตครูและบุคลากรทางการศึกษาที่มีคุณภาพตามมาตรฐานวิชาชีพ' },
+  { id: 2, text: 'วิจัยและพัฒนานวัตกรรมทางการศึกษาเพื่อพัฒนาท้องถิ่น' },
+  { id: 3, text: 'บริการวิชาการแก่ชุมชนและสังคม' },
+  { id: 4, text: 'ทำนุบำรุงศิลปวัฒนธรรมและภูมิปัญญาท้องถิ่น' },
+  { id: 5, text: 'บริหารจัดการองค์กรตามหลักธรรมาภิบาล' },
+])
+const loading = ref(true)
+
+const loadPhilosophy = async () => {
+  try {
+    const data = await api.getPhilosophy()
+    if (data) {
+      if (data.philosophy) philosophy.value = data.philosophy
+      if (data.philosophy_detail) philosophyDetail.value = data.philosophy_detail
+      if (data.vision) vision.value = data.vision
+      if (data.identity) identity.value = data.identity
+      if (data.missions && data.missions.length) missions.value = data.missions
+    }
+  } catch (err) {
+    console.warn('Failed to load philosophy from API, using fallback:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  loadPhilosophy()
+})
 </script>
 
 <template>
@@ -34,11 +62,10 @@ const missions = [
               ปรัชญา (Philosophy)
             </div>
             <blockquote class="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-snug mb-4">
-              "สร้างครูดี มีความรู้<br class="hidden sm:inline" />สู่สังคม"
+              "{{ philosophy }}"
             </blockquote>
             <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl">
-              คณะครุศาสตร์มุ่งมั่นผลิตบัณฑิตครูที่มีคุณภาพ มีความรู้ความสามารถในวิชาชีพ
-              และมีคุณธรรมจริยธรรมเป็นแบบอย่างที่ดีแก่สังคม
+              {{ philosophyDetail }}
             </p>
           </div>
         </div>
@@ -52,11 +79,10 @@ const missions = [
             วิสัยทัศน์ (Vision)
           </div>
           <h2 class="text-lg sm:text-xl font-black text-slate-900 leading-snug mb-3">
-            เป็นสถาบันชั้นนำด้านการผลิตครู<br />และบุคลากรทางการศึกษาของภูมิภาคตะวันออก
+            {{ vision }}
           </h2>
           <p class="text-slate-500 text-sm leading-relaxed">
-            มุ่งสู่ความเป็นเลิศในการจัดการศึกษา การวิจัย และการบริการวิชาการ
-            เพื่อพัฒนาท้องถิ่นและสังคม
+            มุ่งสู่ความเป็นเลิศในการจัดการศึกษา การวิจัย และการบริการวิชาการ เพื่อพัฒนาท้องถิ่นและสังคม
           </p>
         </div>
 
@@ -69,11 +95,10 @@ const missions = [
             อัตลักษณ์ (Identity)
           </div>
           <blockquote class="text-base sm:text-lg font-black text-slate-900 leading-snug mb-3 border-l-4 border-emerald-500 pl-4">
-            "บัณฑิตครูมีจิตวิญญาณความเป็นครู<br />มีความรู้คู่คุณธรรม"
+            "{{ identity }}"
           </blockquote>
           <p class="text-slate-500 text-sm leading-relaxed">
-            บัณฑิตของคณะครุศาสตร์จะมีความรักในวิชาชีพครู มีจิตสำนึกในการพัฒนาผู้เรียน
-            และมีคุณธรรมจริยธรรมในการดำเนินชีวิต
+            บัณฑิตของคณะครุศาสตร์จะมีความรักในวิชาชีพครู มีจิตสำนึกในการพัฒนาผู้เรียน และมีคุณธรรมจริยธรรมในการดำเนินชีวิต
           </p>
         </div>
 
@@ -94,7 +119,7 @@ const missions = [
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div
               v-for="(mission, index) in missions"
-              :key="index"
+              :key="mission.id || index"
               class="flex items-start gap-3 bg-white rounded-2xl p-4 border border-slate-200 hover:border-emerald-300 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 group"
             >
               <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 font-bold text-xs group-hover:scale-110 transition-transform duration-200">

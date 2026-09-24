@@ -226,11 +226,17 @@ const shareToLine = () => {
             </ul>
           </div>
 
-          <!-- Article Paragraphs -->
-          <div class="prose max-w-none text-slate-700 text-base sm:text-lg leading-relaxed space-y-6 font-normal">
-            <p v-for="(paragraph, pIndex) in post.content" :key="pIndex" class="text-justify leading-relaxed">
-              {{ paragraph }}
-            </p>
+          <!-- Article Content (Supports Rich Text HTML & Paragraph Arrays) -->
+          <div
+            v-if="typeof post.content === 'string'"
+            class="article-body-prose text-slate-700 text-base sm:text-lg leading-relaxed font-normal"
+            v-html="post.content"
+          />
+          <div
+            v-else-if="Array.isArray(post.content) && post.content.length > 0"
+            class="article-body-prose text-slate-700 text-base sm:text-lg leading-relaxed space-y-6 font-normal"
+          >
+            <p v-for="(paragraph, pIndex) in post.content" :key="pIndex" class="text-justify leading-relaxed" v-html="paragraph" />
           </div>
 
           <!-- Quote Box (if available) -->
@@ -405,3 +411,51 @@ const shareToLine = () => {
     </template>
   </div>
 </template>
+
+<style>
+.article-body-prose p {
+  margin-bottom: 1.25rem;
+  line-height: 1.8;
+}
+.article-body-prose h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+.article-body-prose h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-top: 1.5rem;
+  margin-bottom: 0.6rem;
+}
+.article-body-prose ul {
+  list-style-type: disc;
+  padding-left: 1.75rem;
+  margin-bottom: 1.25rem;
+}
+.article-body-prose ol {
+  list-style-type: decimal;
+  padding-left: 1.75rem;
+  margin-bottom: 1.25rem;
+}
+.article-body-prose li {
+  margin-bottom: 0.4rem;
+}
+.article-body-prose blockquote {
+  border-left: 4px solid #059669;
+  background-color: #f0fdf4;
+  padding: 1rem 1.25rem;
+  border-radius: 0 0.75rem 0.75rem 0;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: #064e3b;
+}
+.article-body-prose a {
+  color: #047857;
+  text-decoration: underline;
+  font-weight: 600;
+}
+</style>

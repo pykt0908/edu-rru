@@ -67,10 +67,13 @@ class PostController extends Controller
             'thumbnail' => 'nullable|string',
             'gallery' => 'nullable|array',
             'key_highlights' => 'nullable|array',
+            'quote' => 'nullable|array',
+            'attachments' => 'nullable|array',
             'tags' => 'nullable|array',
             'featured' => 'nullable|boolean',
             'author' => 'nullable|array',
             'date' => 'nullable|string',
+            'read_time' => 'nullable|string',
         ]);
 
         if (empty($validated['date'])) {
@@ -78,12 +81,19 @@ class PostController extends Controller
         }
 
         if (is_string($request->input('content'))) {
-            $validated['content'] = array_filter(explode("\n", str_replace("\r", "", $request->input('content'))));
+            $contentStr = $request->input('content');
+            if (str_contains($contentStr, '<') && str_contains($contentStr, '>')) {
+                $validated['content'] = $contentStr;
+            } else {
+                $validated['content'] = array_values(array_filter(explode("\n", str_replace("\r", "", $contentStr))));
+            }
         }
 
         $validated['slug'] = Str::slug($validated['title']) . '-' . time();
         $validated['views'] = '0';
-        $validated['read_time'] = '3 นาที';
+        if (empty($validated['read_time'])) {
+            $validated['read_time'] = '3 นาที';
+        }
 
         $post = Post::create($validated);
 
@@ -124,15 +134,27 @@ class PostController extends Controller
             'thumbnail' => 'nullable|string',
             'gallery' => 'nullable|array',
             'key_highlights' => 'nullable|array',
+            'quote' => 'nullable|array',
+            'attachments' => 'nullable|array',
             'tags' => 'nullable|array',
             'featured' => 'nullable|boolean',
             'author' => 'nullable|array',
             'date' => 'nullable|string',
+            'read_time' => 'nullable|string',
             'views' => 'nullable|string',
         ]);
 
-        if ($request->has('content') && is_string($request->input('content'))) {
-            $validated['content'] = array_filter(explode("\n", str_replace("\r", "", $request->input('content'))));
+        if ($request->has('content')) {
+            $contentInput = $request->input('content');
+            if (is_string($contentInput)) {
+                if (str_contains($contentInput, '<') && str_contains($contentInput, '>')) {
+                    $validated['content'] = $contentInput;
+                } else {
+                    $validated['content'] = array_values(array_filter(explode("\n", str_replace("\r", "", $contentInput))));
+                }
+            } else {
+                $validated['content'] = $contentInput;
+            }
         }
 
         $post->update($validated);

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useDisplay } from 'vuetify'
+import { api } from '@/services/api'
 
 const { smAndDown, mdAndDown, lgAndDown } = useDisplay()
 
@@ -11,7 +12,15 @@ const carouselHeight = computed(() => {
   return 620
 })
 
-const slides = [
+interface SlideItem {
+  id?: number
+  src: string
+  alt: string
+  link_url?: string
+  target?: string
+}
+
+const defaultSlides: SlideItem[] = [
   {
     src: 'https://placehold.co/1920x800/0F5132/ffffff?text=Banner+Slide+1+(1920x800)',
     alt: 'Banner Slide 1',
@@ -29,6 +38,29 @@ const slides = [
     alt: 'Banner Slide 4',
   },
 ]
+
+const slides = ref<SlideItem[]>(defaultSlides)
+
+const loadSlides = async () => {
+  try {
+    const data = await api.getCarouselSlides({ active_only: true })
+    if (data && data.length > 0) {
+      slides.value = data.map((item) => ({
+        id: item.id,
+        src: item.image_url,
+        alt: item.alt_text || item.title || 'แบนเนอร์คณะครุศาสตร์',
+        link_url: item.link_url || undefined,
+        target: item.target || '_self',
+      }))
+    }
+  } catch (err) {
+    console.warn('Failed to load carousel slides from API, using default slides:', err)
+  }
+}
+
+onMounted(() => {
+  loadSlides()
+})
 </script>
 
 <template>
@@ -44,9 +76,11 @@ const slides = [
     >
       <v-carousel-item
         v-for="(slide, i) in slides"
-        :key="i"
+        :key="slide.id || i"
         :src="slide.src"
         :alt="slide.alt"
+        :href="slide.link_url"
+        :target="slide.link_url ? slide.target : undefined"
         cover
         height="100%"
         class="border-0 bg-transparent h-full w-full"
