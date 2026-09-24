@@ -1,20 +1,17 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
-import Lenis from 'lenis'
-import 'lenis/dist/lenis.css'
 import eduLogo from '@/assets/logos/edu-logo-border-white.png'
 import AppFooter from '@/components/AppFooter.vue'
 
 const route = useRoute()
 const isAboutActive = computed(() => route.path.startsWith('/about') || route.path.startsWith('/curriculum'))
+const isAdminRoute = computed(() => route.path.startsWith('/admin'))
 
 const drawer = ref(false)
 const isScrolled = ref(false)
 const aboutOpen = ref(false)
 const mobileAboutOpen = ref(false)
-
-let lenis: Lenis | null = null
 
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 40
@@ -27,38 +24,18 @@ watch(
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     document.documentElement.scrollTop = 0
     document.body.scrollTop = 0
-
-    if (lenis) {
-      lenis.scrollTo(0, { immediate: true })
-    }
+    document.documentElement.classList.remove('lenis', 'lenis-stopped', 'lenis-smooth', 'lenis-scrolling')
 
     nextTick(() => {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
-      if (lenis) {
-        lenis.scrollTo(0, { immediate: true })
-      }
       isScrolled.value = false
     })
   }
 )
 
 onMounted(() => {
-  // Initialize buttery-smooth inertia scrolling across the entire site
-  lenis = new Lenis({
-    autoRaf: true,
-    duration: 1.2,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    smoothWheel: true,
-  })
-
-  // Synchronize navbar pill state with Lenis scroll
-  lenis.on('scroll', (e: { scroll: number }) => {
-    isScrolled.value = e.scroll > 40
-  })
-
-  // Expose lenis globally for smooth anchor scrolling
-  // @ts-expect-error global lenis instance
-  window.__lenis = lenis
+  // Clean any leftover lenis classes
+  document.documentElement.classList.remove('lenis', 'lenis-stopped', 'lenis-smooth', 'lenis-scrolling')
 
   window.addEventListener('scroll', handleScroll, { passive: true })
   handleScroll()
@@ -66,12 +43,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
-  if (lenis) {
-    lenis.destroy()
-    lenis = null
-    // @ts-expect-error global lenis instance
-    window.__lenis = null
-  }
 })
 
 const navItems = [
@@ -106,7 +77,11 @@ const curriculumPrograms = [
 </script>
 
 <template>
-  <v-app>
+  <!-- Backoffice Admin Mode: has its own root v-app in AdminLayout -->
+  <RouterView v-if="isAdminRoute" />
+
+  <!-- Public Portal Mode: standard portal v-app -->
+  <v-app v-else>
     <!-- Mobile Navigation Drawer -->
     <v-navigation-drawer
       v-model="drawer"

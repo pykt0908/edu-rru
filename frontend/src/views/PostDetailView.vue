@@ -1,15 +1,39 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getPostById, POSTS, type Post } from '@/data/postsData'
+import { api } from '@/services/api'
 
 const route = useRoute()
 const router = useRouter()
 
+const livePost = ref<Post | undefined>(undefined)
+
+const loadPost = async () => {
+  const id = route.params.id as string
+  // Initial fallback from local data
+  livePost.value = getPostById(id)
+  try {
+    const fetched = await api.getPost(id)
+    if (fetched) {
+      livePost.value = fetched
+    }
+  } catch (err) {
+    console.warn('API getPost failed, using local fallback:', err)
+  }
+}
+
+onMounted(() => {
+  loadPost()
+})
+
+watch(() => route.params.id, () => {
+  loadPost()
+})
+
 // Get post by route param ID
 const post = computed<Post | undefined>(() => {
-  const id = route.params.id as string
-  return getPostById(id)
+  return livePost.value || getPostById(route.params.id as string)
 })
 
 // Related posts (excluding current post)

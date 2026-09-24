@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { POSTS, type Post } from '@/data/postsData'
+import { api } from '@/services/api'
 
 const router = useRouter()
 
@@ -10,6 +11,17 @@ const selectedCategory = ref('ทั้งหมด')
 const categories = ['ทั้งหมด', 'ข่าวประชาสัมพันธ์', 'วิชาการ & วิจัย', 'กิจกรรมนิสิต', 'บริการวิชาการ']
 
 const posts = ref<Post[]>(POSTS)
+
+onMounted(async () => {
+  try {
+    const res = await api.getPosts()
+    if (res?.data && res.data.length > 0) {
+      posts.value = res.data
+    }
+  } catch (err) {
+    console.warn('API getPosts error, using fallback:', err)
+  }
+})
 
 // Filtered Posts computed property
 const filteredPosts = computed(() => {

@@ -4,13 +4,7 @@ import eduLogo from '@/assets/logos/edu-logo-border-white.png'
 const scrollToContent = () => {
   const target = document.getElementById('explore-content')
   if (target) {
-    // @ts-expect-error global lenis smooth scroll
-    if (window.__lenis) {
-      // @ts-expect-error global lenis smooth scroll
-      window.__lenis.scrollTo(target, { duration: 1.4, offset: -20 })
-    } else {
-      target.scrollIntoView({ behavior: 'smooth' })
-    }
+    target.scrollIntoView({ behavior: 'smooth' })
   }
 }
 </script>

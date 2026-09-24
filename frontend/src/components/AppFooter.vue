@@ -208,6 +208,11 @@ const navLinks = [
           <a href="#" class="text-slate-500 hover:text-slate-300 text-xs transition-colors no-underline">นโยบายความเป็นส่วนตัว</a>
           <span class="text-slate-700 text-xs">|</span>
           <a href="#" class="text-slate-500 hover:text-slate-300 text-xs transition-colors no-underline">เงื่อนไขการใช้งาน</a>
+          <span class="text-slate-700 text-xs">|</span>
+          <RouterLink to="/admin" class="text-emerald-400 hover:text-emerald-300 text-xs font-medium transition-colors no-underline flex items-center gap-1">
+            <v-icon icon="mdi-shield-lock-outline" size="13" />
+            <span>เข้าสู่ระบบจัดการหลังบ้าน</span>
+          </RouterLink>
         </div>
       </div>
     </div>

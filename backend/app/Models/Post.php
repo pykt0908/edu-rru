@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Post extends Model
+{
+    use HasFactory;
+
+    protected $guarded = ['id'];
+
+    protected $casts = [
+        'content' => 'array',
+        'key_highlights' => 'array',
+        'quote' => 'array',
+        'gallery' => 'array',
+        'author' => 'array',
+        'attachments' => 'array',
+        'tags' => 'array',
+        'featured' => 'boolean',
+    ];
+}

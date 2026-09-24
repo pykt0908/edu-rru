@@ -140,6 +140,28 @@ const router = createRouter({
       name: 'contact',
       component: () => import('../views/ContactView.vue'),
     },
+    // Backoffice / Admin Panel Routes
+    {
+      path: '/admin',
+      component: () => import('../layouts/AdminLayout.vue'),
+      children: [
+        {
+          path: '',
+          name: 'admin-dashboard',
+          component: () => import('../views/admin/AdminDashboardView.vue'),
+        },
+        {
+          path: 'posts',
+          name: 'admin-posts',
+          component: () => import('../views/admin/AdminPostsView.vue'),
+        },
+        {
+          path: 'personnel',
+          name: 'admin-personnel',
+          component: () => import('../views/admin/AdminPersonnelView.vue'),
+        },
+      ],
+    },
   ],
 })
 
@@ -149,12 +171,6 @@ router.afterEach((to, from) => {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
       document.documentElement.scrollTop = 0
       document.body.scrollTop = 0
-
-      // @ts-expect-error global lenis instance
-      if (window.__lenis) {
-        // @ts-expect-error global lenis instance
-        window.__lenis.scrollTo(0, { immediate: true })
-      }
     }
   }
 })

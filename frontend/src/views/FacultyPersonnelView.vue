@@ -1,26 +1,39 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import PageHeroBanner from '@/components/PageHeroBanner.vue'
-import { departments, type Department } from '@/data/personnelData'
+import { departments as initialDepartments, type Department } from '@/data/personnelData'
+import { api } from '@/services/api'
 
 const selectedDepartment = ref('all')
 const searchQuery = ref('')
-
 const isDepartmentDropdownOpen = ref(false)
+
+const departmentsList = ref<Department[]>(initialDepartments)
+
+onMounted(async () => {
+  try {
+    const res = await api.getPersonnel({ grouped: true })
+    if (Array.isArray(res) && res.length > 0) {
+      departmentsList.value = res
+    }
+  } catch (err) {
+    console.warn('API getPersonnel failed, using fallback:', err)
+  }
+})
 
 const currentDepartment = computed(() => {
   if (selectedDepartment.value === 'all') {
     return { id: 'all', name: 'ทุกสาขาวิชา (ทั้งหมด)', count: totalPersonnelCount.value }
   }
-  const found = departments.find((d) => d.id === selectedDepartment.value)
+  const found = departmentsList.value.find((d) => d.id === selectedDepartment.value)
   return found
     ? { id: found.id, name: found.name, count: found.members.length }
     : { id: 'all', name: 'ทุกสาขาวิชา (ทั้งหมด)', count: totalPersonnelCount.value }
 })
 
 const totalPersonnelCount = computed(() => {
-  return departments.reduce((acc, d) => acc + d.members.length, 0)
+  return departmentsList.value.reduce((acc, d) => acc + d.members.length, 0)
 })
 
 const filteredPersonnelCount = computed(() => {
@@ -40,7 +53,7 @@ const clearFilters = () => {
 
 // Filtered departments based on selection and search
 const filteredDepartments = computed(() => {
-  let list = departments
+  let list = departmentsList.value
 
   // Department filter
   if (selectedDepartment.value !== 'all') {
@@ -179,7 +192,7 @@ const filteredDepartments = computed(() => {
                   <!-- List of Departments -->
                   <div class="py-1">
                     <button
-                      v-for="dept in departments"
+                      v-for="dept in departmentsList"
                       :key="dept.id"
                       type="button"
                       class="w-full flex items-center justify-between gap-3 px-3.5 py-2 text-left text-xs sm:text-sm transition-colors cursor-pointer"
