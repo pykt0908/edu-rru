@@ -3,21 +3,46 @@ import { ref, computed } from 'vue'
 import { SDG_GOALS, SDG_ACTIVITIES, type SdgGoal, type SdgActivity } from '@/data/sdgsData'
 import sdgsHeroPlant from '@/assets/sdgs_hero_plant.jpg'
 
+// Official UN SDG Logos (1 to 17)
+import sdg1 from '@/assets/sdgs/sdg-1.png'
+import sdg2 from '@/assets/sdgs/sdg-2.png'
+import sdg3 from '@/assets/sdgs/sdg-3.png'
+import sdg4 from '@/assets/sdgs/sdg-4.png'
+import sdg5 from '@/assets/sdgs/sdg-5.png'
+import sdg6 from '@/assets/sdgs/sdg-6.png'
+import sdg7 from '@/assets/sdgs/sdg-7.png'
+import sdg8 from '@/assets/sdgs/sdg-8.png'
+import sdg9 from '@/assets/sdgs/sdg-9.png'
+import sdg10 from '@/assets/sdgs/sdg-10.png'
+import sdg11 from '@/assets/sdgs/sdg-11.png'
+import sdg12 from '@/assets/sdgs/sdg-12.png'
+import sdg13 from '@/assets/sdgs/sdg-13.png'
+import sdg14 from '@/assets/sdgs/sdg-14.png'
+import sdg15 from '@/assets/sdgs/sdg-15.png'
+import sdg16 from '@/assets/sdgs/sdg-16.png'
+import sdg17 from '@/assets/sdgs/sdg-17.png'
+
+const sdgLogos: Record<number, string> = {
+  1: sdg1, 2: sdg2, 3: sdg3, 4: sdg4, 5: sdg5, 6: sdg6, 7: sdg7,
+  8: sdg8, 9: sdg9, 10: sdg10, 11: sdg11, 12: sdg12, 13: sdg13,
+  14: sdg14, 15: sdg15, 16: sdg16, 17: sdg17
+}
+
 // Language toggle state: 'th' | 'en'
 const currentLang = ref<'th' | 'en'>('th')
 
-// Selected SDG goal (defaults to 1 like in the screenshot)
+// Selected SDG goal (default: 1 as per design mockup)
 const selectedGoalId = ref<number>(1)
 
 // Selected category filter
 const selectedCategory = ref<string>('all')
 
-// Selected goal object
+// Selected goal computed object
 const selectedGoal = computed<SdgGoal | undefined>(() => {
   return SDG_GOALS.find((g) => g.id === selectedGoalId.value)
 })
 
-// Filtered activities for current goal
+// Filtered activities for current selected goal
 const filteredActivities = computed<SdgActivity[]>(() => {
   let list = SDG_ACTIVITIES.filter((a) => a.sdgId === selectedGoalId.value)
   if (selectedCategory.value !== 'all') {
@@ -30,16 +55,15 @@ const filteredActivities = computed<SdgActivity[]>(() => {
   return list
 })
 
-// All activities count for current goal
+// Total count of activities for current goal
 const goalActivitiesTotal = computed<number>(() => {
   return SDG_ACTIVITIES.filter((a) => a.sdgId === selectedGoalId.value).length
 })
 
-// Handle selecting a goal
+// Handle selecting a goal with smooth scroll
 const selectGoal = (id: number) => {
   selectedGoalId.value = id
   selectedCategory.value = 'all'
-  // Smooth scroll to activities section
   const section = document.getElementById('sdg-activities-section')
   if (section) {
     section.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -48,45 +72,42 @@ const selectGoal = (id: number) => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-50/60 pb-20">
-    <!-- Top Hero Banner (Deep Forest Green with Subtle Triangle Pattern) -->
-    <div class="relative bg-[#104727] text-white pt-10 pb-16 sm:pb-20 overflow-hidden">
-      <!-- Subtle geometric / triangular decorative SVG pattern -->
-      <div class="absolute inset-0 opacity-[0.07] pointer-events-none" style="background-image: radial-gradient(#fff 1.5px, transparent 1.5px), radial-gradient(#fff 1.5px, #104727 1.5px); background-size: 36px 36px; background-position: 0 0, 18px 18px;" />
-      
-      <!-- Ambient light glows -->
+  <div class="min-h-screen bg-slate-50/70 pb-24 text-slate-800 antialiased">
+    <!-- Top Hero Banner (Minimal Dark Green with subtle organic glow) -->
+    <section class="relative bg-[#0E351E] text-white pt-10 sm:pt-14 pb-20 sm:pb-24 overflow-hidden">
+      <!-- Minimal subtle ambient gradient -->
       <div class="pointer-events-none absolute inset-0">
-        <div class="absolute -top-24 -left-20 w-96 h-96 rounded-full bg-emerald-500/20 blur-3xl" />
-        <div class="absolute -bottom-20 right-0 w-80 h-80 rounded-full bg-emerald-300/15 blur-3xl" />
+        <div class="absolute -top-32 -left-32 w-[32rem] h-[32rem] rounded-full bg-emerald-600/15 blur-3xl" />
+        <div class="absolute -bottom-24 right-0 w-[28rem] h-[28rem] rounded-full bg-emerald-400/10 blur-3xl" />
       </div>
 
       <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
           <!-- Banner Title & Subtitle -->
           <div>
-            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white mb-1.5 drop-shadow-xs">
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white mb-2">
               {{ currentLang === 'th' ? 'เป้าหมายการพัฒนาที่ยั่งยืน (SDGs)' : 'Sustainable Development Goals (SDGs)' }}
             </h1>
-            <p class="text-emerald-100/85 text-xs sm:text-sm font-medium">
+            <p class="text-emerald-200/90 text-xs sm:text-sm font-medium tracking-wide">
               {{ currentLang === 'th' ? 'คณะครุศาสตร์ มหาวิทยาลัยราชภัฏราชนครินทร์' : 'Faculty of Education, Rajabhat Rajanagarinda University' }}
             </p>
           </div>
 
-          <!-- Language Toggle Pill (TH | EN) -->
+          <!-- Minimal Language Switcher Pill (TH | EN) -->
           <div class="self-start sm:self-center shrink-0">
-            <div class="inline-flex items-center p-1 rounded-full bg-[#0b331c]/80 border border-emerald-600/40 backdrop-blur-md shadow-inner">
+            <div class="inline-flex items-center p-0.5 rounded-full bg-black/25 border border-white/15 backdrop-blur-md">
               <button
                 type="button"
-                class="px-3.5 py-1 text-xs font-bold rounded-full transition-all duration-200 cursor-pointer"
-                :class="currentLang === 'th' ? 'bg-white text-[#104727] shadow-sm' : 'text-emerald-200/90 hover:text-white'"
+                class="px-3.5 py-1 text-xs font-semibold rounded-full transition-all duration-150 cursor-pointer"
+                :class="currentLang === 'th' ? 'bg-white text-[#0E351E] shadow-sm font-bold' : 'text-emerald-100/80 hover:text-white'"
                 @click="currentLang = 'th'"
               >
                 TH
               </button>
               <button
                 type="button"
-                class="px-3.5 py-1 text-xs font-bold rounded-full transition-all duration-200 cursor-pointer"
-                :class="currentLang === 'en' ? 'bg-white text-[#104727] shadow-sm' : 'text-emerald-200/90 hover:text-white'"
+                class="px-3.5 py-1 text-xs font-semibold rounded-full transition-all duration-150 cursor-pointer"
+                :class="currentLang === 'en' ? 'bg-white text-[#0E351E] shadow-sm font-bold' : 'text-emerald-100/80 hover:text-white'"
                 @click="currentLang = 'en'"
               >
                 EN
@@ -95,78 +116,73 @@ const selectGoal = (id: number) => {
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Main Container -->
+    <!-- Main Content Container -->
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <!-- White Explanation Card ("SDGs คืออะไร?") -->
-      <div class="relative -mt-10 sm:-mt-12 mb-12 sm:mb-16 z-20">
-        <div class="bg-white rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-900/7 border border-slate-100 p-6 sm:p-8 lg:p-10 transition-all">
+      <!-- White Overview Card ("SDGs คืออะไร?") -->
+      <section class="relative -mt-12 sm:-mt-16 mb-12 sm:mb-16 z-20">
+        <div class="bg-white rounded-2xl sm:rounded-3xl shadow-lg shadow-slate-900/5 border border-slate-100/90 p-6 sm:p-8 lg:p-10 transition-all">
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
             <!-- Left: Text Content -->
             <div class="lg:col-span-7">
-              <h2 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#104727] mb-4 tracking-tight leading-snug">
+              <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-[#0E351E] mb-3.5 tracking-tight leading-snug">
                 {{ currentLang === 'th' ? 'เป้าหมายการพัฒนาที่ยั่งยืน (SDGs) คืออะไร?' : 'What are the Sustainable Development Goals (SDGs)?' }}
               </h2>
               <p class="text-slate-600 text-sm sm:text-base leading-relaxed font-normal text-justify">
                 {{ currentLang === 'th'
                   ? 'เป้าหมายการพัฒนาที่ยั่งยืน (Sustainable Development Goals: SDGs) เป็นเป้าหมายร่วมกันระดับโลกที่ได้รับการรับรองจากองค์การสหประชาชาติ (UN) เพื่อเป็นแนวทางในการขจัดความยากจน ปกป้องโลก และสร้างหลักประกันว่าทุกคนจะได้รับความสันติสุขและความมั่งคั่งภายในปี 2573 โดยมีเป้าหมายทั้งหมด 17 ข้อ ครอบคลุมทั้งมิติเศรษฐกิจ สังคม และสิ่งแวดล้อมอย่างรอบด้าน'
-                  : 'The Sustainable Development Goals (SDGs) are a universal call to action adopted by the United Nations to end poverty, protect the planet, and ensure that by 2030 all people enjoy peace and prosperity. The 17 SDGs are integrated—they recognize that action in one area will affect outcomes in others, and that development must balance social, economic and environmental sustainability.'
+                  : 'The Sustainable Development Goals (SDGs) are a universal call to action adopted by the United Nations to end poverty, protect the planet, and ensure that by 2030 all people enjoy peace and prosperity. The 17 integrated goals balance social, economic and environmental sustainability.'
                 }}
               </p>
 
-              <div class="mt-5 flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 text-xs text-slate-500">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 font-semibold border border-emerald-100">
-                  <v-icon icon="mdi-shield-check" size="14" />
-                  <span>17 Goals for Sustainable Future</span>
+              <!-- Minimal Info Tags -->
+              <div class="mt-5 flex flex-wrap items-center gap-2 pt-4 border-t border-slate-100 text-xs text-slate-500">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-50 text-slate-600 font-medium border border-slate-200/80">
+                  <v-icon icon="mdi-earth" size="14" class="text-emerald-700" />
+                  <span>17 Global Goals (2016-2030)</span>
                 </span>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-semibold border border-blue-100">
-                  <v-icon icon="mdi-school" size="14" />
-                  <span>Faculty of Education RRU</span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-50 text-slate-600 font-medium border border-slate-200/80">
+                  <v-icon icon="mdi-school-outline" size="14" class="text-emerald-700" />
+                  <span>Education for Sustainable Future</span>
                 </span>
               </div>
             </div>
 
-            <!-- Right: Image of Hands Holding Seedling with Solar/Windmills -->
+            <!-- Right: Real Image with Minimal Frame -->
             <div class="lg:col-span-5">
-              <div class="relative overflow-hidden rounded-xl sm:rounded-2xl shadow-lg group">
+              <div class="relative overflow-hidden rounded-xl sm:rounded-2xl shadow-sm border border-slate-100 group">
                 <img
                   :src="sdgsHeroPlant"
                   alt="ภาพสัญลักษณ์ความยั่งยืน มือโอบอุ้มต้นกล้าและพลังงานสะอาด"
-                  class="w-full h-56 sm:h-64 lg:h-64 object-cover object-center transform group-hover:scale-105 transition-transform duration-500 ease-out"
+                  class="w-full h-56 sm:h-64 object-cover object-center group-hover:scale-102 transition-transform duration-500 ease-out"
                 />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60" />
-                <div class="absolute bottom-3 left-3 right-3 text-white text-[11px] font-medium bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20">
-                  🌱 มุ่งสู่อนาคตที่ยั่งยืนผ่านพลังการศึกษาและการพัฒนาท้องถิ่น
-                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       <!-- Section Title: "คลิกที่เป้าหมายเพื่อแสดงข่าวสารและกิจกรรมที่เกี่ยวข้อง" -->
-      <div class="text-center mb-8 sm:mb-10">
+      <section class="text-center mb-8 sm:mb-10">
         <h3 class="text-lg sm:text-xl md:text-2xl font-bold text-slate-800 tracking-tight">
           {{ currentLang === 'th' ? 'คลิกที่เป้าหมายเพื่อแสดงข่าวสารและกิจกรรมที่เกี่ยวข้อง' : 'Click on a goal to explore related news and activities' }}
         </h3>
-        <!-- Green indicator bar -->
-        <div class="w-16 h-1 bg-[#104727] rounded-full mx-auto mt-2.5" />
-      </div>
+        <div class="w-12 h-1 bg-[#0E351E] rounded-full mx-auto mt-2.5 opacity-90" />
+      </section>
 
-      <!-- 17 SDG Tiles Grid (Arranged precisely like the screenshot) -->
-      <div class="mb-14 sm:mb-16">
-        <!-- Row 1: Goals 1 to 11 on large screen -->
-        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-11 gap-2.5 sm:gap-3 mb-2.5 sm:mb-3">
+      <!-- 17 Official UN SDG Logos Grid (Arranged cleanly like the mockup) -->
+      <section class="mb-14 sm:mb-16">
+        <!-- Row 1: Goals 1 to 11 on desktop -->
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-11 gap-2 sm:gap-2.5 mb-2 sm:mb-2.5">
           <button
             v-for="goal in SDG_GOALS.slice(0, 11)"
             :key="goal.id"
             type="button"
-            class="group relative aspect-square rounded-xl sm:rounded-2xl p-2 sm:p-2.5 flex flex-col justify-between text-left transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md hover:-translate-y-1 select-none border-0"
-            :style="{ backgroundColor: goal.color, color: goal.textColor }"
+            class="group relative aspect-square rounded-xl sm:rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer shadow-xs hover:shadow-md hover:-translate-y-0.5 select-none border-0 p-0 bg-white"
             :class="[
               selectedGoalId === goal.id
-                ? 'ring-4 ring-offset-2 ring-emerald-600 scale-[1.03] z-10 shadow-lg'
+                ? 'ring-4 ring-offset-2 ring-emerald-600 scale-[1.04] z-10 shadow-lg'
                 : 'opacity-95 hover:opacity-100'
             ]"
             :aria-label="goal.titleTh"
@@ -175,39 +191,31 @@ const selectGoal = (id: number) => {
             <!-- Checkmark badge when active -->
             <div
               v-if="selectedGoalId === goal.id"
-              class="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-white text-emerald-700 shadow-md flex items-center justify-center border-2 border-emerald-600 z-20 animate-scale-in"
+              class="absolute top-1 right-1 w-5 h-5 sm:w-5.5 sm:h-5.5 rounded-full bg-white text-emerald-700 shadow-md flex items-center justify-center border-2 border-emerald-600 z-20"
             >
-              <v-icon icon="mdi-check-bold" size="13" />
+              <v-icon icon="mdi-check-bold" size="11" />
             </div>
 
-            <!-- Goal Number + Title -->
-            <div class="leading-none">
-              <span class="text-base sm:text-lg font-black tracking-tight block">
-                {{ goal.numberStr }}
-              </span>
-              <span class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-tight block mt-0.5 line-clamp-2 leading-tight">
-                {{ goal.titleEn }}
-              </span>
-            </div>
-
-            <!-- Pictogram SVG -->
-            <div class="self-center my-auto w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
-              <svg viewBox="0 0 48 48" class="w-full h-full fill-current" v-html="goal.svgIcon" />
-            </div>
+            <!-- Official UN SDG Logo Image -->
+            <img
+              :src="sdgLogos[goal.id]"
+              :alt="goal.titleEn"
+              class="w-full h-full object-cover rounded-xl sm:rounded-2xl"
+              loading="lazy"
+            />
           </button>
         </div>
 
-        <!-- Row 2: Goals 12 to 17 on large screen -->
-        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5 sm:gap-3 max-w-[calc(6/11*100%)] max-lg:max-w-none">
+        <!-- Row 2: Goals 12 to 17 on desktop -->
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 sm:gap-2.5 max-w-[calc(6/11*100%)] max-lg:max-w-none">
           <button
             v-for="goal in SDG_GOALS.slice(11, 17)"
             :key="goal.id"
             type="button"
-            class="group relative aspect-square rounded-xl sm:rounded-2xl p-2 sm:p-2.5 flex flex-col justify-between text-left transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md hover:-translate-y-1 select-none border-0"
-            :style="{ backgroundColor: goal.color, color: goal.textColor }"
+            class="group relative aspect-square rounded-xl sm:rounded-2xl overflow-hidden transition-all duration-200 cursor-pointer shadow-xs hover:shadow-md hover:-translate-y-0.5 select-none border-0 p-0 bg-white"
             :class="[
               selectedGoalId === goal.id
-                ? 'ring-4 ring-offset-2 ring-emerald-600 scale-[1.03] z-10 shadow-lg'
+                ? 'ring-4 ring-offset-2 ring-emerald-600 scale-[1.04] z-10 shadow-lg'
                 : 'opacity-95 hover:opacity-100'
             ]"
             :aria-label="goal.titleTh"
@@ -216,70 +224,69 @@ const selectGoal = (id: number) => {
             <!-- Checkmark badge when active -->
             <div
               v-if="selectedGoalId === goal.id"
-              class="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-white text-emerald-700 shadow-md flex items-center justify-center border-2 border-emerald-600 z-20 animate-scale-in"
+              class="absolute top-1 right-1 w-5 h-5 sm:w-5.5 sm:h-5.5 rounded-full bg-white text-emerald-700 shadow-md flex items-center justify-center border-2 border-emerald-600 z-20"
             >
-              <v-icon icon="mdi-check-bold" size="13" />
+              <v-icon icon="mdi-check-bold" size="11" />
             </div>
 
-            <!-- Goal Number + Title -->
-            <div class="leading-none">
-              <span class="text-base sm:text-lg font-black tracking-tight block">
-                {{ goal.numberStr }}
-              </span>
-              <span class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-tight block mt-0.5 line-clamp-2 leading-tight">
-                {{ goal.titleEn }}
-              </span>
-            </div>
-
-            <!-- Pictogram SVG -->
-            <div class="self-center my-auto w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
-              <svg viewBox="0 0 48 48" class="w-full h-full fill-current" v-html="goal.svgIcon" />
-            </div>
+            <!-- Official UN SDG Logo Image -->
+            <img
+              :src="sdgLogos[goal.id]"
+              :alt="goal.titleEn"
+              class="w-full h-full object-cover rounded-xl sm:rounded-2xl"
+              loading="lazy"
+            />
           </button>
         </div>
-      </div>
+      </section>
 
       <!-- Selected Goal News & Activities Section -->
-      <div id="sdg-activities-section" class="scroll-mt-28">
-        <!-- Active Goal Banner Card -->
+      <section id="sdg-activities-section" class="scroll-mt-28">
+        <!-- Minimal Active Goal Summary Card -->
         <div
           v-if="selectedGoal"
-          class="rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-white shadow-xl transition-all duration-300 mb-8 relative overflow-hidden"
-          :style="{ backgroundColor: selectedGoal.color }"
+          class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-6 mb-8 transition-all duration-200"
         >
-          <!-- Background decoration -->
-          <div class="absolute right-0 bottom-0 opacity-15 pointer-events-none translate-x-8 translate-y-8">
-            <svg viewBox="0 0 48 48" class="w-64 h-64 fill-white" v-html="selectedGoal.svgIcon" />
-          </div>
-
-          <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div class="flex items-start sm:items-center gap-4">
-              <!-- Big Icon -->
-              <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shrink-0 p-3 shadow-inner">
-                <svg viewBox="0 0 48 48" class="w-full h-full fill-white" v-html="selectedGoal.svgIcon" />
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+            <div class="flex items-center gap-4">
+              <!-- Real Official SDG Icon Thumbnail -->
+              <div class="w-18 h-18 sm:w-20 sm:h-20 shrink-0 rounded-xl overflow-hidden shadow-xs border border-slate-100">
+                <img
+                  :src="sdgLogos[selectedGoal.id]"
+                  :alt="selectedGoal.titleEn"
+                  class="w-full h-full object-cover"
+                />
               </div>
 
-              <!-- Titles -->
-              <div>
-                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-bold uppercase tracking-wider mb-1.5">
-                  <span>SDG GOAL {{ selectedGoal.numberStr }}</span>
+              <!-- Title & Description -->
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <span
+                    class="px-2.5 py-0.5 rounded-md text-[11px] font-bold text-white uppercase tracking-wider"
+                    :style="{ backgroundColor: selectedGoal.color }"
+                  >
+                    GOAL {{ selectedGoal.numberStr }}
+                  </span>
+                  <span class="text-xs font-semibold text-slate-400">
+                    {{ selectedGoal.titleEn }}
+                  </span>
                 </div>
-                <h4 class="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight leading-tight">
+                <h4 class="text-lg sm:text-xl font-bold text-slate-900 leading-snug">
                   {{ currentLang === 'th' ? selectedGoal.titleTh : selectedGoal.titleEn }}
                 </h4>
-                <p class="text-white/90 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">
+                <p class="text-slate-500 text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">
                   {{ currentLang === 'th' ? selectedGoal.descTh : selectedGoal.descEn }}
                 </p>
               </div>
             </div>
 
-            <!-- Stats Badge -->
-            <div class="shrink-0 flex items-center gap-3">
-              <div class="px-4 py-2 rounded-xl bg-black/20 backdrop-blur-md border border-white/20 text-center">
-                <span class="text-xl sm:text-2xl font-black block leading-none">
+            <!-- Counter Pill -->
+            <div class="shrink-0 flex items-center sm:self-center">
+              <div class="px-4 py-2 rounded-xl bg-slate-50 border border-slate-200/80 text-center min-w-[120px]">
+                <span class="text-xl font-extrabold text-[#0E351E] block leading-none">
                   {{ goalActivitiesTotal }}
                 </span>
-                <span class="text-[10px] text-white/80 uppercase font-semibold">
+                <span class="text-[10px] text-slate-500 font-medium mt-0.5 block">
                   {{ currentLang === 'th' ? 'กิจกรรมที่เกี่ยวข้อง' : 'Activities' }}
                 </span>
               </div>
@@ -293,41 +300,41 @@ const selectGoal = (id: number) => {
             <span class="text-sm font-bold text-slate-800">
               {{ currentLang === 'th' ? 'ข่าวสารและโครงการที่เกี่ยวข้อง' : 'Related News & Projects' }}
             </span>
-            <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold">
-              {{ filteredActivities.length }} รายการ
+            <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-semibold">
+              {{ filteredActivities.length }} {{ currentLang === 'th' ? 'รายการ' : 'items' }}
             </span>
           </div>
 
-          <!-- Category filter buttons -->
+          <!-- Minimal Category Filter Pills -->
           <div class="flex flex-wrap gap-1.5">
             <button
               type="button"
-              class="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer"
-              :class="selectedCategory === 'all' ? 'bg-[#104727] text-white font-semibold shadow-xs' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+              class="px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-150 cursor-pointer"
+              :class="selectedCategory === 'all' ? 'bg-[#0E351E] text-white shadow-xs font-semibold' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/90'"
               @click="selectedCategory = 'all'"
             >
               {{ currentLang === 'th' ? 'ทั้งหมด' : 'All' }}
             </button>
             <button
               type="button"
-              class="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer"
-              :class="selectedCategory === 'บริการวิชาการ' ? 'bg-[#104727] text-white font-semibold shadow-xs' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+              class="px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-150 cursor-pointer"
+              :class="selectedCategory === 'บริการวิชาการ' ? 'bg-[#0E351E] text-white shadow-xs font-semibold' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/90'"
               @click="selectedCategory = 'บริการวิชาการ'"
             >
               {{ currentLang === 'th' ? 'บริการวิชาการ' : 'Academic Service' }}
             </button>
             <button
               type="button"
-              class="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer"
-              :class="selectedCategory === 'วิจัย' ? 'bg-[#104727] text-white font-semibold shadow-xs' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+              class="px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-150 cursor-pointer"
+              :class="selectedCategory === 'วิจัย' ? 'bg-[#0E351E] text-white shadow-xs font-semibold' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/90'"
               @click="selectedCategory = 'วิจัย'"
             >
               {{ currentLang === 'th' ? 'งานวิจัย & นวัตกรรม' : 'Research & Innovation' }}
             </button>
             <button
               type="button"
-              class="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer"
-              :class="selectedCategory === 'กิจกรรม' ? 'bg-[#104727] text-white font-semibold shadow-xs' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'"
+              class="px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-150 cursor-pointer"
+              :class="selectedCategory === 'กิจกรรม' ? 'bg-[#0E351E] text-white shadow-xs font-semibold' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/90'"
               @click="selectedCategory = 'กิจกรรม'"
             >
               {{ currentLang === 'th' ? 'กิจกรรมพัฒนานักศึกษา' : 'Student Activities' }}
@@ -335,109 +342,92 @@ const selectGoal = (id: number) => {
           </div>
         </div>
 
-        <!-- Activities Grid -->
-        <div v-if="filteredActivities.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Activities Grid (Clean & Minimalist cards) -->
+        <div v-if="filteredActivities.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           <article
             v-for="act in filteredActivities"
             :key="act.id"
-            class="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col group"
+            class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs hover:shadow-md transition-all duration-200 flex flex-col group"
           >
             <!-- Card Image -->
-            <div class="relative h-48 overflow-hidden bg-slate-100">
+            <div class="relative h-44 overflow-hidden bg-slate-100">
               <img
                 :src="act.image"
                 :alt="act.titleTh"
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                class="w-full h-full object-cover group-hover:scale-103 transition-transform duration-500"
                 loading="lazy"
               />
-              <div class="absolute top-3 left-3 flex flex-wrap gap-1.5">
+              <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
                 <span
-                  class="px-2.5 py-1 rounded-md text-[11px] font-bold text-white shadow-xs backdrop-blur-md"
-                  :style="{ backgroundColor: selectedGoal?.color || '#104727' }"
+                  class="px-2 py-0.5 rounded-md text-[10px] font-bold text-white shadow-xs"
+                  :style="{ backgroundColor: selectedGoal?.color || '#0E351E' }"
                 >
                   SDG {{ selectedGoal?.numberStr }}
                 </span>
-                <span class="px-2.5 py-1 rounded-md text-[11px] font-medium bg-black/60 text-white backdrop-blur-md">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-black/60 text-white backdrop-blur-md">
                   {{ currentLang === 'th' ? act.categoryTh : act.categoryEn }}
                 </span>
               </div>
             </div>
 
             <!-- Card Body -->
-            <div class="p-5 flex-1 flex flex-col justify-between">
+            <div class="p-4 sm:p-5 flex-1 flex flex-col justify-between">
               <div>
-                <div class="flex items-center gap-2 text-xs text-slate-500 mb-2.5">
-                  <v-icon icon="mdi-calendar-clock" size="14" class="text-slate-400" />
+                <div class="flex items-center gap-1.5 text-[11px] text-slate-400 mb-2">
+                  <v-icon icon="mdi-calendar-blank-outline" size="13" />
                   <span>{{ act.date }}</span>
-                  <span class="text-slate-300">•</span>
+                  <span>•</span>
                   <span class="truncate">{{ act.author }}</span>
                 </div>
 
-                <h5 class="text-base font-bold text-slate-800 group-hover:text-emerald-700 transition-colors leading-snug mb-2 line-clamp-2">
+                <h5 class="text-sm sm:text-base font-bold text-slate-800 group-hover:text-emerald-700 transition-colors leading-snug mb-2 line-clamp-2">
                   {{ currentLang === 'th' ? act.titleTh : act.titleEn }}
                 </h5>
 
-                <p class="text-xs sm:text-sm text-slate-600 line-clamp-3 leading-relaxed">
+                <p class="text-xs text-slate-500 line-clamp-3 leading-relaxed">
                   {{ currentLang === 'th' ? act.summaryTh : act.summaryEn }}
                 </p>
               </div>
 
               <!-- Card Action -->
-              <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+              <div class="pt-3.5 mt-3.5 border-t border-slate-100 flex items-center justify-between text-xs">
                 <span class="font-semibold text-emerald-700 flex items-center gap-1 group-hover:gap-1.5 transition-all">
-                  {{ currentLang === 'th' ? 'อ่านรายละเอียดเพิ่มเติม' : 'Read more' }}
-                  <v-icon icon="mdi-arrow-right" size="14" />
+                  {{ currentLang === 'th' ? 'อ่านรายละเอียด' : 'Read more' }}
+                  <v-icon icon="mdi-arrow-right" size="13" />
                 </span>
-                <span class="text-[11px] text-slate-400 font-medium">คณะครุศาสตร์</span>
+                <span class="text-[10px] text-slate-400">คณะครุศาสตร์</span>
               </div>
             </div>
           </article>
         </div>
 
-        <!-- Empty State if no activities for selected filter/goal -->
+        <!-- Empty State (Clean Minimalist) -->
         <div
           v-else
-          class="bg-white rounded-2xl border border-slate-200/90 p-10 text-center my-6"
+          class="bg-white rounded-2xl border border-slate-200/80 p-8 sm:p-10 text-center my-6 shadow-xs"
         >
-          <div class="w-16 h-16 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto mb-4">
-            <v-icon icon="mdi-sprout-outline" size="32" />
+          <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center mx-auto mb-3">
+            <v-icon icon="mdi-leaf" size="24" class="text-emerald-700" />
           </div>
-          <h5 class="text-base sm:text-lg font-bold text-slate-800 mb-2">
-            {{ currentLang === 'th' ? 'อยู่ระหว่างการดำเนินโครงการและรวบรวมข้อมูล' : 'Initiatives Underway' }}
+          <h5 class="text-base font-bold text-slate-800 mb-1.5">
+            {{ currentLang === 'th' ? 'อยู่ระหว่างการดำเนินโครงการและรวบรวมข้อมูล' : 'Initiatives In Progress' }}
           </h5>
-          <p class="text-xs sm:text-sm text-slate-600 max-w-md mx-auto mb-6 leading-relaxed">
+          <p class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto mb-5 leading-relaxed">
             {{ currentLang === 'th'
-              ? 'คณะครุศาสตร์กำลังจัดเตรียมและดำเนินโครงการที่เกี่ยวข้องกับเป้าหมายนี้เพื่อขับเคลื่อนการศึกษาที่ยั่งยืน ท่านสามารถเลือกดูเป้าหมายอื่น ๆ หรืออ่านภาพรวม SDGs ได้'
-              : 'The Faculty of Education is actively planning and implementing initiatives supporting this goal. Feel free to explore other SDG goals.'
+              ? 'คณะครุศาสตร์กำลังจัดเตรียมและดำเนินโครงการที่เกี่ยวข้องกับเป้าหมายนี้เพื่อขับเคลื่อนการศึกษาที่ยั่งยืน ท่านสามารถเลือกดูเป้าหมายอื่น ๆ ได้'
+              : 'The Faculty of Education is actively conducting projects supporting this goal. Feel free to explore other goals.'
             }}
           </p>
           <button
             type="button"
-            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#104727] text-white text-xs sm:text-sm font-semibold hover:bg-emerald-800 transition-colors shadow-sm cursor-pointer"
+            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#0E351E] text-white text-xs font-semibold hover:bg-emerald-800 transition-colors shadow-xs cursor-pointer"
             @click="selectGoal(4)"
           >
-            <v-icon icon="mdi-school" size="16" />
-            <span>{{ currentLang === 'th' ? 'ดูตัวอย่างเป้าหมายที่ 4: การศึกษาที่มีคุณภาพ' : 'View Goal 4: Quality Education' }}</span>
+            <v-icon icon="mdi-school" size="14" />
+            <span>{{ currentLang === 'th' ? 'ดูเป้าหมายที่ 4: การศึกษาที่มีคุณภาพ' : 'View Goal 4: Quality Education' }}</span>
           </button>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 </template>
-
-<style scoped>
-@keyframes scaleIn {
-  0% {
-    transform: scale(0);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.animate-scale-in {
-  animation: scaleIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-</style>
