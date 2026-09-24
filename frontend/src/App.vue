@@ -309,7 +309,7 @@ const curriculumPrograms = [
                   <!-- 3-Column Balanced Grid -->
                   <div class="grid grid-cols-12 divide-x divide-slate-100">
                     <!-- Column 1: ข้อมูลและนโยบาย (col-span-4) -->
-                    <div class="col-span-4 p-4.5 space-y-3 flex flex-col justify-between">
+                    <div class="col-span-4 p-4.5 space-y-3">
                       <div>
                         <div class="flex items-center gap-2 pb-2.5 border-b border-slate-100">
                           <div class="w-6 h-6 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
@@ -343,7 +343,7 @@ const curriculumPrograms = [
                     </div>
 
                     <!-- Column 2: การบริหารและบุคลากร (col-span-4) -->
-                    <div class="col-span-4 p-4.5 space-y-3 flex flex-col justify-between">
+                    <div class="col-span-4 p-4.5 space-y-3">
                       <div>
                         <div class="flex items-center gap-2 pb-2.5 border-b border-slate-100">
                           <div class="w-6 h-6 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
@@ -374,25 +374,10 @@ const curriculumPrograms = [
                           </RouterLink>
                         </div>
                       </div>
-
-                      <!-- Bottom Action Pill for Perfect Visual Balance -->
-                      <div class="pt-1">
-                        <RouterLink
-                          to="/about/personnel"
-                          class="flex items-center justify-between px-3 py-2 rounded-xl bg-emerald-50/80 border border-emerald-200/70 text-emerald-900 hover:bg-emerald-100 transition-colors text-[11px] font-bold no-underline group"
-                          @click="aboutOpen = false"
-                        >
-                          <div class="flex items-center gap-1.5 min-w-0">
-                            <v-icon icon="mdi-badge-account-horizontal-outline" size="14" class="text-emerald-700 shrink-0" />
-                            <span class="truncate">ทำเนียบคณาจารย์ 11 สาขาวิชา</span>
-                          </div>
-                          <v-icon icon="mdi-arrow-right" size="13" class="text-emerald-700 group-hover:translate-x-0.5 transition-transform shrink-0" />
-                        </RouterLink>
-                      </div>
                     </div>
 
                     <!-- Column 3: หลักสูตรที่เปิดสอน (col-span-4) -->
-                    <div class="col-span-4 p-4.5 space-y-3 flex flex-col justify-between bg-slate-50/50">
+                    <div class="col-span-4 p-4.5 space-y-3 bg-slate-50/50">
                       <div>
                         <div class="flex items-center gap-2 pb-2.5 border-b border-slate-100">
                           <div class="w-6 h-6 rounded-md bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
@@ -422,21 +407,6 @@ const curriculumPrograms = [
                             </div>
                           </RouterLink>
                         </div>
-                      </div>
-
-                      <!-- Bottom Action Pill for Perfect Visual Balance -->
-                      <div class="pt-1">
-                        <RouterLink
-                          to="/curriculum/bachelor"
-                          class="flex items-center justify-between px-3 py-2 rounded-xl bg-blue-50/80 border border-blue-200/70 text-blue-900 hover:bg-blue-100 transition-colors text-[11px] font-bold no-underline group"
-                          @click="aboutOpen = false"
-                        >
-                          <div class="flex items-center gap-1.5 min-w-0">
-                            <v-icon icon="mdi-book-search-outline" size="14" class="text-blue-700 shrink-0" />
-                            <span class="truncate">รายละเอียดหลักสูตรทั้งหมด</span>
-                          </div>
-                          <v-icon icon="mdi-arrow-right" size="13" class="text-blue-700 group-hover:translate-x-0.5 transition-transform shrink-0" />
-                        </RouterLink>
                       </div>
                     </div>
                   </div>
