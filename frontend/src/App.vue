@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import Lenis from 'lenis'
 import 'lenis/dist/lenis.css'
@@ -19,6 +19,28 @@ let lenis: Lenis | null = null
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 40
 }
+
+// Ensure scroll resets to top immediately when route changes
+watch(
+  () => route.fullPath,
+  () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
+
+    if (lenis) {
+      lenis.scrollTo(0, { immediate: true })
+    }
+
+    nextTick(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+      if (lenis) {
+        lenis.scrollTo(0, { immediate: true })
+      }
+      isScrolled.value = false
+    })
+  }
+)
 
 onMounted(() => {
   // Initialize buttery-smooth inertia scrolling across the entire site

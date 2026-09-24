@@ -9,7 +9,7 @@ const router = createRouter({
     } else if (to.hash) {
       return { el: to.hash, behavior: 'smooth' }
     } else {
-      return { top: 0, behavior: 'smooth' }
+      return { top: 0, left: 0 }
     }
   },
   routes: [
@@ -123,6 +123,22 @@ const router = createRouter({
       component: () => import('../views/ContactView.vue'),
     },
   ],
+})
+
+router.afterEach((to, from) => {
+  if (to.path !== from.path || !to.hash) {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+      document.documentElement.scrollTop = 0
+      document.body.scrollTop = 0
+
+      // @ts-expect-error global lenis instance
+      if (window.__lenis) {
+        // @ts-expect-error global lenis instance
+        window.__lenis.scrollTo(0, { immediate: true })
+      }
+    }
+  }
 })
 
 export default router
