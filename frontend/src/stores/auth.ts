@@ -5,6 +5,7 @@ import { api } from '@/services/api'
 export interface User {
   id: number
   name: string
+  username?: string
   email: string
 }
 
@@ -17,7 +18,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isAuthenticated = computed(() => !!token.value)
 
-  async function login(credentials: { email: string; password: string }) {
+  async function login(credentials: { username: string; password: string }) {
     loading.value = true
     try {
       const data = await api.login(credentials)
@@ -27,10 +28,33 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('auth_user', JSON.stringify(data.user))
       return { success: true, message: data.message }
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'การเข้าสู่ระบบล้มเหลว กรุณาตรวจสอบอีเมลและรหัสผ่าน'
+      const msg = err.response?.data?.message || 'การเข้าสู่ระบบล้มเหลว กรุณาตรวจสอบชื่อผู้ใช้งานและรหัสผ่าน'
       const status = err.response?.status
       const retryAfter = err.response?.data?.retry_after || (status === 429 ? 60 : 0)
       return { success: false, message: msg, status, retryAfter }
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function updateProfile(payload: {
+    name: string
+    username: string
+    email: string
+    current_password?: string
+    new_password?: string
+    new_password_confirmation?: string
+  }) {
+    loading.value = true
+    try {
+      const data = await api.updateProfile(payload)
+      user.value = data.user
+      localStorage.setItem('auth_user', JSON.stringify(data.user))
+      return { success: true, message: data.message, user: data.user }
+    } catch (err: any) {
+      const msg = err.response?.data?.message || 'บันทึกการตั้งค่าบัญชีไม่สำเร็จ'
+      const errors = err.response?.data?.errors || null
+      return { success: false, message: msg, errors }
     } finally {
       loading.value = false
     }
@@ -72,5 +96,6 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     logout,
     checkAuth,
+    updateProfile,
   }
 })

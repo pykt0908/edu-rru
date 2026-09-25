@@ -13,6 +13,90 @@ const handleLogout = async () => {
   router.push('/login')
 }
 
+// Admin Account Settings Modal State
+const settingsModalOpen = ref(false)
+const savingSettings = ref(false)
+const settingsSuccess = ref('')
+const settingsError = ref('')
+const showCurrentPassword = ref(false)
+const showNewPassword = ref(false)
+
+const settingsForm = ref({
+  name: '',
+  username: '',
+  email: '',
+  current_password: '',
+  new_password: '',
+  new_password_confirmation: '',
+})
+
+const openSettingsModal = () => {
+  settingsError.value = ''
+  settingsSuccess.value = ''
+  settingsForm.value = {
+    name: authStore.user?.name || '',
+    username: authStore.user?.username || '',
+    email: authStore.user?.email || '',
+    current_password: '',
+    new_password: '',
+    new_password_confirmation: '',
+  }
+  settingsModalOpen.value = true
+}
+
+const handleSaveSettings = async () => {
+  settingsError.value = ''
+  settingsSuccess.value = ''
+
+  if (!settingsForm.value.name.trim()) {
+    settingsError.value = 'กรุณากรอกชื่อ-นามสกุล'
+    return
+  }
+  if (!settingsForm.value.username.trim()) {
+    settingsError.value = 'กรุณากรอกชื่อผู้ใช้งาน (Username)'
+    return
+  }
+  if (!settingsForm.value.email.trim()) {
+    settingsError.value = 'กรุณากรอกอีเมล'
+    return
+  }
+  if (settingsForm.value.new_password) {
+    if (!settingsForm.value.current_password) {
+      settingsError.value = 'กรุณากรอกรหัสผ่านปัจจุบันเพื่อยืนยันการตั้งรหัสผ่านใหม่'
+      return
+    }
+    if (settingsForm.value.new_password.length < 6) {
+      settingsError.value = 'รหัสผ่านใหม่ต้องมีความยาวอย่างน้อย 6 ตัวอักษร'
+      return
+    }
+    if (settingsForm.value.new_password !== settingsForm.value.new_password_confirmation) {
+      settingsError.value = 'การยืนยันรหัสผ่านใหม่ไม่ตรงกัน'
+      return
+    }
+  }
+
+  savingSettings.value = true
+  const res = await authStore.updateProfile({
+    name: settingsForm.value.name.trim(),
+    username: settingsForm.value.username.trim(),
+    email: settingsForm.value.email.trim(),
+    current_password: settingsForm.value.current_password || undefined,
+    new_password: settingsForm.value.new_password || undefined,
+    new_password_confirmation: settingsForm.value.new_password_confirmation || undefined,
+  })
+  savingSettings.value = false
+
+  if (res.success) {
+    settingsSuccess.value = res.message || 'บันทึกการตั้งค่าบัญชีเรียบร้อยแล้ว'
+    // Clear password inputs
+    settingsForm.value.current_password = ''
+    settingsForm.value.new_password = ''
+    settingsForm.value.new_password_confirmation = ''
+  } else {
+    settingsError.value = res.message
+  }
+}
+
 // Collapse / Rail state (default false = open)
 const rail = ref(false)
 const mobileMenuOpen = ref(false)
@@ -157,14 +241,26 @@ const currentTitle = computed(() => {
         </button>
 
         <!-- User Profile Card -->
-        <div v-if="!rail" class="pt-2 border-t border-slate-800/60 flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shrink-0 shadow-sm">
-            <v-icon icon="mdi-shield-account" size="18" />
+        <div
+          v-if="!rail"
+          class="pt-2 border-t border-slate-800/60 flex items-center justify-between group cursor-pointer hover:bg-slate-900/60 p-2 rounded-xl transition-colors"
+          @click="openSettingsModal"
+          title="คลิกเพื่อตั้งค่าบัญชีผู้ดูแล"
+        >
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shrink-0 shadow-sm">
+              <v-icon icon="mdi-shield-account" size="18" />
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="text-xs font-bold text-white truncate">
+                {{ authStore.user?.name || 'ผู้ดูแลระบบ' }}
+              </div>
+              <div class="text-[10px] text-emerald-400 truncate">
+                {{ authStore.user?.username ? '@' + authStore.user.username : (authStore.user?.email || 'admin') }}
+              </div>
+            </div>
           </div>
-          <div class="min-w-0 flex-1">
-            <div class="text-xs font-bold text-white truncate">ผู้ดูแลระบบ (Admin)</div>
-            <div class="text-[10px] text-slate-400 truncate">admin@rru.ac.th</div>
-          </div>
+          <v-icon icon="mdi-cog-outline" size="16" class="text-slate-500 group-hover:text-emerald-400 transition-colors" />
         </div>
       </div>
     </aside>
@@ -226,18 +322,30 @@ const currentTitle = computed(() => {
                 <v-icon icon="mdi-account" size="18" />
               </button>
             </template>
-            <v-list density="compact" class="w-52 shadow-xl rounded-xl border border-slate-100 p-1">
+            <v-list density="compact" class="w-60 shadow-xl rounded-xl border border-slate-100 p-1">
+              <div class="px-3 py-2 border-b border-slate-100">
+                <div class="text-xs font-bold text-slate-800 truncate">
+                  {{ authStore.user?.name || 'ผู้ดูแลระบบ (Admin)' }}
+                </div>
+                <div class="text-[11px] text-emerald-600 font-semibold truncate">
+                  {{ authStore.user?.username ? '@' + authStore.user.username : '' }}
+                </div>
+                <div class="text-[10px] text-slate-400 truncate">
+                  {{ authStore.user?.email || 'admin@rru.ac.th' }}
+                </div>
+              </div>
               <v-list-item
-                :title="authStore.user?.name || 'ผู้ดูแลระบบ (Admin)'"
-                :subtitle="authStore.user?.email || 'admin@rru.ac.th'"
+                prepend-icon="mdi-account-cog-outline"
+                title="ตั้งค่าบัญชีผู้ดูแล"
+                @click="openSettingsModal"
               />
-              <v-divider class="my-1" />
               <v-list-item
                 prepend-icon="mdi-open-in-new"
                 title="หน้าเว็บหลัก"
                 to="/"
                 target="_blank"
               />
+              <v-divider class="my-1" />
               <v-list-item
                 prepend-icon="mdi-logout"
                 title="ออกจากระบบ"
@@ -254,6 +362,205 @@ const currentTitle = computed(() => {
         <router-view />
       </main>
     </div>
+
+    <!-- Admin Account Settings Dialog -->
+    <v-dialog v-model="settingsModalOpen" max-width="540" persistent>
+      <v-card class="rounded-2xl overflow-hidden border border-slate-200 shadow-2xl">
+        <!-- Dialog Header -->
+        <div class="bg-gradient-to-r from-emerald-800 to-teal-800 px-6 py-4 flex items-center justify-between text-white">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center">
+              <v-icon icon="mdi-account-cog" size="20" />
+            </div>
+            <div>
+              <h2 class="text-base font-bold leading-tight">ตั้งค่าบัญชีผู้ดูแล (Admin Settings)</h2>
+              <p class="text-xs text-emerald-200">แก้ไขข้อมูลโปรไฟล์ ชื่อผู้ใช้งาน และรหัสผ่าน</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="text-emerald-200 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+            @click="settingsModalOpen = false"
+          >
+            <v-icon icon="mdi-close" size="20" />
+          </button>
+        </div>
+
+        <form @submit.prevent="handleSaveSettings" class="p-6 space-y-5 bg-white">
+          <!-- Success Alert -->
+          <div
+            v-if="settingsSuccess"
+            class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2.5"
+          >
+            <v-icon icon="mdi-check-circle" size="18" class="text-emerald-600 shrink-0" />
+            <span class="font-medium">{{ settingsSuccess }}</span>
+          </div>
+
+          <!-- Error Alert -->
+          <div
+            v-if="settingsError"
+            class="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2.5"
+          >
+            <v-icon icon="mdi-alert-circle" size="18" class="text-rose-600 mt-0.5 shrink-0" />
+            <span class="font-medium">{{ settingsError }}</span>
+          </div>
+
+          <!-- Profile Info Section -->
+          <div class="space-y-4">
+            <div class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+              <v-icon icon="mdi-card-account-details-outline" size="16" class="text-emerald-700" />
+              <span>ข้อมูลทั่วไป</span>
+            </div>
+
+            <!-- Full Name -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                ชื่อ-นามสกุล / ชื่อผู้ดูแล <span class="text-rose-500">*</span>
+              </label>
+              <input
+                v-model="settingsForm.name"
+                type="text"
+                required
+                placeholder="Admin EDU RRU"
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-hidden focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 transition-all"
+              />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Username -->
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                  ชื่อผู้ใช้งาน (Username) <span class="text-rose-500">*</span>
+                </label>
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-xs font-bold">@</span>
+                  <input
+                    v-model="settingsForm.username"
+                    type="text"
+                    required
+                    placeholder="admin"
+                    class="w-full pl-8 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-hidden focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 transition-all"
+                  />
+                </div>
+                <p class="text-[10px] text-slate-400 mt-1">ใช้สำหรับเข้าสู่ระบบ</p>
+              </div>
+
+              <!-- Email -->
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                  อีเมล (Email) <span class="text-rose-500">*</span>
+                </label>
+                <input
+                  v-model="settingsForm.email"
+                  type="email"
+                  required
+                  placeholder="admin@rru.ac.th"
+                  class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-hidden focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 transition-all"
+                />
+                <p class="text-[10px] text-slate-400 mt-1">ใช้รับแจ้งเตือนหรือเข้าสู่ระบบ</p>
+              </div>
+            </div>
+          </div>
+
+          <v-divider />
+
+          <!-- Password Change Section -->
+          <div class="space-y-4">
+            <div class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+              <v-icon icon="mdi-shield-key-outline" size="16" class="text-emerald-700" />
+              <span>เปลี่ยนรหัสผ่าน (เว้นว่างไว้หากไม่ต้องการเปลี่ยน)</span>
+            </div>
+
+            <!-- Current Password -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                รหัสผ่านปัจจุบัน (Current Password)
+              </label>
+              <div class="relative">
+                <input
+                  v-model="settingsForm.current_password"
+                  :type="showCurrentPassword ? 'text' : 'password'"
+                  placeholder="กรอกรหัสผ่านปัจจุบันเพื่อยืนยัน"
+                  class="w-full px-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-hidden focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 transition-all"
+                />
+                <button
+                  type="button"
+                  @click="showCurrentPassword = !showCurrentPassword"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                  tabindex="-1"
+                >
+                  <v-icon :icon="showCurrentPassword ? 'mdi-eye-off-outline' : 'mdi-eye-outline'" size="16" />
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- New Password -->
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                  รหัสผ่านใหม่ (New Password)
+                </label>
+                <div class="relative">
+                  <input
+                    v-model="settingsForm.new_password"
+                    :type="showNewPassword ? 'text' : 'password'"
+                    placeholder="อย่างน้อย 6 ตัวอักษร"
+                    class="w-full px-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-hidden focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 transition-all"
+                  />
+                  <button
+                    type="button"
+                    @click="showNewPassword = !showNewPassword"
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                    tabindex="-1"
+                  >
+                    <v-icon :icon="showNewPassword ? 'mdi-eye-off-outline' : 'mdi-eye-outline'" size="16" />
+                  </button>
+                </div>
+              </div>
+
+              <!-- Confirm New Password -->
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                  ยืนยันรหัสผ่านใหม่
+                </label>
+                <input
+                  v-model="settingsForm.new_password_confirmation"
+                  :type="showNewPassword ? 'text' : 'password'"
+                  placeholder="กรอกรหัสผ่านใหม่อีกครั้ง"
+                  class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-hidden focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 transition-all"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Dialog Actions -->
+          <div class="pt-3 flex items-center justify-end gap-2.5 border-t border-slate-100">
+            <button
+              type="button"
+              class="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+              @click="settingsModalOpen = false"
+            >
+              ยกเลิก
+            </button>
+            <button
+              type="submit"
+              :disabled="savingSettings"
+              class="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white text-xs font-bold shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              <v-progress-circular
+                v-if="savingSettings"
+                indeterminate
+                color="white"
+                size="16"
+                width="2"
+              />
+              <v-icon v-else icon="mdi-content-save-outline" size="16" />
+              <span>{{ savingSettings ? 'กำลังบันทึก...' : 'บันทึกการเปลี่ยนแปลง' }}</span>
+            </button>
+          </div>
+        </form>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 

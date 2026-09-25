@@ -62,7 +62,7 @@ departments.forEach((dept) => {
 
 export const api = {
   // Authentication
-  async login(credentials: { email: string; password: string }) {
+  async login(credentials: { username: string; password: string }) {
     const response = await apiClient.post('/login', credentials)
     return response.data
   },
@@ -72,6 +72,17 @@ export const api = {
   },
   async getMe() {
     const response = await apiClient.get('/me')
+    return response.data
+  },
+  async updateProfile(data: {
+    name: string
+    username: string
+    email: string
+    current_password?: string
+    new_password?: string
+    new_password_confirmation?: string
+  }) {
+    const response = await apiClient.put('/me', data)
     return response.data
   },
 
