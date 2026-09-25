@@ -64,8 +64,9 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-stretch bg-slate-900 font-sans selection:bg-emerald-500 selection:text-white">
-    <!-- Left Hero Brand Column (Visible on lg screens) -->
+  <v-app class="!bg-slate-900 !min-h-screen">
+    <div class="min-h-screen flex items-stretch bg-slate-900 font-sans selection:bg-emerald-500 selection:text-white">
+      <!-- Left Hero Brand Column (Visible on lg screens) -->
     <div
       class="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-emerald-950 via-[#064e3b] to-teal-950 p-12 flex-col justify-between overflow-hidden text-white border-r border-emerald-900/50"
     >
@@ -349,5 +350,6 @@ const handleLogin = async () => {
         </v-btn>
       </v-card>
     </v-dialog>
-  </div>
+    </div>
+  </v-app>
 </template>

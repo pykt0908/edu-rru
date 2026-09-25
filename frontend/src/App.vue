@@ -6,7 +6,7 @@ import AppFooter from '@/components/AppFooter.vue'
 
 const route = useRoute()
 const isAboutActive = computed(() => route.path.startsWith('/about') || route.path.startsWith('/curriculum'))
-const isAdminRoute = computed(() => route.path.startsWith('/admin'))
+const isStandaloneRoute = computed(() => route.path.startsWith('/admin') || route.path.startsWith('/login'))
 
 const drawer = ref(false)
 const isScrolled = ref(false)
@@ -77,8 +77,8 @@ const curriculumPrograms = [
 </script>
 
 <template>
-  <!-- Backoffice Admin Mode: has its own root v-app in AdminLayout -->
-  <RouterView v-if="isAdminRoute" />
+  <!-- Standalone Mode (Backoffice Admin & Login Page): has its own layout without public navbar/footer -->
+  <RouterView v-if="isStandaloneRoute" />
 
   <!-- Public Portal Mode: standard portal v-app -->
   <v-app v-else>
