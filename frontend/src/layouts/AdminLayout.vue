@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useRouter, useRoute, RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { api } from '@/services/api'
 import eduLogo from '@/assets/logos/edu-logo-border-white.png'
 
 const router = useRouter()
@@ -76,24 +77,40 @@ const handleSaveSettings = async () => {
   }
 
   savingSettings.value = true
-  const res = await authStore.updateProfile({
-    name: settingsForm.value.name.trim(),
-    username: settingsForm.value.username.trim(),
-    email: settingsForm.value.email.trim(),
-    current_password: settingsForm.value.current_password || undefined,
-    new_password: settingsForm.value.new_password || undefined,
-    new_password_confirmation: settingsForm.value.new_password_confirmation || undefined,
-  })
-  savingSettings.value = false
+  try {
+    const payload = {
+      name: settingsForm.value.name.trim(),
+      username: settingsForm.value.username.trim(),
+      email: settingsForm.value.email.trim(),
+      current_password: settingsForm.value.current_password || undefined,
+      new_password: settingsForm.value.new_password || undefined,
+      new_password_confirmation: settingsForm.value.new_password_confirmation || undefined,
+    }
 
-  if (res.success) {
-    settingsSuccess.value = res.message || 'บันทึกการตั้งค่าบัญชีเรียบร้อยแล้ว'
-    // Clear password inputs
-    settingsForm.value.current_password = ''
-    settingsForm.value.new_password = ''
-    settingsForm.value.new_password_confirmation = ''
-  } else {
-    settingsError.value = res.message
+    let res: any
+    if (typeof (authStore as any).updateProfile === 'function') {
+      res = await authStore.updateProfile(payload)
+    } else {
+      const data = await api.updateProfile(payload)
+      authStore.user = data.user
+      localStorage.setItem('auth_user', JSON.stringify(data.user))
+      res = { success: true, message: data.message, user: data.user }
+    }
+
+    if (res.success) {
+      settingsSuccess.value = res.message || 'บันทึกการตั้งค่าบัญชีเรียบร้อยแล้ว'
+      // Clear password inputs
+      settingsForm.value.current_password = ''
+      settingsForm.value.new_password = ''
+      settingsForm.value.new_password_confirmation = ''
+    } else {
+      settingsError.value = res.message
+    }
+  } catch (err: any) {
+    const msg = err.response?.data?.message || 'บันทึกการตั้งค่าบัญชีไม่สำเร็จ'
+    settingsError.value = msg
+  } finally {
+    savingSettings.value = false
   }
 }
 
