@@ -14,6 +14,21 @@ const showPassword = ref(false)
 const rememberMe = ref(true)
 const errorMessage = ref('')
 const showForgotDialog = ref(false)
+const lockoutSeconds = ref(0)
+let timerInterval: any = null
+
+const startLockoutTimer = (seconds: number) => {
+  lockoutSeconds.value = seconds
+  if (timerInterval) clearInterval(timerInterval)
+  timerInterval = setInterval(() => {
+    if (lockoutSeconds.value > 0) {
+      lockoutSeconds.value--
+    } else {
+      clearInterval(timerInterval)
+      errorMessage.value = ''
+    }
+  }, 1000)
+}
 
 // Fill test credentials for quick review
 const fillDemoCredentials = () => {
@@ -23,6 +38,8 @@ const fillDemoCredentials = () => {
 }
 
 const handleLogin = async () => {
+  if (lockoutSeconds.value > 0) return
+
   if (!email.value || !password.value) {
     errorMessage.value = 'กรุณากรอกอีเมลและรหัสผ่านให้ครบถ้วน'
     return
@@ -39,6 +56,9 @@ const handleLogin = async () => {
     router.push(redirectUrl)
   } else {
     errorMessage.value = res.message
+    if (res.status === 429 && res.retryAfter) {
+      startLockoutTimer(res.retryAfter)
+    }
   }
 }
 </script>
@@ -249,8 +269,13 @@ const handleLogin = async () => {
           <div class="pt-2">
             <button
               type="submit"
-              :disabled="authStore.loading"
-              class="w-full py-3 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white font-bold text-sm tracking-wide shadow-md shadow-emerald-700/20 hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
+              :disabled="authStore.loading || lockoutSeconds > 0"
+              class="w-full py-3 px-4 rounded-xl text-white font-bold text-sm tracking-wide shadow-md transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+              :class="
+                lockoutSeconds > 0
+                  ? 'bg-rose-600/80 cursor-not-allowed text-white shadow-none'
+                  : 'bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 shadow-emerald-700/20 hover:shadow-lg disabled:opacity-60'
+              "
             >
               <v-progress-circular
                 v-if="authStore.loading"
@@ -260,6 +285,10 @@ const handleLogin = async () => {
                 width="2"
               />
               <span v-if="authStore.loading">กำลังตรวจสอบข้อมูล...</span>
+              <span v-else-if="lockoutSeconds > 0" class="flex items-center gap-1.5 text-xs">
+                <v-icon icon="mdi-timer-sand" size="16" />
+                <span>ระงับการเข้าสู่ระบบชั่วคราว (รออีก {{ lockoutSeconds }} วินาที)</span>
+              </span>
               <span v-else class="flex items-center gap-1.5">
                 <span>เข้าสู่ระบบ</span>
                 <v-icon icon="mdi-arrow-right" size="18" />

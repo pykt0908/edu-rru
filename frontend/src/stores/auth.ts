@@ -28,7 +28,9 @@ export const useAuthStore = defineStore('auth', () => {
       return { success: true, message: data.message }
     } catch (err: any) {
       const msg = err.response?.data?.message || 'การเข้าสู่ระบบล้มเหลว กรุณาตรวจสอบอีเมลและรหัสผ่าน'
-      return { success: false, message: msg }
+      const status = err.response?.status
+      const retryAfter = err.response?.data?.retry_after || (status === 429 ? 60 : 0)
+      return { success: false, message: msg, status, retryAfter }
     } finally {
       loading.value = false
     }
