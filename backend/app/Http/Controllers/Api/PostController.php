@@ -36,6 +36,12 @@ class PostController extends Controller
             $query->where('featured', filter_var($request->query('featured'), FILTER_VALIDATE_BOOLEAN));
         }
 
+        // SDG filter
+        if ($request->filled('sdg')) {
+            $sdg = (int)$request->query('sdg');
+            $query->whereJsonContains('sdgs', $sdg);
+        }
+
         // Order
         $sortBy = $request->query('sort_by', 'id');
         $sortOrder = $request->query('sort_order', 'desc');
@@ -70,6 +76,7 @@ class PostController extends Controller
             'quote' => 'nullable|array',
             'attachments' => 'nullable|array',
             'tags' => 'nullable|array',
+            'sdgs' => 'nullable|array',
             'featured' => 'nullable|boolean',
             'author' => 'nullable|array',
             'date' => 'nullable|string',
@@ -137,6 +144,7 @@ class PostController extends Controller
             'quote' => 'nullable|array',
             'attachments' => 'nullable|array',
             'tags' => 'nullable|array',
+            'sdgs' => 'nullable|array',
             'featured' => 'nullable|boolean',
             'author' => 'nullable|array',
             'date' => 'nullable|string',

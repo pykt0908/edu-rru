@@ -2,30 +2,63 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { POSTS, type Post } from '@/data/postsData'
-import { api } from '@/services/api'
+import { api, type Category } from '@/services/api'
 
 const router = useRouter()
 
 // Active Filter Category
 const selectedCategory = ref('ทั้งหมด')
-const categories = ['ทั้งหมด', 'ข่าวประชาสัมพันธ์', 'วิชาการ & วิจัย', 'กิจกรรมนิสิต', 'บริการวิชาการ']
+const categoryList = ref<Category[]>([])
 
+// Posts
 const posts = ref<Post[]>(POSTS)
 
 onMounted(async () => {
   try {
-    const res = await api.getPosts()
-    if (res?.data && res.data.length > 0) {
+    const [catRes, postRes] = await Promise.allSettled([
+      api.getCategories(),
+      api.getPosts()
+    ])
+
+    if (catRes.status === 'fulfilled' && Array.isArray(catRes.value) && catRes.value.length > 0) {
+      categoryList.value = [...catRes.value].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+    }
+
+    if (postRes.status === 'fulfilled' && postRes.value?.data && postRes.value.data.length > 0) {
       // Sort: featured first, then by id ascending — matches original local data order
-      posts.value = [...res.data].sort((a, b) => {
+      posts.value = [...postRes.value.data].sort((a, b) => {
         if (a.featured === b.featured) return a.id - b.id
         return a.featured ? -1 : 1
       })
     }
   } catch (err) {
-    console.warn('API getPosts error, using fallback:', err)
+    console.warn('API fetch error in BentoGridSection:', err)
   }
 })
+
+// Dynamic categories matching admin dashboard
+const categories = computed(() => {
+  const names = ['ทั้งหมด']
+  categoryList.value.forEach((c) => {
+    if (c.name && !names.includes(c.name)) {
+      names.push(c.name)
+    }
+  })
+  // Include any categories present in current posts
+  posts.value.forEach((p) => {
+    if (p.category && !names.includes(p.category)) {
+      names.push(p.category)
+    }
+  })
+  return names
+})
+
+// Helper to get category badge class from admin category settings
+const getCategoryBadgeClass = (post: Post) => {
+  if (post.categoryBadgeClass) return post.categoryBadgeClass
+  const cat = categoryList.value.find((c) => c.name === post.category)
+  return cat?.badge_class || 'bg-slate-600 text-white'
+}
 
 // Grid layout pattern — re-applied by position whenever category filter changes
 const GRID_CLASSES = [
@@ -84,6 +117,30 @@ const navigateToPost = (id: number | string) => {
       <!-- Bento Grid Posts Container -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 sm:gap-6">
         
+        <!-- Empty State if category has no posts -->
+        <div
+          v-if="filteredPosts.length === 0"
+          class="col-span-1 md:col-span-2 lg:col-span-12 py-16 px-6 text-center bg-white rounded-3xl border border-slate-200/80 shadow-xs"
+        >
+          <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+            <v-icon icon="mdi-newspaper-variant-outline" size="24" class="text-slate-400" />
+          </div>
+          <h4 class="text-base font-bold text-slate-800 mb-1">
+            ยังไม่มีข่าวสารในหมวดหมู่ "{{ selectedCategory }}"
+          </h4>
+          <p class="text-xs text-slate-500 mb-4 max-w-sm mx-auto">
+            กำลังจัดเตรียมข้อมูลข่าวสารและกิจกรรมในหมวดหมู่นี้เพื่อเผยแพร่
+          </p>
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition-colors shadow-xs cursor-pointer"
+            @click="selectedCategory = 'ทั้งหมด'"
+          >
+            <v-icon icon="mdi-arrow-left" size="14" />
+            <span>ดูข่าวสารทั้งหมด</span>
+          </button>
+        </div>
+
         <article
           v-for="post in filteredPosts"
           :key="post.id"
@@ -112,7 +169,7 @@ const navigateToPost = (id: number | string) => {
             <!-- Content Overlay at Bottom -->
             <div class="relative z-10 text-white flex flex-col justify-end">
               <div class="flex items-center gap-2 mb-3">
-                <span :class="['px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase', post.categoryBadgeClass]">
+                <span :class="['px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase', getCategoryBadgeClass(post)]">
                   {{ post.category }}
                 </span>
                 <span class="text-xs text-slate-300 flex items-center gap-1">
@@ -169,7 +226,7 @@ const navigateToPost = (id: number | string) => {
                 loading="lazy"
               />
               <div class="absolute top-3 left-3">
-                <span :class="['px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide shadow-sm', post.categoryBadgeClass]">
+                <span :class="['px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide shadow-sm', getCategoryBadgeClass(post)]">
                   {{ post.category }}
                 </span>
               </div>

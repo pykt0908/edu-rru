@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { api, type Category } from '@/services/api'
+import { SDG_GOALS } from '@/data/sdgsData'
 import ThaiDatePicker from '@/components/admin/ThaiDatePicker.vue'
 import RichTextEditor from '@/components/admin/RichTextEditor.vue'
 import AdminToast from '@/components/admin/AdminToast.vue'
@@ -34,6 +35,7 @@ const form = ref({
   thumbnail: '',
   featured: false,
   tags: '',
+  sdgs: [] as number[],
   // Author
   author: {
     name: 'ฝ่ายสื่อสารองค์กร คณะครุศาสตร์',
@@ -52,6 +54,19 @@ const form = ref({
   // Attachments
   attachments: [] as { name: string; size: string; type: string; url: string }[],
 })
+
+const toggleSdg = (id: number) => {
+  const idx = form.value.sdgs.indexOf(id)
+  if (idx > -1) {
+    form.value.sdgs.splice(idx, 1)
+  } else {
+    form.value.sdgs.push(id)
+  }
+}
+
+const clearSdgs = () => {
+  form.value.sdgs = []
+}
 
 // Input helpers
 const newHighlight = ref('')
@@ -113,6 +128,7 @@ const loadPost = async () => {
       thumbnail: post.thumbnail ?? '',
       featured: !!post.featured,
       tags: tagsText,
+      sdgs: Array.isArray(post.sdgs) ? [...post.sdgs] : [],
       author: {
         name: post.author?.name || 'ฝ่ายสื่อสารองค์กร คณะครุศาสตร์',
         role: post.author?.role || 'คณะครุศาสตร์ มหาวิทยาลัยราชภัฏราชนครินทร์',
@@ -285,6 +301,7 @@ const save = async () => {
       tags: form.value.tags
         ? form.value.tags.split(',').map((t) => t.trim()).filter(Boolean)
         : [],
+      sdgs: form.value.sdgs,
       author: form.value.author,
       key_highlights: form.value.keyHighlights.filter(Boolean),
       quote: quotePayload,
@@ -813,7 +830,93 @@ onMounted(async () => {
             </div>
           </div>
 
-          <!-- 2. Author Info -->
+          <!-- 2. SDGs Alignment (เป้าหมายการพัฒนาที่ยั่งยืน) -->
+          <div class="bg-white rounded-2xl border border-slate-200/90 p-5 space-y-3.5 shadow-xs">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+                  <v-icon icon="mdi-earth" size="18" />
+                </div>
+                <div>
+                  <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">
+                    เป้าหมาย SDGs
+                  </h3>
+                  <p class="text-[10px] text-slate-400">สอดคล้องกับเป้าหมายความยั่งยืน</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <span
+                  v-if="form.sdgs.length > 0"
+                  class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800"
+                >
+                  {{ form.sdgs.length }} ข้อ
+                </span>
+                <button
+                  v-if="form.sdgs.length > 0"
+                  type="button"
+                  class="text-[10px] text-slate-400 hover:text-rose-500 cursor-pointer"
+                  title="ล้างทั้งหมด"
+                  @click="clearSdgs"
+                >
+                  ล้าง
+                </button>
+              </div>
+            </div>
+
+            <p class="text-[11px] text-slate-500 leading-relaxed">
+              เลือกเป้าหมาย SDG ที่เกี่ยวข้องกับข่าวนี้ (ระบบจะนำข่าวนี้ไปแสดงในหน้า SDGs หมวดนั้นๆ อัตโนมัติ):
+            </p>
+
+            <!-- 17 SDGs List Grid -->
+            <div class="space-y-1.5 max-h-72 overflow-y-auto pr-1">
+              <button
+                v-for="goal in SDG_GOALS"
+                :key="goal.id"
+                type="button"
+                class="w-full text-left p-2 rounded-xl border text-xs transition-all flex items-center gap-2.5 cursor-pointer"
+                :class="
+                  form.sdgs.includes(goal.id)
+                    ? 'border-transparent shadow-xs text-white'
+                    : 'border-slate-200 hover:border-slate-300 text-slate-700 bg-white hover:bg-slate-50'
+                "
+                :style="
+                  form.sdgs.includes(goal.id)
+                    ? { backgroundColor: goal.color }
+                    : {}
+                "
+                @click="toggleSdg(goal.id)"
+              >
+                <!-- Number Box -->
+                <span
+                  class="w-6 h-6 rounded-lg text-xs font-black flex items-center justify-center shrink-0"
+                  :class="form.sdgs.includes(goal.id) ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-800'"
+                >
+                  {{ goal.id }}
+                </span>
+
+                <!-- Title -->
+                <div class="flex-1 min-w-0">
+                  <div class="text-[11px] font-bold truncate leading-tight">
+                    {{ goal.titleTh }}
+                  </div>
+                  <div class="text-[9px] opacity-75 truncate leading-tight">
+                    {{ goal.titleEn }}
+                  </div>
+                </div>
+
+                <!-- Check Icon -->
+                <v-icon
+                  v-if="form.sdgs.includes(goal.id)"
+                  icon="mdi-check-circle"
+                  size="16"
+                  class="shrink-0 text-white"
+                />
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. Author Info -->
           <div class="bg-white rounded-2xl border border-slate-200/90 p-5 space-y-3.5 shadow-xs">
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide border-b border-slate-100 pb-2">
               ข้อมูลผู้เขียน / ผู้เผยแพร่

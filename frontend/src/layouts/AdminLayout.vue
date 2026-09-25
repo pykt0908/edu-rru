@@ -28,6 +28,16 @@ const navMenuItems = [
     to: '/admin/personnel',
   },
   {
+    title: 'จัดการคณะผู้บริหาร',
+    icon: 'mdi-account-tie-outline',
+    to: '/admin/executives',
+  },
+  {
+    title: 'จัดการหลักสูตรการศึกษา',
+    icon: 'mdi-school-outline',
+    to: '/admin/curricula',
+  },
+  {
     title: 'จัดการข้อมูลและนโยบาย',
     icon: 'mdi-book-cog-outline',
     to: '/admin/content',
@@ -40,6 +50,8 @@ const currentTitle = computed(() => {
   if (route.path.match(/\/admin\/posts\/\d+\/edit/)) return 'แก้ไขข่าวสาร'
   if (route.path.startsWith('/admin/posts')) return 'จัดการข่าวสารและกิจกรรม (News & Posts)'
   if (route.path.startsWith('/admin/personnel')) return 'จัดการบุคลากรและคณาจารย์ (Personnel)'
+  if (route.path.startsWith('/admin/executives')) return 'จัดการคณะผู้บริหาร (Faculty Management)'
+  if (route.path.startsWith('/admin/curricula')) return 'จัดการหลักสูตรการศึกษา (Curriculum Management)'
   if (route.path.startsWith('/admin/content')) return 'จัดการข้อมูลและนโยบาย (Content & Policy)'
   return 'ระบบจัดการหลังบ้าน'
 })

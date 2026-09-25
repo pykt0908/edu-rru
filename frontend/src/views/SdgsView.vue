@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { SDG_GOALS, SDG_ACTIVITIES, type SdgGoal, type SdgActivity } from '@/data/sdgsData'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { SDG_GOALS, SDG_ACTIVITIES, type SdgGoal } from '@/data/sdgsData'
+import { api, type Post } from '@/services/api'
 import sdgsHeroPlant from '@/assets/sdgs_hero_plant.jpg'
 
 // Official UN SDG Logos (1 to 17)
@@ -22,6 +24,8 @@ import sdg15 from '@/assets/sdgs/sdg-15.png'
 import sdg16 from '@/assets/sdgs/sdg-16.png'
 import sdg17 from '@/assets/sdgs/sdg-17.png'
 
+const route = useRoute()
+
 const sdgLogos: Record<number, string> = {
   1: sdg1, 2: sdg2, 3: sdg3, 4: sdg4, 5: sdg5, 6: sdg6, 7: sdg7,
   8: sdg8, 9: sdg9, 10: sdg10, 11: sdg11, 12: sdg12, 13: sdg13,
@@ -31,20 +35,135 @@ const sdgLogos: Record<number, string> = {
 // Language toggle state: 'th' | 'en'
 const currentLang = ref<'th' | 'en'>('th')
 
-// Selected SDG goal (default: 1 as per design mockup)
+// Selected SDG goal (default: 1, or from route query)
 const selectedGoalId = ref<number>(1)
 
 // Selected category filter
 const selectedCategory = ref<string>('all')
+
+// Dynamic posts fetched from backend
+const dynamicPosts = ref<Post[]>([])
+const isLoadingPosts = ref<boolean>(false)
+
+const fetchDynamicPosts = async () => {
+  try {
+    isLoadingPosts.value = true
+    const res = await api.getPosts({ per_page: 100 })
+    dynamicPosts.value = res.data || []
+  } catch (err) {
+    console.warn('SdgsView: Failed to load dynamic posts:', err)
+  } finally {
+    isLoadingPosts.value = false
+  }
+}
+
+// Apply query param if present
+const applyGoalFromQuery = (scroll = false) => {
+  const q = route.query.goal
+  if (q) {
+    const parsed = parseInt(String(q), 10)
+    if (parsed >= 1 && parsed <= 17) {
+      selectedGoalId.value = parsed
+      if (scroll) {
+        setTimeout(() => {
+          const section = document.getElementById('sdg-activities-section')
+          if (section) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }
+        }, 150)
+      }
+    }
+  }
+}
+
+onMounted(() => {
+  applyGoalFromQuery(true)
+  fetchDynamicPosts()
+})
+
+watch(() => route.query.goal, () => {
+  applyGoalFromQuery(true)
+})
 
 // Selected goal computed object
 const selectedGoal = computed<SdgGoal | undefined>(() => {
   return SDG_GOALS.find((g) => g.id === selectedGoalId.value)
 })
 
+// Unified activity interface
+export interface UnifiedSdgItem {
+  id: string | number
+  sdgId: number
+  titleTh: string
+  titleEn: string
+  categoryTh: string
+  categoryEn: string
+  date: string
+  image: string
+  summaryTh: string
+  summaryEn: string
+  author: string
+  isPost?: boolean
+  postUrl?: string
+}
+
+// All combined activities for the selected goal (Dynamic Posts + Static Mock Activities)
+const allActivitiesForSelectedGoal = computed<UnifiedSdgItem[]>(() => {
+  const goalId = selectedGoalId.value
+
+  // Map matching dynamic posts to UnifiedSdgItem
+  const matchingPosts: UnifiedSdgItem[] = dynamicPosts.value
+    .filter((p: Post) => Array.isArray(p.sdgs) && p.sdgs.map(Number).includes(goalId))
+    .map((p: Post) => {
+      // Strip HTML if content is html string or array
+      let summary = p.desc || ''
+      if (!summary && p.content) {
+        const rawText = Array.isArray(p.content) ? p.content.join(' ') : String(p.content)
+        summary = rawText.replace(/<[^>]*>/g, '').trim().slice(0, 150) + '...'
+      }
+      return {
+        id: p.id,
+        sdgId: goalId,
+        titleTh: p.title,
+        titleEn: p.title,
+        categoryTh: p.category || 'ข่าวสารและกิจกรรม',
+        categoryEn: p.category || 'News & Activities',
+        date: p.date || '',
+        image: p.thumbnail || sdgsHeroPlant,
+        summaryTh: summary,
+        summaryEn: summary,
+        author: p.author?.name || 'คณะครุศาสตร์',
+        isPost: true,
+        postUrl: `/posts/${p.id}`,
+      }
+    })
+
+  // Static mock activities for this goal
+  const staticActivities: UnifiedSdgItem[] = SDG_ACTIVITIES
+    .filter((a) => a.sdgId === goalId)
+    .map((a) => ({
+      id: a.id,
+      sdgId: a.sdgId,
+      titleTh: a.titleTh,
+      titleEn: a.titleEn,
+      categoryTh: a.categoryTh,
+      categoryEn: a.categoryEn,
+      date: a.date,
+      image: a.image,
+      summaryTh: a.summaryTh,
+      summaryEn: a.summaryEn,
+      author: a.author,
+      isPost: false,
+      postUrl: `/sdgs/post/${a.id}`,
+    }))
+
+  // Dynamic posts take precedence at the front
+  return [...matchingPosts, ...staticActivities]
+})
+
 // Filtered activities for current selected goal
-const filteredActivities = computed<SdgActivity[]>(() => {
-  let list = SDG_ACTIVITIES.filter((a) => a.sdgId === selectedGoalId.value)
+const filteredActivities = computed<UnifiedSdgItem[]>(() => {
+  let list = allActivitiesForSelectedGoal.value
   if (selectedCategory.value !== 'all') {
     list = list.filter((a) =>
       currentLang.value === 'th'
@@ -57,7 +176,7 @@ const filteredActivities = computed<SdgActivity[]>(() => {
 
 // Total count of activities for current goal
 const goalActivitiesTotal = computed<number>(() => {
-  return SDG_ACTIVITIES.filter((a) => a.sdgId === selectedGoalId.value).length
+  return allActivitiesForSelectedGoal.value.length
 })
 
 // Handle selecting a goal with smooth scroll
@@ -346,8 +465,8 @@ const selectGoal = (id: number) => {
         <div v-if="filteredActivities.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           <RouterLink
             v-for="act in filteredActivities"
-            :key="act.id"
-            :to="'/sdgs/post/' + act.id"
+            :key="(act.isPost ? 'post-' : 'act-') + act.id"
+            :to="act.postUrl || ('/sdgs/post/' + act.id)"
             class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs hover:shadow-md transition-all duration-200 flex flex-col group no-underline text-inherit cursor-pointer"
           >
             <!-- Card Image -->
@@ -364,6 +483,12 @@ const selectGoal = (id: number) => {
                   :style="{ backgroundColor: selectedGoal?.color || '#0E351E' }"
                 >
                   SDG {{ selectedGoal?.numberStr }}
+                </span>
+                <span
+                  v-if="act.isPost"
+                  class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-600 text-white shadow-xs"
+                >
+                  ข่าวสารคณะ
                 </span>
                 <span class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-black/60 text-white backdrop-blur-md">
                   {{ currentLang === 'th' ? act.categoryTh : act.categoryEn }}

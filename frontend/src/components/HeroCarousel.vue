@@ -1,16 +1,34 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
 import { api } from '@/services/api'
 
-const { smAndDown, mdAndDown, lgAndDown } = useDisplay()
+const router = useRouter()
+const { smAndDown } = useDisplay()
 
+const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1920)
+
+const onResize = () => {
+  if (typeof window !== 'undefined') {
+    windowWidth.value = window.innerWidth
+  }
+}
+
+// Exactly match 1920 x 800 (2.4 : 1) aspect ratio
 const carouselHeight = computed(() => {
-  if (smAndDown.value) return 240
-  if (mdAndDown.value) return 460
-  if (lgAndDown.value) return 540
-  return 620
+  const h = Math.round(windowWidth.value * (800 / 1920))
+  return Math.min(Math.max(h, 180), 800)
 })
+
+const handleSlideClick = (e: MouseEvent, slide: SlideItem) => {
+  if (!slide.link_url) return
+  // If it is an internal router path (e.g. /posts/1, /about/history)
+  if (slide.link_url.startsWith('/') && !slide.link_url.startsWith('//')) {
+    e.preventDefault()
+    router.push(slide.link_url)
+  }
+}
 
 interface SlideItem {
   id?: number
@@ -59,7 +77,17 @@ const loadSlides = async () => {
 }
 
 onMounted(() => {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', onResize)
+    onResize()
+  }
   loadSlides()
+})
+
+onUnmounted(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('resize', onResize)
+  }
 })
 </script>
 
@@ -79,18 +107,27 @@ onMounted(() => {
         :key="slide.id || i"
         :src="slide.src"
         :alt="slide.alt"
-        :href="slide.link_url"
-        :target="slide.link_url ? slide.target : undefined"
         cover
         height="100%"
-        class="border-0 bg-transparent h-full w-full"
-      />
+        class="border-0 bg-transparent h-full w-full relative"
+      >
+        <!-- Full Clickable Overlay Anchor if slide has link_url -->
+        <a
+          v-if="slide.link_url"
+          :href="slide.link_url"
+          :target="slide.target || '_self'"
+          :rel="slide.target === '_blank' ? 'noopener noreferrer' : undefined"
+          class="absolute inset-0 z-10 w-full h-full block cursor-pointer select-none"
+          :title="slide.alt || 'คลิกเพื่อดูรายละเอียด'"
+          @click="handleSlideClick($event, slide)"
+        />
+      </v-carousel-item>
 
       <!-- Natural, Minimalist Glassmorphic Arrow Controls -->
       <template #prev="{ props }">
         <button
           type="button"
-          class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-black/30 hover:bg-black/55 text-white/90 hover:text-white backdrop-blur-md flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 shadow-md ml-2 sm:ml-4 lg:ml-6 group border border-white/10"
+          class="relative z-20 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-black/30 hover:bg-black/55 text-white/90 hover:text-white backdrop-blur-md flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 shadow-md ml-2 sm:ml-4 lg:ml-6 group border border-white/10"
           aria-label="สไลด์ก่อนหน้า"
           @click="props.onClick"
         >
@@ -101,7 +138,7 @@ onMounted(() => {
       <template #next="{ props }">
         <button
           type="button"
-          class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-black/30 hover:bg-black/55 text-white/90 hover:text-white backdrop-blur-md flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 shadow-md mr-2 sm:mr-4 lg:mr-6 group border border-white/10"
+          class="relative z-20 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-black/30 hover:bg-black/55 text-white/90 hover:text-white backdrop-blur-md flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 shadow-md mr-2 sm:mr-4 lg:mr-6 group border border-white/10"
           aria-label="สไลด์ถัดไป"
           @click="props.onClick"
         >
@@ -113,35 +150,23 @@ onMounted(() => {
 </template>
 
 <style>
-/* Responsive Carousel Height - tailored to eliminate empty space on iPad Pro and tablets */
+/* Responsive Carousel Height - exact 1920x800 (2.4 : 1) aspect ratio */
 .hero-banner-carousel {
-  height: 240px !important;
+  width: 100% !important;
+  aspect-ratio: 1920 / 800 !important;
+  height: calc(100vw * 800 / 1920) !important;
+  max-height: 800px !important;
 }
 
-@media (min-width: 640px) {
+@media (max-width: 480px) {
   .hero-banner-carousel {
-    height: 360px !important;
+    min-height: 180px !important;
   }
 }
 
-/* iPad Pro 13" Portrait and 1024px Tablets */
-@media (min-width: 1024px) {
+@media (min-width: 1920px) {
   .hero-banner-carousel {
-    height: 460px !important;
-  }
-}
-
-/* iPad Pro 13" Landscape and Standard Laptops */
-@media (min-width: 1280px) {
-  .hero-banner-carousel {
-    height: 540px !important;
-  }
-}
-
-/* Desktop and Large Screens */
-@media (min-width: 1536px) {
-  .hero-banner-carousel {
-    height: 620px !important;
+    height: 800px !important;
   }
 }
 

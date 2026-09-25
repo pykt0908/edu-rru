@@ -2,6 +2,7 @@
 import { computed, ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getPostById, POSTS, type Post } from '@/data/postsData'
+import { getSdgGoalById } from '@/data/sdgsData'
 import { api } from '@/services/api'
 
 const route = useRoute()
@@ -105,6 +106,18 @@ const shareToLine = () => {
               <span :class="['px-3 py-1 rounded-full text-xs font-bold tracking-wide shadow-xs', post.categoryBadgeClass]">
                 {{ post.category }}
               </span>
+              <template v-if="post.sdgs && post.sdgs.length > 0">
+                <RouterLink
+                  v-for="sdgId in post.sdgs"
+                  :key="sdgId"
+                  :to="`/sdgs?goal=${sdgId}`"
+                  class="px-2.5 py-1 rounded-full text-xs font-bold text-white shadow-xs no-underline hover:opacity-90 transition-opacity"
+                  :style="{ backgroundColor: getSdgGoalById(sdgId)?.color || '#0E351E' }"
+                  :title="getSdgGoalById(sdgId)?.titleTh"
+                >
+                  SDG {{ sdgId }}
+                </RouterLink>
+              </template>
               <span class="text-xs text-slate-400 flex items-center gap-1">
                 <v-icon icon="mdi-clock-outline" size="14" />
                 <span>ใช้เวลาอ่าน {{ post.readTime }}</span>
@@ -312,6 +325,44 @@ const shareToLine = () => {
                   <span class="hidden sm:inline">ดาวน์โหลด</span>
                 </a>
               </div>
+            </div>
+          </div>
+
+          <!-- SDGs Alignment Section -->
+          <div
+            v-if="post.sdgs && post.sdgs.length > 0"
+            class="my-8 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-emerald-50/70 via-slate-50 to-white border border-emerald-100/90 shadow-xs"
+          >
+            <div class="flex items-center gap-2.5 mb-3.5">
+              <div class="w-8 h-8 rounded-lg bg-emerald-700 text-white flex items-center justify-center shrink-0 shadow-xs">
+                <v-icon icon="mdi-earth" size="18" />
+              </div>
+              <div>
+                <h4 class="text-sm sm:text-base font-bold text-slate-900 leading-snug">
+                  สอดคล้องกับเป้าหมายการพัฒนาที่ยั่งยืน (SDGs)
+                </h4>
+                <p class="text-xs text-slate-500">
+                  ข่าวนี้มีความเชื่อมโยงกับเป้าหมายความยั่งยืนของสหประชาชาติ คลิกเพื่อดูโครงการที่เกี่ยวข้องทั้งหมด
+                </p>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2.5 pt-1">
+              <RouterLink
+                v-for="sdgId in post.sdgs"
+                :key="sdgId"
+                :to="`/sdgs?goal=${sdgId}`"
+                class="group inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-white font-medium text-xs shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all no-underline"
+                :style="{ backgroundColor: getSdgGoalById(sdgId)?.color || '#0E351E' }"
+              >
+                <span class="px-1.5 py-0.5 rounded bg-black/20 font-black text-[11px]">
+                  SDG {{ sdgId }}
+                </span>
+                <span class="font-bold">
+                  {{ getSdgGoalById(sdgId)?.titleTh || '' }}
+                </span>
+                <v-icon icon="mdi-arrow-right" size="13" class="opacity-80 group-hover:translate-x-0.5 transition-transform" />
+              </RouterLink>
             </div>
           </div>
 

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { POSTS, type Post } from '@/data/postsData'
+export type { Post }
 import { departments, type Person } from '@/data/personnelData'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
@@ -32,6 +33,7 @@ function mapPost(raw: any): Post {
     author: raw.author ?? { name: '', role: '', avatar: '' },
     attachments: raw.attachments ?? [],
     tags: raw.tags ?? [],
+    sdgs: Array.isArray(raw.sdgs) ? raw.sdgs : [],
     featured: !!raw.featured,
     gridClass: raw.grid_class ?? raw.gridClass ?? undefined,
   }
@@ -63,20 +65,52 @@ export const api = {
         departments_count: departments.length,
         featured_posts: POSTS.filter((p) => p.featured).length,
         total_views: 18000,
+        total_curricula: 11,
+        total_carousels: 3,
+        total_regulations: 12,
+        total_ita: 24,
         recent_posts: POSTS.slice(0, 5),
         recent_personnel: fallbackPersonnel.slice(0, 5),
+        top_viewed_posts: POSTS.slice(0, 5).map((p) => ({
+          id: p.id,
+          title: p.title,
+          category: p.category,
+          views: typeof p.views === 'string' ? parseInt(p.views) || 0 : p.views,
+          views_formatted: String(p.views),
+          date: p.date,
+          thumbnail: p.thumbnail,
+        })),
         categories_stats: [
           { category: 'ข่าวประชาสัมพันธ์', count: 2 },
-          { category: 'วิชาการ & วิจัย', count: 2 },
-          { category: 'กิจกรรมนิสิต', count: 1 },
-          { category: 'บริการวิชาการ', count: 1 },
+          { category: 'วิชาการ', count: 2 },
+          { category: 'กิจกรรมนักศึกษา', count: 2 },
+        ],
+        sdgs_stats: [
+          { sdg_id: 1, count: 1 },
+          { sdg_id: 4, count: 1 },
+        ],
+        department_personnel_stats: departments.map((d) => ({
+          id: d.id,
+          slug: d.id,
+          name: d.name,
+          count: d.members.length,
+        })),
+        academic_titles_stats: [
+          { academic_title: 'อาจารย์', count: 21 },
+          { academic_title: 'ผู้ช่วยศาสตราจารย์', count: 11 },
+          { academic_title: 'รองศาสตราจารย์', count: 3 },
+        ],
+        curricula_stats: [
+          { degree_level: 'bachelor', count: 8 },
+          { degree_level: 'master', count: 2 },
+          { degree_level: 'grad-diploma', count: 1 },
         ],
       }
     }
   },
 
   // Posts
-  async getPosts(params?: { category?: string; search?: string; page?: number; per_page?: number }) {
+  async getPosts(params?: { category?: string; search?: string; page?: number; per_page?: number; sdg?: number | string }) {
     try {
       const response = await apiClient.get('/posts', { params })
       const raw = response.data
@@ -87,6 +121,10 @@ export const api = {
       let filtered = [...POSTS]
       if (params?.category && params.category !== 'ทั้งหมด') {
         filtered = filtered.filter((p) => p.category === params.category)
+      }
+      if (params?.sdg) {
+        const targetSdg = Number(params.sdg)
+        filtered = filtered.filter((p) => p.sdgs?.includes(targetSdg))
       }
       if (params?.search) {
         const s = params.search.toLowerCase()
@@ -253,8 +291,13 @@ export const api = {
 
   // Categories
   async getCategories() {
-    const response = await apiClient.get('/categories')
-    return response.data as Category[]
+    try {
+      const response = await apiClient.get('/categories')
+      return (response.data || []) as Category[]
+    } catch (err) {
+      console.warn('Failed to fetch categories:', err)
+      return []
+    }
   },
 
   async createCategory(data: Partial<Category>) {
@@ -461,6 +504,93 @@ export const api = {
     const response = await apiClient.post('/committee-members/reorder', { orders })
     return response.data
   },
+
+  // Executives (Categories & Members)
+  async getExecutives(params?: { active_only?: boolean }) {
+    try {
+      const response = await apiClient.get('/executives', { params })
+      return response.data as ExecutiveCategory[]
+    } catch (err) {
+      console.warn('API getExecutives failed, fallback to empty:', err)
+      return [] as ExecutiveCategory[]
+    }
+  },
+
+  async createExecutiveCategory(data: Partial<ExecutiveCategory>) {
+    const response = await apiClient.post('/executive-categories', data)
+    return response.data as ExecutiveCategory
+  },
+
+  async updateExecutiveCategory(id: number, data: Partial<ExecutiveCategory>) {
+    const response = await apiClient.put(`/executive-categories/${id}`, data)
+    return response.data as ExecutiveCategory
+  },
+
+  async deleteExecutiveCategory(id: number) {
+    const response = await apiClient.delete(`/executive-categories/${id}`)
+    return response.data
+  },
+
+  async reorderExecutiveCategories(orders: { id: number; sort_order: number }[]) {
+    const response = await apiClient.post('/executive-categories/reorder', { orders })
+    return response.data
+  },
+
+  async createExecutiveMember(data: Partial<ExecutiveMember>) {
+    const response = await apiClient.post('/executive-members', data)
+    return response.data as ExecutiveMember
+  },
+
+  async updateExecutiveMember(id: number, data: Partial<ExecutiveMember>) {
+    const response = await apiClient.put(`/executive-members/${id}`, data)
+    return response.data as ExecutiveMember
+  },
+
+  async deleteExecutiveMember(id: number) {
+    const response = await apiClient.delete(`/executive-members/${id}`)
+    return response.data
+  },
+
+  async reorderExecutiveMembers(orders: { id: number; sort_order: number; category_id?: number }[]) {
+    const response = await apiClient.post('/executive-members/reorder', { orders })
+    return response.data
+  },
+
+  // Curricula (หลักสูตร)
+  async getCurricula(params?: { degree_level?: string; active_only?: boolean; search?: string }) {
+    try {
+      const response = await apiClient.get('/curricula', { params })
+      return response.data as CurriculumRecord[]
+    } catch (err) {
+      console.warn('API getCurricula failed, returning empty:', err)
+      return [] as CurriculumRecord[]
+    }
+  },
+
+  async getCurriculum(idOrSlug: string | number) {
+    const response = await apiClient.get(`/curricula/${idOrSlug}`)
+    return response.data as CurriculumRecord
+  },
+
+  async createCurriculum(data: Partial<CurriculumRecord>) {
+    const response = await apiClient.post('/curricula', data)
+    return response.data as CurriculumRecord
+  },
+
+  async updateCurriculum(id: number, data: Partial<CurriculumRecord>) {
+    const response = await apiClient.put(`/curricula/${id}`, data)
+    return response.data as CurriculumRecord
+  },
+
+  async deleteCurriculum(id: number) {
+    const response = await apiClient.delete(`/curricula/${id}`)
+    return response.data
+  },
+
+  async reorderCurricula(orders: { id: number; sort_order: number; degree_level?: string }[]) {
+    const response = await apiClient.post('/curricula/reorder', { orders })
+    return response.data
+  },
 }
 
 export interface Category {
@@ -593,6 +723,65 @@ export interface DepartmentRecord {
   created_at?: string
   updated_at?: string
 }
+
+export interface ExecutiveMember {
+  id: number
+  category_id: number
+  personnel_id?: number | null
+  position: string
+  position_suffix?: string
+  custom_name?: string
+  custom_avatar?: string
+  custom_email?: string
+  custom_phone?: string
+  sort_order: number
+  is_active: boolean
+  name?: string
+  avatar?: string
+  email?: string
+  phone?: string
+  degrees?: string
+  personnel?: any
+  category?: any
+  created_at?: string
+  updated_at?: string
+}
+
+export interface ExecutiveCategory {
+  id: number
+  title: string
+  description?: string
+  sort_order: number
+  is_active: boolean
+  members?: ExecutiveMember[]
+  members_count?: number
+  created_at?: string
+  updated_at?: string
+}
+
+export interface CurriculumRecord {
+  id: number
+  slug: string
+  degree_level: 'bachelor' | 'grad-diploma' | 'master' | 'doctoral'
+  title: string
+  title_en?: string
+  degree_title: string
+  degree_title_en?: string
+  duration: string
+  credits: string
+  desc?: string
+  image?: string
+  tags?: string[]
+  highlight?: boolean
+  department_id?: string
+  document_url?: string
+  detail_content?: any
+  sort_order: number
+  is_active: boolean
+  created_at?: string
+  updated_at?: string
+}
+
 
 
 

@@ -171,6 +171,16 @@ const router = createRouter({
           component: () => import('../views/admin/AdminPersonnelView.vue'),
         },
         {
+          path: 'executives',
+          name: 'admin-executives',
+          component: () => import('../views/admin/AdminExecutivesView.vue'),
+        },
+        {
+          path: 'curricula',
+          name: 'admin-curricula',
+          component: () => import('../views/admin/AdminCurriculaView.vue'),
+        },
+        {
           path: 'content',
           name: 'admin-content',
           component: () => import('../views/admin/AdminContentView.vue'),

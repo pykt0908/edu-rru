@@ -1,0 +1,2429 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "คณะครุศาสตร์ มหาวิทยาลัยราชภัฏราชนครินทร์ (EDU RRU) - RESTful API",
+        "description": "ระบบ RESTful API ครอบคลุมการทำงานของระบบสารสนเทศ เว็บไซต์หลัก และระบบบริหารจัดการหลังบ้าน (Backoffice) คณะครุศาสตร์ มหาวิทยาลัยราชภัฏราชนครินทร์\n\n### ฟังก์ชันหลักของระบบ:\n- **Dashboard & Stats:** สรุปจำนวนข่าวสาร บุคลากร สาขาวิชา จำนวนเข้าชม\n- **Posts & SDGs:** ข่าวสาร กิจกรรม บทความ เชื่อมโยงเป้าหมายการพัฒนาที่ยั่งยืน (SDGs 1-17)\n- **Categories:** บริหารจัดการหมวดหมู่ข่าวสารและสี Badge ประจำหมวดหมู่\n- **Personnel & Departments:** ฐานข้อมูลคณาจารย์ บุคลากร และสาขาวิชาประจำคณะครุศาสตร์\n- **Executives:** โครงสร้างผู้บริหารคณะ การจัดหมวดหมู่ และการจัดเรียงลำดับ\n- **Curricula:** หลักสูตรการศึกษา (ปริญญาตรี ค.บ., ประกาศนียบัตรบัณฑิต ป.บัณฑิต, ปริญญาโท ค.ม.)\n- **Regulations & Law:** ข้อบังคับ ระเบียบ ประกาศ คำสั่งมหาวิทยาลัย และหมวดหมู่กฎหมาย\n- **ITA:** ข้อมูลการประเมินคุณธรรมและความโปร่งใส (Integrity and Transparency Assessment)\n- **Carousel:** ภาพสไลด์แบนเนอร์ประชาสัมพันธ์หน้าแรก พร้อมลิงก์ปลายทาง\n- **Philosophy & Committee:** ปรัชญา วิสัยทัศน์ พันธกิจ และคณะกรรมการประจำคณะ\n- **Uploads:** ระบบจัดเก็บไฟล์ภาพและเอกสารแนบ (Storage Disk)",
+        "contact": {
+            "name": "คณะครุศาสตร์ มหาวิทยาลัยราชภัฏราชนครินทร์",
+            "url": "https://edu.rru.ac.th",
+            "email": "edu@rru.ac.th"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api",
+            "description": "Local Artisan Server (Default)"
+        },
+        {
+            "url": "/api",
+            "description": "Current Domain Relative Endpoint"
+        }
+    ],
+    "paths": {
+        "/stats": {
+            "get": {
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "ดึงข้อมูลสถิติภาพรวมสำหรับแดชบอร์ด (Dashboard Stats)",
+                "description": "ส่งกลับยอดรวมข่าวสาร, คณาจารย์, สาขาวิชา, ยอดเข้าชม, ข่าวสารล่าสุด, บุคลากรล่าสุด และการกระจายตัวของข่าวสารตามหมวดหมู่",
+                "operationId": "375223c68d5e4a79071c4a085534cede",
+                "responses": {
+                    "200": {
+                        "description": "ดึงข้อมูลสถิติสำเร็จ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total_posts": {
+                                            "type": "integer",
+                                            "example": 12
+                                        },
+                                        "total_personnel": {
+                                            "type": "integer",
+                                            "example": 45
+                                        },
+                                        "departments_count": {
+                                            "type": "integer",
+                                            "example": 8
+                                        },
+                                        "featured_posts": {
+                                            "type": "integer",
+                                            "example": 3
+                                        },
+                                        "total_views": {
+                                            "type": "integer",
+                                            "example": 1250
+                                        },
+                                        "total_curricula": {
+                                            "type": "integer",
+                                            "example": 11
+                                        },
+                                        "total_carousels": {
+                                            "type": "integer",
+                                            "example": 3
+                                        },
+                                        "total_regulations": {
+                                            "type": "integer",
+                                            "example": 12
+                                        },
+                                        "total_ita": {
+                                            "type": "integer",
+                                            "example": 24
+                                        },
+                                        "recent_posts": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "recent_personnel": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "top_viewed_posts": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "categories_stats": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "category": {
+                                                        "type": "string",
+                                                        "example": "ข่าวประชาสัมพันธ์"
+                                                    },
+                                                    "count": {
+                                                        "type": "integer",
+                                                        "example": 7
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "sdgs_stats": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "sdg_id": {
+                                                        "type": "integer",
+                                                        "example": 4
+                                                    },
+                                                    "count": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "department_personnel_stats": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "slug": {
+                                                        "type": "string",
+                                                        "example": "early-childhood"
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "สาขาวิชาการศึกษาปฐมวัย"
+                                                    },
+                                                    "count": {
+                                                        "type": "integer",
+                                                        "example": 4
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "academic_titles_stats": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "academic_title": {
+                                                        "type": "string",
+                                                        "example": "ผู้ช่วยศาสตราจารย์"
+                                                    },
+                                                    "count": {
+                                                        "type": "integer",
+                                                        "example": 11
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "curricula_stats": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "degree_level": {
+                                                        "type": "string",
+                                                        "example": "bachelor"
+                                                    },
+                                                    "count": {
+                                                        "type": "integer",
+                                                        "example": 8
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/posts": {
+            "get": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "ดึงรายการข่าวสารทั้งหมด (พร้อม Pagination และตัวกรอง)",
+                "description": "รองรับการกรองตามหมวดหมู่, การค้นหาคำสำคัญ, การกรองตามเป้าหมาย SDG (1-17) และการแบ่งหน้า",
+                "operationId": "f01d4fb9c624db2aa6a39d3959a638b1",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "description": "กรองตามชื่อหมวดหมู่ เช่น ข่าวประชาสัมพันธ์, วิชาการ",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sdg",
+                        "in": "query",
+                        "description": "กรองข่าวที่สอดคล้องกับเป้าหมาย SDG (ระบุหมายเลข 1 ถึง 17)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 4,
+                            "maximum": 17,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "ค้นหาคำสำคัญในชื่อข่าวหรือเนื้อหา",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "เลขหน้า (Pagination)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "จำนวนรายการต่อหน้า (ค่าเริ่มต้น 15)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ดึงข้อมูลข่าวสารสำเร็จ"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "สร้างข่าวสารใหม่",
+                "description": "สร้างข่าวสาร/บทความ พร้อมรองรับการกำหนดเป้าหมาย SDGs (อาร์เรย์ของเลข 1-17), ภาพหน้าปก, ภาพแกลเลอรี และไฟล์แนบ",
+                "operationId": "11ab143acd8241ad488cf07499319ce5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "category"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "เปิดรับสมัครนิสิตใหม่ระดับปริญญาตรี รอบ Portfolio TCAS69"
+                                    },
+                                    "desc": {
+                                        "type": "string",
+                                        "example": "คณะครุศาสตร์ มรภ.ราชนครินทร์ เปิดรับสมัครนิสิตใหม่ 8 สาขาวิชาเอก"
+                                    },
+                                    "content": {
+                                        "type": "string",
+                                        "example": "<p>รายละเอียดการรับสมัคร...</p>"
+                                    },
+                                    "category": {
+                                        "type": "string",
+                                        "example": "ข่าวประชาสัมพันธ์"
+                                    },
+                                    "category_badge_class": {
+                                        "type": "string",
+                                        "example": "bg-slate-600 text-white"
+                                    },
+                                    "thumbnail": {
+                                        "type": "string",
+                                        "example": "https://images.unsplash.com/photo-1523240795612-9a054b0db644"
+                                    },
+                                    "gallery": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "key_highlights": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "example": [
+                                            "หลักสูตรผ่านการรับรองจากคุรุสภา",
+                                            "มีทุนการศึกษา"
+                                        ]
+                                    },
+                                    "quote": {
+                                        "properties": {
+                                            "text": {
+                                                "type": "string",
+                                                "example": "มุ่งมั่นสร้างครูดี มีคุณธรรม นำการศึกษา"
+                                            },
+                                            "by": {
+                                                "type": "string",
+                                                "example": "คณบดีคณะครุศาสตร์"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "tags": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "example": [
+                                            "TCAS69",
+                                            "รับสมัครนิสิต"
+                                        ]
+                                    },
+                                    "sdgs": {
+                                        "description": "เป้าหมาย SDGs ที่สอดคล้อง เช่น [1, 4]",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1,
+                                            4
+                                        ]
+                                    },
+                                    "featured": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "read_time": {
+                                        "type": "string",
+                                        "example": "3 นาที"
+                                    },
+                                    "date": {
+                                        "type": "string",
+                                        "example": "25 กันยายน 2569"
+                                    },
+                                    "author_name": {
+                                        "type": "string",
+                                        "example": "ฝ่ายประชาสัมพันธ์ คณะครุศาสตร์"
+                                    },
+                                    "author_role": {
+                                        "type": "string",
+                                        "example": "คณะครุศาสตร์ มรภ.ราชนครินทร์"
+                                    },
+                                    "attachments": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "สร้างข่าวสารสำเร็จ"
+                    },
+                    "422": {
+                        "description": "ข้อมูลที่ส่งมาไม่ถูกต้อง (Validation Error)"
+                    }
+                }
+            }
+        },
+        "/posts/{id}": {
+            "get": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "ดูรายละเอียดข่าวสารตาม ID (พร้อมนับยอดเข้าชม +1)",
+                "description": "ส่งกลับข้อมูลข่าวสารฉบับเต็ม รวมถึงเนื้อหา HTML, ภาพปก, ภาพแกลเลอรี, ไฟล์แนบ, และรายการ SDGs ที่สอดคล้อง",
+                "operationId": "4b1b11f1a637b18ff52426e7a38705d4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "รหัสข่าวสาร (Post ID)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "พบข้อมูลข่าวสาร"
+                    },
+                    "404": {
+                        "description": "ไม่พบข่าวสารที่ระบุ"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "แก้ไขข้อมูลข่าวสาร",
+                "description": "อัปเดตข้อมูลข่าวสารตาม ID ที่ระบุ",
+                "operationId": "e860df2a1150366605f40ebd07bf8385",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "อัปเดตข่าวสารสำเร็จ"
+                    },
+                    "404": {
+                        "description": "ไม่พบข่าวสาร"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "ลบข่าวสาร",
+                "description": "ลบข่าวสารออกจากระบบอย่างถาวร",
+                "operationId": "5cc62b23119c8525e722545ba9e0984f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ลบข่าวสารสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/categories": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "ดึงรายการหมวดหมู่ข่าวสารทั้งหมด",
+                "description": "ส่งกลับหมวดหมู่ทั้งหมด เรียงตาม sort_order เพื่อนำไปแสดงผลทั้งใน Admin และแท็บในหน้าแรก",
+                "operationId": "cc7ca8297f12cda783a203f0377faa51",
+                "responses": {
+                    "200": {
+                        "description": "ดึงรายการหมวดหมู่สำเร็จ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "ข่าวประชาสัมพันธ์"
+                                            },
+                                            "slug": {
+                                                "type": "string",
+                                                "example": "news"
+                                            },
+                                            "badge_class": {
+                                                "type": "string",
+                                                "example": "bg-slate-600 text-white"
+                                            },
+                                            "color_hex": {
+                                                "type": "string",
+                                                "example": "#475569"
+                                            },
+                                            "sort_order": {
+                                                "type": "integer",
+                                                "example": 1
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "สร้างหมวดหมู่ข่าวสารใหม่",
+                "operationId": "2cd5e666dbc980cdcdb9e67bece0211e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "บริการวิชาการ"
+                                    },
+                                    "badge_class": {
+                                        "type": "string",
+                                        "example": "bg-emerald-600 text-white"
+                                    },
+                                    "color_hex": {
+                                        "type": "string",
+                                        "example": "#059669"
+                                    },
+                                    "sort_order": {
+                                        "type": "integer",
+                                        "example": 4
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "สร้างหมวดหมู่สำเร็จ"
+                    }
+                }
+            }
+        },
+        "/categories/{id}": {
+            "put": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "แก้ไขหมวดหมู่ข่าวสาร",
+                "operationId": "4c40a4cdc86854ac853eb6b6229387ae",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "อัปเดตหมวดหมู่สำเร็จ"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "ลบหมวดหมู่ข่าวสาร",
+                "operationId": "afadb322a2d054bc8c49e4fee13fe9e5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ลบหมวดหมู่สำเร็จ"
+                    }
+                }
+            }
+        },
+        "/personnel": {
+            "get": {
+                "tags": [
+                    "Personnel"
+                ],
+                "summary": "ดึงรายชื่ออาจารย์และบุคลากรทั้งหมด",
+                "description": "รองรับการกรองตามสาขาวิชา และการค้นหาชื่อ-นามสกุล",
+                "operationId": "7881cace4e8d1035361e6f0a06c9650a",
+                "parameters": [
+                    {
+                        "name": "department_id",
+                        "in": "query",
+                        "description": "กรองตาม ID สาขาวิชา",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "ค้นหาชื่อ อีเมล หรือตำแหน่ง",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ดึงรายชื่อบุคลากรสำเร็จ"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Personnel"
+                ],
+                "summary": "เพิ่มข้อมูลอาจารย์/บุคลากรใหม่",
+                "operationId": "d6c1f1587bf6d3d008c741e8790829e9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "department_id"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "ผศ.ดร.สมชาย ใจดี"
+                                    },
+                                    "position": {
+                                        "type": "string",
+                                        "example": "ประธานสาขาวิชาการศึกษาปฐมวัย"
+                                    },
+                                    "academic_rank": {
+                                        "type": "string",
+                                        "example": "ผู้ช่วยศาสตราจารย์ ดร."
+                                    },
+                                    "department_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "somchai@rru.ac.th"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "038-500000 ต่อ 1234"
+                                    },
+                                    "avatar": {
+                                        "type": "string",
+                                        "example": "https://images.unsplash.com/photo-1534528741775-53994a69daeb"
+                                    },
+                                    "education": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "expertise": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "เพิ่มข้อมูลบุคลากรสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/personnel/{id}": {
+            "get": {
+                "tags": [
+                    "Personnel"
+                ],
+                "summary": "ดูข้อมูลอาจารย์/บุคลากรรายบุคคล",
+                "operationId": "8faae7de60135e08ea3bedd90d684aa5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "พบข้อมูล"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Personnel"
+                ],
+                "summary": "แก้ไขข้อมูลอาจารย์/บุคลากร",
+                "operationId": "49f078bf19cc9cb251882052c2df2844",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "อัปเดตสำเร็จ"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Personnel"
+                ],
+                "summary": "ลบข้อมูลอาจารย์/บุคลากร",
+                "operationId": "8f0678f901973524f01a5c6d19d2ccf0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ลบสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/personnel/reorder": {
+            "post": {
+                "tags": [
+                    "Personnel"
+                ],
+                "summary": "จัดเรียงลำดับอาจารย์/บุคลากรในสาขา",
+                "operationId": "161c3e4db789243eba797021750e9a8d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "order": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            3,
+                                            1,
+                                            2,
+                                            4
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "จัดเรียงสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/departments": {
+            "get": {
+                "tags": [
+                    "Departments"
+                ],
+                "summary": "ดึงรายชื่อสาขาวิชาทั้งหมด",
+                "operationId": "0cb76c515518018e839ed48569308fa1",
+                "responses": {
+                    "200": {
+                        "description": "ดึงรายการสาขาสำเร็จ"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Departments"
+                ],
+                "summary": "สร้างสาขาวิชาใหม่",
+                "operationId": "ee2d9c89ace1865d90bb31a1f3d3f7ed",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "สาขาวิชาการศึกษาปฐมวัย"
+                                    },
+                                    "name_en": {
+                                        "type": "string",
+                                        "example": "Early Childhood Education"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "ผลิตบัณฑิตครูปฐมวัยที่มีสมรรถนะสูง"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "สร้างสาขาวิชาสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/departments/reorder": {
+            "post": {
+                "tags": [
+                    "Departments"
+                ],
+                "summary": "จัดเรียงลำดับสาขาวิชา",
+                "operationId": "67bd4acb58fe8b82e32df194480af5f8",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "order": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "จัดเรียงสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/departments/{id}/set-head": {
+            "post": {
+                "tags": [
+                    "Departments"
+                ],
+                "summary": "กำหนดหัวหน้าสาขาวิชา",
+                "operationId": "f9e4036492fdfb9eb4eb08a7e6b641b3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "personnel_id"
+                                ],
+                                "properties": {
+                                    "personnel_id": {
+                                        "type": "integer",
+                                        "example": 5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "กำหนดหัวหน้าสาขาสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/departments/{id}": {
+            "put": {
+                "tags": [
+                    "Departments"
+                ],
+                "summary": "แก้ไขข้อมูลสาขาวิชา",
+                "operationId": "9496254178f6cd99cf36b2b7c7fd63d4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "อัปเดตสาขาสำเร็จ"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Departments"
+                ],
+                "summary": "ลบสาขาวิชา",
+                "operationId": "4d41030e67e50f0700119570c662afea",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ลบสาขาสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/executives": {
+            "get": {
+                "tags": [
+                    "Executives"
+                ],
+                "summary": "ดึงข้อมูลโครงสร้างผู้บริหารคณะทั้งหมด (แบ่งตามหมวดหมู่)",
+                "description": "ส่งกลับหมวดหมู่ผู้บริหาร (เช่น คณบดี, รองคณบดี, ผู้ช่วยคณบดี) พร้อมรายชื่อผู้บริหารและข้อมูลอาจารย์ที่เชื่อมโยง",
+                "operationId": "7fd19d0d04964f128a1e9579da2d94a5",
+                "responses": {
+                    "200": {
+                        "description": "ดึงโครงสร้างผู้บริหารสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/executive-categories": {
+            "post": {
+                "tags": [
+                    "Executives"
+                ],
+                "summary": "สร้างหมวดหมู่ผู้บริหารใหม่ (เช่น รองคณบดี)",
+                "operationId": "8e9218a12304ebbaa79dc821a820707f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "รองคณบดี"
+                                    },
+                                    "name_en": {
+                                        "type": "string",
+                                        "example": "Associate Dean"
+                                    },
+                                    "sort_order": {
+                                        "type": "integer",
+                                        "example": 2
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "สร้างหมวดหมู่สำเร็จ"
+                    }
+                }
+            }
+        },
+        "/executive-categories/reorder": {
+            "post": {
+                "tags": [
+                    "Executives"
+                ],
+                "summary": "จัดเรียงลำดับหมวดหมู่ผู้บริหาร",
+                "operationId": "4f7074a93422f15c6c69bbe7cb886e7a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "order": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "จัดเรียงหมวดหมู่สำเร็จ"
+                    }
+                }
+            }
+        },
+        "/executive-categories/{id}": {
+            "put": {
+                "tags": [
+                    "Executives"
+                ],
+                "summary": "แก้ไขหมวดหมู่ผู้บริหาร",
+                "operationId": "50459322e0c13e41ed553e4c1946578f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "อัปเดตสำเร็จ"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Executives"
+                ],
+                "summary": "ลบหมวดหมู่ผู้บริหาร",
+                "operationId": "01143f5196aa52500ef9b8a5c2dd5b0b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ลบสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/executive-members": {
+            "post": {
+                "tags": [
+                    "Executives"
+                ],
+                "summary": "เพิ่มผู้บริหารเข้าในหมวดหมู่",
+                "operationId": "04db1e35c56fa59f79d5b2e305562e51",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "category_id",
+                                    "position_title"
+                                ],
+                                "properties": {
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "personnel_id": {
+                                        "type": "integer",
+                                        "example": 5,
+                                        "nullable": true
+                                    },
+                                    "custom_name": {
+                                        "type": "string",
+                                        "example": "ผศ.ดร.วิชัย พัฒนา",
+                                        "nullable": true
+                                    },
+                                    "position_title": {
+                                        "type": "string",
+                                        "example": "รองคณบดีฝ่ายวิชาการและวิจัย"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "เพิ่มผู้บริหารสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/executive-members/reorder": {
+            "post": {
+                "tags": [
+                    "Executives"
+                ],
+                "summary": "จัดเรียงลำดับผู้บริหารในหมวดหมู่",
+                "operationId": "3a810a49ba78fdf5794de6ee387ff603",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "order": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "จัดเรียงผู้บริหารสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/executive-members/{id}": {
+            "put": {
+                "tags": [
+                    "Executives"
+                ],
+                "summary": "แก้ไขข้อมูลผู้บริหาร",
+                "operationId": "04355969c894421af3d41db7b121dbad",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "อัปเดตผู้บริหารสำเร็จ"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Executives"
+                ],
+                "summary": "ลบผู้บริหาร",
+                "operationId": "ad407b2f79d4415e5cf8e7f1c322beff",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ลบผู้บริหารสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/curricula": {
+            "get": {
+                "tags": [
+                    "Curricula"
+                ],
+                "summary": "ดึงรายการหลักสูตรการศึกษาทั้งหมด",
+                "description": "รองรับการกรองตามระดับปริญญา เช่น bachelor (ป.ตรี), grad-diploma (ป.บัณฑิต), master (ป.โท)",
+                "operationId": "04e39f29861d7d397fa7bdf238ce403e",
+                "parameters": [
+                    {
+                        "name": "degree",
+                        "in": "query",
+                        "description": "ระดับปริญญา (bachelor, grad-diploma, master)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "bachelor",
+                                "grad-diploma",
+                                "master"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "active_only",
+                        "in": "query",
+                        "description": "แสดงเฉพาะหลักสูตรที่เปิดรับสมัคร (1 หรือ 0)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ดึงรายการหลักสูตรสำเร็จ"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Curricula"
+                ],
+                "summary": "สร้างหลักสูตรใหม่",
+                "operationId": "76ea9d87031b8a626d24b32898213485",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title_th",
+                                    "degree_level"
+                                ],
+                                "properties": {
+                                    "title_th": {
+                                        "type": "string",
+                                        "example": "หลักสูตรครุศาสตรบัณฑิต สาขาวิชาการศึกษาปฐมวัย"
+                                    },
+                                    "title_en": {
+                                        "type": "string",
+                                        "example": "Bachelor of Education in Early Childhood Education"
+                                    },
+                                    "degree_level": {
+                                        "type": "string",
+                                        "example": "bachelor",
+                                        "enum": [
+                                            "bachelor",
+                                            "grad-diploma",
+                                            "master"
+                                        ]
+                                    },
+                                    "total_credits": {
+                                        "type": "string",
+                                        "example": "136 หน่วยกิต"
+                                    },
+                                    "duration_years": {
+                                        "type": "string",
+                                        "example": "4 ปี"
+                                    },
+                                    "image_url": {
+                                        "type": "string",
+                                        "example": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "สร้างหลักสูตรสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/curricula/{idOrSlug}": {
+            "get": {
+                "tags": [
+                    "Curricula"
+                ],
+                "summary": "ดูรายละเอียดหลักสูตรตาม ID หรือ Slug",
+                "operationId": "caa9ff93ad25ebc7d8d9bcf597b455a9",
+                "parameters": [
+                    {
+                        "name": "idOrSlug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "early-childhood"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "พบข้อมูลหลักสูตร"
+                    }
+                }
+            }
+        },
+        "/curricula/reorder": {
+            "post": {
+                "tags": [
+                    "Curricula"
+                ],
+                "summary": "จัดเรียงลำดับหลักสูตร",
+                "operationId": "c6ec713f25be329225cd98c9bb12efec",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "order": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "จัดเรียงหลักสูตรสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/curricula/{id}": {
+            "put": {
+                "tags": [
+                    "Curricula"
+                ],
+                "summary": "แก้ไขข้อมูลหลักสูตร",
+                "operationId": "3ad7332290246be9aa2de57e95fd258b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "อัปเดตหลักสูตรสำเร็จ"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Curricula"
+                ],
+                "summary": "ลบหลักสูตร",
+                "operationId": "3509e48ede447c7f4e8a086825eef35d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ลบหลักสูตรสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/regulations": {
+            "get": {
+                "tags": [
+                    "Regulations"
+                ],
+                "summary": "ดึงรายการระเบียบ ข้อบังคับ ประกาศ และกฎหมาย",
+                "operationId": "d5fbcb5ffbd04fd294854e99e9844bc6",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "description": "รหัสหมวดหมู่กฎหมาย เช่น act, regulation, announcement",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "ปี พ.ศ. เช่น 2567",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ดึงข้อมูลสำเร็จ"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Regulations"
+                ],
+                "summary": "เพิ่มระเบียบ/ข้อบังคับใหม่",
+                "operationId": "ad89cb64a7f63b68599fd8c7b4c30ed7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "สร้างระเบียบสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/regulations/{id}": {
+            "put": {
+                "tags": [
+                    "Regulations"
+                ],
+                "summary": "แก้ไขระเบียบ/ข้อบังคับ",
+                "operationId": "ae061f94453e40146968c2cc669fd343",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "อัปเดตสำเร็จ"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Regulations"
+                ],
+                "summary": "ลบระเบียบ/ข้อบังคับ",
+                "operationId": "d349d529d6ccbf2096825936f24952e1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ลบสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/regulation-categories": {
+            "get": {
+                "tags": [
+                    "Regulations"
+                ],
+                "summary": "ดึงหมวดหมู่ข้อบังคับและระเบียบ",
+                "operationId": "8fdcb0257c1da7d96c426984d2cc0a61",
+                "responses": {
+                    "200": {
+                        "description": "ดึงหมวดหมู่สำเร็จ"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Regulations"
+                ],
+                "summary": "สร้างหมวดหมู่ข้อบังคับใหม่",
+                "operationId": "8eee827ee3b20c68ee823c3ba548ef27",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "สร้างหมวดหมู่สำเร็จ"
+                    }
+                }
+            }
+        },
+        "/regulation-categories/{id}": {
+            "put": {
+                "tags": [
+                    "Regulations"
+                ],
+                "summary": "แก้ไขหมวดหมู่ข้อบังคับ",
+                "operationId": "fc8e29cf099c270a7f12a513e6da0429",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "อัปเดตสำเร็จ"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Regulations"
+                ],
+                "summary": "ลบหมวดหมู่ข้อบังคับ",
+                "operationId": "fc647ad0ae1a8458dee0b2ca405a739e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ลบสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/ita": {
+            "get": {
+                "tags": [
+                    "ITA"
+                ],
+                "summary": "ดึงข้อมูลการประเมิน ITA ตามปีงบประมาณ",
+                "operationId": "704d4169d1ba1b5c3d891807f941212f",
+                "parameters": [
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "ปี พ.ศ. ของ ITA เช่น 2567",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "2567"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ดึงข้อมูล ITA สำเร็จ"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "ITA"
+                ],
+                "summary": "เพิ่มรายการการประเมิน ITA",
+                "operationId": "7880d9e369057d15d62da3b8aeeada41",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "เพิ่มรายการ ITA สำเร็จ"
+                    }
+                }
+            }
+        },
+        "/ita/reorder": {
+            "post": {
+                "tags": [
+                    "ITA"
+                ],
+                "summary": "จัดเรียงลำดับรายการ ITA",
+                "operationId": "b0beb12c63163e3a89d4df47ce0b3cab",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "จัดเรียงสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/ita/{id}": {
+            "put": {
+                "tags": [
+                    "ITA"
+                ],
+                "summary": "แก้ไขรายการ ITA",
+                "operationId": "8e5860875898ede92655a674a33419a3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "อัปเดตสำเร็จ"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "ITA"
+                ],
+                "summary": "ลบรายการ ITA",
+                "operationId": "473a2545ab812b746ad0b654e2313a56",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ลบสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/ita-years": {
+            "get": {
+                "tags": [
+                    "ITA"
+                ],
+                "summary": "ดึงรายการปีงบประมาณที่มีข้อมูล ITA",
+                "operationId": "b8896694a411bb5ee329fe4511e779af",
+                "responses": {
+                    "200": {
+                        "description": "ดึงรายการปีสำเร็จ"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "ITA"
+                ],
+                "summary": "เพิ่มปีงบประมาณ ITA",
+                "operationId": "371a3a4211219cd329f7dc7e7da9f424",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "year"
+                                ],
+                                "properties": {
+                                    "year": {
+                                        "type": "string",
+                                        "example": "2568"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "เพิ่มปีสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/ita-years/{id}": {
+            "put": {
+                "tags": [
+                    "ITA"
+                ],
+                "summary": "แก้ไขปีงบประมาณ ITA",
+                "operationId": "976c13186f9e96bbbbb41d2ba0f4f74e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "อัปเดตสำเร็จ"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "ITA"
+                ],
+                "summary": "ลบปีงบประมาณ ITA",
+                "operationId": "c8af159e4e419b7e222e8f636ddc3950",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ลบสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/carousel-slides": {
+            "get": {
+                "tags": [
+                    "Carousel"
+                ],
+                "summary": "ดึงภาพสไลด์แบนเนอร์หน้าแรก (Carousel Banner)",
+                "description": "รองรับการดึงเฉพาะสไลด์ที่เปิดใช้งาน (active_only=1) เพื่อแสดงผลใน Hero Carousel",
+                "operationId": "4e1678e4b5a9cdfa26adeee674078eaf",
+                "parameters": [
+                    {
+                        "name": "active_only",
+                        "in": "query",
+                        "description": "1 เพื่อดึงเฉพาะภาพที่เปิดใช้งาน",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ดึงรายการภาพสไลด์สำเร็จ"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Carousel"
+                ],
+                "summary": "เพิ่มภาพแบนเนอร์สไลด์ใหม่",
+                "operationId": "ec306e7721e83946a4d9e225c7e81509",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "image_url"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "ประชาสัมพันธ์กิจกรรมครุศาสตร์"
+                                    },
+                                    "image_url": {
+                                        "type": "string",
+                                        "example": "https://edu.rru.ac.th/banner1.jpg"
+                                    },
+                                    "link_url": {
+                                        "type": "string",
+                                        "example": "https://www.facebook.com/edurru",
+                                        "nullable": true
+                                    },
+                                    "target": {
+                                        "type": "string",
+                                        "example": "_blank",
+                                        "default": "_self",
+                                        "enum": [
+                                            "_self",
+                                            "_blank"
+                                        ]
+                                    },
+                                    "sort_order": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "default": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "เพิ่มภาพสไลด์สำเร็จ"
+                    }
+                }
+            }
+        },
+        "/carousel-slides/reorder": {
+            "post": {
+                "tags": [
+                    "Carousel"
+                ],
+                "summary": "จัดเรียงลำดับภาพสไลด์แบนเนอร์",
+                "operationId": "f501364aa98beeca1685aaf449b2d745",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "order": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "จัดเรียงสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/carousel-slides/{id}": {
+            "put": {
+                "tags": [
+                    "Carousel"
+                ],
+                "summary": "แก้ไขภาพแบนเนอร์สไลด์",
+                "operationId": "b5f49379b5591151eed5f6075e29f249",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "อัปเดตสำเร็จ"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Carousel"
+                ],
+                "summary": "ลบภาพแบนเนอร์สไลด์",
+                "operationId": "a13a9f2a844dff5889ab0db5482ed4b2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ลบสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/philosophy": {
+            "get": {
+                "tags": [
+                    "Philosophy"
+                ],
+                "summary": "ดึงข้อมูลปรัชญา วิสัยทัศน์ เอกลักษณ์ อัตลักษณ์ และพันธกิจ",
+                "operationId": "531929fe2b18517121502c96bf64ee75",
+                "responses": {
+                    "200": {
+                        "description": "ดึงข้อมูลสำเร็จ"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Philosophy"
+                ],
+                "summary": "อัปเดตข้อมูลปรัชญา วิสัยทัศน์ และอัตลักษณ์",
+                "operationId": "d0983b120b81da0de164e9f21ca6a5ac",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "อัปเดตสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/philosophy/missions": {
+            "post": {
+                "tags": [
+                    "Philosophy"
+                ],
+                "summary": "เพิ่มพันธกิจของคณะครุศาสตร์",
+                "operationId": "9deee661746b07088cadad94c98e805f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "เพิ่มพันธกิจสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/philosophy/missions/{id}": {
+            "put": {
+                "tags": [
+                    "Philosophy"
+                ],
+                "summary": "แก้ไขพันธกิจ",
+                "operationId": "7aa7f46c26fb2157b950d536390cdcac",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "อัปเดตสำเร็จ"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Philosophy"
+                ],
+                "summary": "ลบพันธกิจ",
+                "operationId": "a48072ddd30ad62de392c25811a7e229",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ลบสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/committee-members": {
+            "get": {
+                "tags": [
+                    "Committee"
+                ],
+                "summary": "ดึงรายชื่อคณะกรรมการประจำคณะครุศาสตร์",
+                "operationId": "a8a45bdf33db68fecd4c28d1e0f7562e",
+                "responses": {
+                    "200": {
+                        "description": "ดึงรายชื่อสำเร็จ"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Committee"
+                ],
+                "summary": "เพิ่มคณะกรรมการประจำคณะ",
+                "operationId": "e162ebc165b1470028ff6bd86ce1a89c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "เพิ่มคณะกรรมการสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/committee-members/reorder": {
+            "post": {
+                "tags": [
+                    "Committee"
+                ],
+                "summary": "จัดเรียงลำดับคณะกรรมการ",
+                "operationId": "dd84b9d82b7d484dec0001cb37aaa88d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "จัดเรียงสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/committee-members/{id}": {
+            "put": {
+                "tags": [
+                    "Committee"
+                ],
+                "summary": "แก้ไขข้อมูลคณะกรรมการ",
+                "operationId": "9dd5072353e28cd2a1e2e2ff1e26af0a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "อัปเดตสำเร็จ"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Committee"
+                ],
+                "summary": "ลบคณะกรรมการ",
+                "operationId": "fe8991e4840040b43e083beaea7af320",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ลบสำเร็จ"
+                    }
+                }
+            }
+        },
+        "/upload": {
+            "post": {
+                "tags": [
+                    "Uploads"
+                ],
+                "summary": "อัปโหลดไฟล์ รูปภาพ หรือเอกสารแนบ PDF",
+                "description": "รองรับไฟล์ภาพ (JPG, PNG, WebP) และไฟล์เอกสาร (PDF, DOCX) ขนาดไม่เกิน 20MB โดยส่งในรูปแบบ multipart/form-data",
+                "operationId": "e016a6c83ff7a07e644e2b354b02a5e1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "file"
+                                ],
+                                "properties": {
+                                    "file": {
+                                        "description": "ไฟล์ที่ต้องการอัปโหลด",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "อัปโหลดไฟล์สำเร็จ ส่งกลับ URL และชื่อไฟล์",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "url": {
+                                            "type": "string",
+                                            "example": "http://localhost:8000/storage/uploads/example.png"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "example.png"
+                                        },
+                                        "size": {
+                                            "type": "string",
+                                            "example": "1.2 MB"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "ไฟล์ไม่ถูกต้องหรือขนาดเกินกำหนด"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Dashboard",
+            "description": "ข้อมูลสรุปภาพรวมและสถิติของระบบ"
+        },
+        {
+            "name": "Posts",
+            "description": "จัดการข่าวสาร กิจกรรม และเป้าหมาย SDGs"
+        },
+        {
+            "name": "Categories",
+            "description": "จัดการหมวดหมู่ข่าวสารและสี Badge"
+        },
+        {
+            "name": "Personnel",
+            "description": "จัดการข้อมูลอาจารย์และบุคลากร"
+        },
+        {
+            "name": "Departments",
+            "description": "จัดการสาขาวิชาและหัวหน้าสาขา"
+        },
+        {
+            "name": "Executives",
+            "description": "จัดการโครงสร้างผู้บริหารและหมวดหมู่ผู้บริหาร"
+        },
+        {
+            "name": "Curricula",
+            "description": "จัดการหลักสูตรการศึกษาของคณะครุศาสตร์"
+        },
+        {
+            "name": "Regulations",
+            "description": "จัดการข้อบังคับ ระเบียบ ประกาศ และหมวดหมู่กฎหมาย"
+        },
+        {
+            "name": "ITA",
+            "description": "จัดการข้อมูลการประเมินคุณธรรมและความโปร่งใส (ITA) รายปี"
+        },
+        {
+            "name": "Carousel",
+            "description": "จัดการภาพแบนเนอร์สไลด์หน้าแรก (Carousel Banner)"
+        },
+        {
+            "name": "Philosophy",
+            "description": "จัดการปรัชญา วิสัยทัศน์ และพันธกิจ"
+        },
+        {
+            "name": "Committee",
+            "description": "จัดการคณะกรรมการประจำคณะ"
+        },
+        {
+            "name": "Uploads",
+            "description": "อัปโหลดไฟล์ รูปภาพ และเอกสาร"
+        }
+    ]
+}

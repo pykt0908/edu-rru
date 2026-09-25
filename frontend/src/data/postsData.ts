@@ -31,6 +31,7 @@ export interface Post {
   author: PostAuthor
   attachments?: PostAttachment[]
   tags: string[]
+  sdgs?: number[]
   featured?: boolean
   gridClass?: string
 }

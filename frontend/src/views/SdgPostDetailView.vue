@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getSdgActivityById, getSdgGoalById, SDG_ACTIVITIES, type SdgActivity } from '@/data/sdgsData'
+import { api } from '@/services/api'
 
 // Official UN SDG Logos
 import sdg1 from '@/assets/sdgs/sdg-1.png'
@@ -35,6 +36,20 @@ const router = useRouter()
 const activity = computed<SdgActivity | undefined>(() => {
   const id = route.params.id as string
   return getSdgActivityById(id)
+})
+
+onMounted(async () => {
+  if (!activity.value) {
+    const id = route.params.id as string
+    try {
+      const p = await api.getPost(id)
+      if (p) {
+        router.replace('/posts/' + id)
+      }
+    } catch {
+      // not a dynamic post either
+    }
+  }
 })
 
 // Parent SDG Goal

@@ -10,7 +10,9 @@ use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\RegulationController;
 use App\Http\Controllers\Api\CarouselSlideController;
 use App\Http\Controllers\Api\CommitteeMemberController;
+use App\Http\Controllers\Api\CurriculumController;
 use App\Http\Controllers\Api\DepartmentController;
+use App\Http\Controllers\Api\ExecutiveController;
 use App\Http\Controllers\Api\UploadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -98,5 +100,27 @@ Route::post('/committee-members', [CommitteeMemberController::class, 'store']);
 Route::post('/committee-members/reorder', [CommitteeMemberController::class, 'reorder']);
 Route::put('/committee-members/{id}', [CommitteeMemberController::class, 'update']);
 Route::delete('/committee-members/{id}', [CommitteeMemberController::class, 'destroy']);
+
+// Executives (Categories & Members)
+Route::get('/executives', [ExecutiveController::class, 'index']);
+Route::post('/executive-categories', [ExecutiveController::class, 'storeCategory']);
+Route::post('/executive-categories/reorder', [ExecutiveController::class, 'reorderCategories']);
+Route::put('/executive-categories/{id}', [ExecutiveController::class, 'updateCategory']);
+Route::delete('/executive-categories/{id}', [ExecutiveController::class, 'destroyCategory']);
+
+Route::post('/executive-members', [ExecutiveController::class, 'storeMember']);
+Route::post('/executive-members/reorder', [ExecutiveController::class, 'reorderMembers']);
+Route::put('/executive-members/{id}', [ExecutiveController::class, 'updateMember']);
+Route::delete('/executive-members/{id}', [ExecutiveController::class, 'destroyMember']);
+
+// Curricula (หลักสูตร)
+Route::get('/curricula', [CurriculumController::class, 'index']);
+Route::get('/curricula/{idOrSlug}', [CurriculumController::class, 'show']);
+Route::post('/curricula', [CurriculumController::class, 'store']);
+Route::post('/curricula/reorder', [CurriculumController::class, 'reorder']);
+Route::put('/curricula/{id}', [CurriculumController::class, 'update']);
+Route::delete('/curricula/{id}', [CurriculumController::class, 'destroy']);
+
+
 
 

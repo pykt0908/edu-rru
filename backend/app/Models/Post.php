@@ -18,6 +18,7 @@ class Post extends Model
         'author' => 'array',
         'attachments' => 'array',
         'tags' => 'array',
+        'sdgs' => 'array',
         'featured' => 'boolean',
     ];
 
