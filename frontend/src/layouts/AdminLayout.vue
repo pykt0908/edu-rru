@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter, useRoute, RouterLink } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import eduLogo from '@/assets/logos/edu-logo-border-white.png'
 
 const router = useRouter()
 const route = useRoute()
+const authStore = useAuthStore()
+
+const handleLogout = async () => {
+  await authStore.logout()
+  router.push('/login')
+}
 
 // Collapse / Rail state (default false = open)
 const rail = ref(false)
@@ -219,8 +226,11 @@ const currentTitle = computed(() => {
                 <v-icon icon="mdi-account" size="18" />
               </button>
             </template>
-            <v-list density="compact" class="w-48 shadow-xl rounded-xl border border-slate-100 p-1">
-              <v-list-item title="ผู้ดูแลระบบ (Admin)" subtitle="admin@rru.ac.th" />
+            <v-list density="compact" class="w-52 shadow-xl rounded-xl border border-slate-100 p-1">
+              <v-list-item
+                :title="authStore.user?.name || 'ผู้ดูแลระบบ (Admin)'"
+                :subtitle="authStore.user?.email || 'admin@rru.ac.th'"
+              />
               <v-divider class="my-1" />
               <v-list-item
                 prepend-icon="mdi-open-in-new"
@@ -232,7 +242,7 @@ const currentTitle = computed(() => {
                 prepend-icon="mdi-logout"
                 title="ออกจากระบบ"
                 class="text-rose-600"
-                @click="router.push('/')"
+                @click="handleLogout"
               />
             </v-list>
           </v-menu>

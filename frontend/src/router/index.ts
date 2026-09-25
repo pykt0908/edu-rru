@@ -140,6 +140,16 @@ const router = createRouter({
       name: 'contact',
       component: () => import('../views/ContactView.vue'),
     },
+    // Authentication
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('../views/auth/LoginView.vue'),
+    },
+    {
+      path: '/admin/login',
+      redirect: '/login',
+    },
     // Backoffice / Admin Panel Routes
     {
       path: '/admin',
@@ -188,6 +198,20 @@ const router = createRouter({
       ],
     },
   ],
+})
+
+// Authentication & Protection Navigation Guard
+router.beforeEach((to, _from, next) => {
+  const token = localStorage.getItem('auth_token')
+  const isProtectedAdminRoute = to.path.startsWith('/admin')
+
+  if (isProtectedAdminRoute && !token) {
+    next({ path: '/login', query: { redirect: to.fullPath } })
+  } else if ((to.path === '/login' || to.path === '/admin/login') && token) {
+    next({ path: '/admin' })
+  } else {
+    next()
+  }
 })
 
 router.afterEach((to, from) => {

@@ -14,8 +14,16 @@ use App\Http\Controllers\Api\CurriculumController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\ExecutiveController;
 use App\Http\Controllers\Api\UploadController;
+use App\Http\Controllers\Api\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+// Authentication
+Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'me']);
+});
 
 // Public & Backoffice Endpoints
 Route::get('/stats', [DashboardController::class, 'stats']);

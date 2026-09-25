@@ -14,6 +14,15 @@ export const apiClient = axios.create({
   timeout: 10000,
 })
 
+// Attach Sanctum Bearer token automatically if stored
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('auth_token')
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
 // Map snake_case API response → camelCase Post interface
 function mapPost(raw: any): Post {
   return {
@@ -52,6 +61,20 @@ departments.forEach((dept) => {
 })
 
 export const api = {
+  // Authentication
+  async login(credentials: { email: string; password: string }) {
+    const response = await apiClient.post('/login', credentials)
+    return response.data
+  },
+  async logout() {
+    const response = await apiClient.post('/logout')
+    return response.data
+  },
+  async getMe() {
+    const response = await apiClient.get('/me')
+    return response.data
+  },
+
   // Stats
   async getStats() {
     try {

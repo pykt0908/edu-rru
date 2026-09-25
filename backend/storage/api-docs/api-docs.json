@@ -21,6 +21,110 @@
         }
     ],
     "paths": {
+        "/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "เข้าสู่ระบบสำหรับผู้ดูแล (Login)",
+                "description": "ตรวจสอบความถูกต้องของอีเมลและรหัสผ่าน พร้อมออก Sanctum Personal Access Token",
+                "operationId": "fa56cbbd355cc9f42332b5e4a1bd0324",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "admin@rru.ac.th"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "admin1234"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "เข้าสู่ระบบสำเร็จ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "เข้าสู่ระบบสำเร็จ"
+                                        },
+                                        "user": {
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|TtizAasxn..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "อีเมลหรือรหัสผ่านไม่ถูกต้อง"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "ออกจากระบบ (Logout)",
+                "description": "ยกเลิกการใช้งาน Sanctum Token ของผู้ใช้ปัจจุบัน",
+                "operationId": "206e44090557d51d55ecf005208fa631",
+                "responses": {
+                    "200": {
+                        "description": "ออกจากระบบเรียบร้อยแล้ว"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "ข้อมูลผู้ใช้ปัจจุบัน (Current User Profile)",
+                "description": "ดึงข้อมูลโปรไฟล์ของผู้ดูแลระบบที่กำลังเข้าสู่ระบบอยู่",
+                "operationId": "fbe0e4199261d9744bfffc0d1bacf7d5",
+                "responses": {
+                    "200": {
+                        "description": "ดึงข้อมูลสำเร็จ"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/stats": {
             "get": {
                 "tags": [
@@ -2373,6 +2477,10 @@
         }
     },
     "tags": [
+        {
+            "name": "Auth",
+            "description": "ระบบตรวจสอบสิทธิ์และเข้าสู่ระบบ (Authentication & Sanctum Tokens)"
+        },
         {
             "name": "Dashboard",
             "description": "ข้อมูลสรุปภาพรวมและสถิติของระบบ"

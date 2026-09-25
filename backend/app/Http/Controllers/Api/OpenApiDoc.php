@@ -22,6 +22,7 @@ use OpenApi\Attributes as OA;
     url: '/api',
     description: 'Current Domain Relative Endpoint'
 )]
+#[OA\Tag(name: 'Auth', description: 'ระบบตรวจสอบสิทธิ์และเข้าสู่ระบบ (Authentication & Sanctum Tokens)')]
 #[OA\Tag(name: 'Dashboard', description: 'ข้อมูลสรุปภาพรวมและสถิติของระบบ')]
 #[OA\Tag(name: 'Posts', description: 'จัดการข่าวสาร กิจกรรม และเป้าหมาย SDGs')]
 #[OA\Tag(name: 'Categories', description: 'จัดการหมวดหมู่ข่าวสารและสี Badge')]
@@ -37,6 +38,65 @@ use OpenApi\Attributes as OA;
 #[OA\Tag(name: 'Uploads', description: 'อัปโหลดไฟล์ รูปภาพ และเอกสาร')]
 class OpenApiDoc
 {
+    // ==========================================
+    // 0. AUTHENTICATION
+    // ==========================================
+    #[OA\Post(
+        path: '/login',
+        summary: 'เข้าสู่ระบบสำหรับผู้ดูแล (Login)',
+        description: 'ตรวจสอบความถูกต้องของอีเมลและรหัสผ่าน พร้อมออก Sanctum Personal Access Token',
+        tags: ['Auth'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['email', 'password'],
+                properties: [
+                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'admin@rru.ac.th'),
+                    new OA\Property(property: 'password', type: 'string', format: 'password', example: 'admin1234')
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'เข้าสู่ระบบสำเร็จ',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', example: 'เข้าสู่ระบบสำเร็จ'),
+                        new OA\Property(property: 'user', type: 'object'),
+                        new OA\Property(property: 'token', type: 'string', example: '1|TtizAasxn...')
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง')
+        ]
+    )]
+    public function login() {}
+
+    #[OA\Post(
+        path: '/logout',
+        summary: 'ออกจากระบบ (Logout)',
+        description: 'ยกเลิกการใช้งาน Sanctum Token ของผู้ใช้ปัจจุบัน',
+        tags: ['Auth'],
+        security: [['sanctum' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'ออกจากระบบเรียบร้อยแล้ว')
+        ]
+    )]
+    public function logout() {}
+
+    #[OA\Get(
+        path: '/me',
+        summary: 'ข้อมูลผู้ใช้ปัจจุบัน (Current User Profile)',
+        description: 'ดึงข้อมูลโปรไฟล์ของผู้ดูแลระบบที่กำลังเข้าสู่ระบบอยู่',
+        tags: ['Auth'],
+        security: [['sanctum' => []]],
+        responses: [
+            new OA\Response(response: 200, description: 'ดึงข้อมูลสำเร็จ')
+        ]
+    )]
+    public function me() {}
+
     // ==========================================
     // 1. DASHBOARD & STATS
     // ==========================================
