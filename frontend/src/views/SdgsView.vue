@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { SDG_GOALS, SDG_ACTIVITIES, type SdgGoal } from '@/data/sdgsData'
-import { api, type Post } from '@/services/api'
+import { api, type Post, type Category } from '@/services/api'
 import sdgsHeroPlant from '@/assets/sdgs_hero_plant.jpg'
 
 // Official UN SDG Logos (1 to 17)
@@ -41,6 +41,20 @@ const selectedGoalId = ref<number>(1)
 // Selected category filter
 const selectedCategory = ref<string>('all')
 
+// Dynamic categories fetched from backend
+const categoryList = ref<Category[]>([])
+
+const fetchCategories = async () => {
+  try {
+    const res = await api.getCategories()
+    if (Array.isArray(res) && res.length > 0) {
+      categoryList.value = [...res].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+    }
+  } catch (err) {
+    console.warn('SdgsView: Failed to load categories:', err)
+  }
+}
+
 // Dynamic posts fetched from backend
 const dynamicPosts = ref<Post[]>([])
 const isLoadingPosts = ref<boolean>(false)
@@ -78,6 +92,7 @@ const applyGoalFromQuery = (scroll = false) => {
 
 onMounted(() => {
   applyGoalFromQuery(true)
+  fetchCategories()
   fetchDynamicPosts()
 })
 
@@ -161,15 +176,57 @@ const allActivitiesForSelectedGoal = computed<UnifiedSdgItem[]>(() => {
   return [...matchingPosts, ...staticActivities]
 })
 
+// Available categories for current goal matching backend/admin categories
+const availableCategories = computed(() => {
+  const list: { id: string; labelTh: string; labelEn: string }[] = [
+    { id: 'all', labelTh: 'ทั้งหมด', labelEn: 'All' },
+  ]
+  const added = new Set<string>()
+
+  // 1. Categories from backend / admin
+  categoryList.value.forEach((c) => {
+    if (c.name && !added.has(c.name)) {
+      added.add(c.name)
+      list.push({
+        id: c.name,
+        labelTh: c.name,
+        labelEn: c.name,
+      })
+    }
+  })
+
+  // 2. Also ensure any categories appearing in activities/posts for this goal are available
+  allActivitiesForSelectedGoal.value.forEach((a) => {
+    const catName = a.categoryTh || a.categoryEn
+    if (catName && !added.has(catName)) {
+      added.add(catName)
+      list.push({
+        id: catName,
+        labelTh: a.categoryTh || catName,
+        labelEn: a.categoryEn || catName,
+      })
+    }
+  })
+
+  return list
+})
+
+// Helper to get category badge class from admin category settings
+const getCategoryBadgeClass = (categoryName: string) => {
+  const cat = categoryList.value.find((c) => c.name === categoryName)
+  return cat?.badge_class || 'bg-black/60 text-white'
+}
+
 // Filtered activities for current selected goal
 const filteredActivities = computed<UnifiedSdgItem[]>(() => {
   let list = allActivitiesForSelectedGoal.value
   if (selectedCategory.value !== 'all') {
-    list = list.filter((a) =>
-      currentLang.value === 'th'
-        ? a.categoryTh.includes(selectedCategory.value)
-        : a.categoryEn.toLowerCase().includes(selectedCategory.value.toLowerCase())
-    )
+    const target = selectedCategory.value.trim().toLowerCase()
+    list = list.filter((a) => {
+      const th = (a.categoryTh || '').trim().toLowerCase()
+      const en = (a.categoryEn || '').trim().toLowerCase()
+      return th === target || en === target || th.includes(target) || en.includes(target)
+    })
   }
   return list
 })
@@ -424,39 +481,21 @@ const selectGoal = (id: number) => {
             </span>
           </div>
 
-          <!-- Minimal Category Filter Pills -->
+          <!-- Dynamic Category Filter Pills -->
           <div class="flex flex-wrap gap-1.5">
             <button
+              v-for="cat in availableCategories"
+              :key="cat.id"
               type="button"
-              class="px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-150 cursor-pointer"
-              :class="selectedCategory === 'all' ? 'bg-[#0E351E] text-white shadow-xs font-semibold' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/90'"
-              @click="selectedCategory = 'all'"
+              class="px-3.5 py-1.5 text-xs font-medium rounded-full transition-all duration-150 cursor-pointer"
+              :class="
+                selectedCategory === cat.id
+                  ? 'bg-[#0E351E] text-white shadow-xs font-semibold'
+                  : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/90'
+              "
+              @click="selectedCategory = cat.id"
             >
-              {{ currentLang === 'th' ? 'ทั้งหมด' : 'All' }}
-            </button>
-            <button
-              type="button"
-              class="px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-150 cursor-pointer"
-              :class="selectedCategory === 'บริการวิชาการ' ? 'bg-[#0E351E] text-white shadow-xs font-semibold' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/90'"
-              @click="selectedCategory = 'บริการวิชาการ'"
-            >
-              {{ currentLang === 'th' ? 'บริการวิชาการ' : 'Academic Service' }}
-            </button>
-            <button
-              type="button"
-              class="px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-150 cursor-pointer"
-              :class="selectedCategory === 'วิจัย' ? 'bg-[#0E351E] text-white shadow-xs font-semibold' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/90'"
-              @click="selectedCategory = 'วิจัย'"
-            >
-              {{ currentLang === 'th' ? 'งานวิจัย & นวัตกรรม' : 'Research & Innovation' }}
-            </button>
-            <button
-              type="button"
-              class="px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-150 cursor-pointer"
-              :class="selectedCategory === 'กิจกรรม' ? 'bg-[#0E351E] text-white shadow-xs font-semibold' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/90'"
-              @click="selectedCategory = 'กิจกรรม'"
-            >
-              {{ currentLang === 'th' ? 'กิจกรรมพัฒนานักศึกษา' : 'Student Activities' }}
+              {{ currentLang === 'th' ? cat.labelTh : cat.labelEn }}
             </button>
           </div>
         </div>
@@ -490,7 +529,10 @@ const selectGoal = (id: number) => {
                 >
                   ข่าวสารคณะ
                 </span>
-                <span class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-black/60 text-white backdrop-blur-md">
+                <span
+                  class="px-2 py-0.5 rounded-md text-[10px] font-medium shadow-xs"
+                  :class="getCategoryBadgeClass(act.categoryTh)"
+                >
                   {{ currentLang === 'th' ? act.categoryTh : act.categoryEn }}
                 </span>
               </div>
